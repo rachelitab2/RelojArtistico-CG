@@ -1,0 +1,26 @@
+{
+    "version": 4,
+    "configurations": [
+        {
+            "name": "MinGW64",
+            "compilerPath": "C:/msys64/mingw64/bin/gcc.exe",
+
+            "includePath": [
+                "${workspaceFolder}/include",
+                "C:/msys64/mingw64/include",
+                "C:/msys64/mingw64/include/GL"
+            ],
+
+            "defines": [
+                "_DEBUG",
+                "FREEGLUT_STATIC"
+            ],
+
+            "intelliSenseMode": "windows-gcc-x64",
+
+            "cStandard": "c17",
+
+            "cppStandard": "c++17"
+        }
+    ]
+}

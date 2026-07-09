@@ -1,0 +1,3 @@
+C:/Users/rache/proyectos/RelojArtistico/build/CMakeFiles/RelojArtistico.dir
+C:/Users/rache/proyectos/RelojArtistico/build/CMakeFiles/edit_cache.dir
+C:/Users/rache/proyectos/RelojArtistico/build/CMakeFiles/rebuild_cache.dir

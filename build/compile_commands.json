@@ -1,0 +1,50 @@
+[
+{
+  "directory": "C:/Users/rache/proyectos/RelojArtistico/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe  @CMakeFiles/RelojArtistico.dir/includes_C.rsp -g -std=gnu99 -o CMakeFiles\\RelojArtistico.dir\\src\\main.c.obj -c C:\\Users\\rache\\proyectos\\RelojArtistico\\src\\main.c",
+  "file": "C:/Users/rache/proyectos/RelojArtistico/src/main.c",
+  "output": "CMakeFiles/RelojArtistico.dir/src/main.c.obj"
+},
+{
+  "directory": "C:/Users/rache/proyectos/RelojArtistico/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe  @CMakeFiles/RelojArtistico.dir/includes_C.rsp -g -std=gnu99 -o CMakeFiles\\RelojArtistico.dir\\src\\display.c.obj -c C:\\Users\\rache\\proyectos\\RelojArtistico\\src\\display.c",
+  "file": "C:/Users/rache/proyectos/RelojArtistico/src/display.c",
+  "output": "CMakeFiles/RelojArtistico.dir/src/display.c.obj"
+},
+{
+  "directory": "C:/Users/rache/proyectos/RelojArtistico/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe  @CMakeFiles/RelojArtistico.dir/includes_C.rsp -g -std=gnu99 -o CMakeFiles\\RelojArtistico.dir\\src\\clock.c.obj -c C:\\Users\\rache\\proyectos\\RelojArtistico\\src\\clock.c",
+  "file": "C:/Users/rache/proyectos/RelojArtistico/src/clock.c",
+  "output": "CMakeFiles/RelojArtistico.dir/src/clock.c.obj"
+},
+{
+  "directory": "C:/Users/rache/proyectos/RelojArtistico/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe  @CMakeFiles/RelojArtistico.dir/includes_C.rsp -g -std=gnu99 -o CMakeFiles\\RelojArtistico.dir\\src\\segments.c.obj -c C:\\Users\\rache\\proyectos\\RelojArtistico\\src\\segments.c",
+  "file": "C:/Users/rache/proyectos/RelojArtistico/src/segments.c",
+  "output": "CMakeFiles/RelojArtistico.dir/src/segments.c.obj"
+},
+{
+  "directory": "C:/Users/rache/proyectos/RelojArtistico/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe  @CMakeFiles/RelojArtistico.dir/includes_C.rsp -g -std=gnu99 -o CMakeFiles\\RelojArtistico.dir\\src\\utils.c.obj -c C:\\Users\\rache\\proyectos\\RelojArtistico\\src\\utils.c",
+  "file": "C:/Users/rache/proyectos/RelojArtistico/src/utils.c",
+  "output": "CMakeFiles/RelojArtistico.dir/src/utils.c.obj"
+},
+{
+  "directory": "C:/Users/rache/proyectos/RelojArtistico/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe  @CMakeFiles/RelojArtistico.dir/includes_C.rsp -g -std=gnu99 -o CMakeFiles\\RelojArtistico.dir\\src\\segment_hokusai.c.obj -c C:\\Users\\rache\\proyectos\\RelojArtistico\\src\\segment_hokusai.c",
+  "file": "C:/Users/rache/proyectos/RelojArtistico/src/segment_hokusai.c",
+  "output": "CMakeFiles/RelojArtistico.dir/src/segment_hokusai.c.obj"
+},
+{
+  "directory": "C:/Users/rache/proyectos/RelojArtistico/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe  @CMakeFiles/RelojArtistico.dir/includes_C.rsp -g -std=gnu99 -o CMakeFiles\\RelojArtistico.dir\\src\\segment_vangogh.c.obj -c C:\\Users\\rache\\proyectos\\RelojArtistico\\src\\segment_vangogh.c",
+  "file": "C:/Users/rache/proyectos/RelojArtistico/src/segment_vangogh.c",
+  "output": "CMakeFiles/RelojArtistico.dir/src/segment_vangogh.c.obj"
+},
+{
+  "directory": "C:/Users/rache/proyectos/RelojArtistico/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe  @CMakeFiles/RelojArtistico.dir/includes_C.rsp -g -std=gnu99 -o CMakeFiles\\RelojArtistico.dir\\src\\segment_kandinsky.c.obj -c C:\\Users\\rache\\proyectos\\RelojArtistico\\src\\segment_kandinsky.c",
+  "file": "C:/Users/rache/proyectos/RelojArtistico/src/segment_kandinsky.c",
+  "output": "CMakeFiles/RelojArtistico.dir/src/segment_kandinsky.c.obj"
+}
+]
