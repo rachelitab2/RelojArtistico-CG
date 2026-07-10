@@ -7,6 +7,7 @@
 #include "segment_monet.h"
 #include "segment_mondrian.h"
 #include "segment_kandinsky.h"
+#include "segment_vangogh.h"
 
 Segment segments[6];
 
@@ -118,6 +119,7 @@ static void drawArtwork(ArtworkType artwork)
             break;
 
         case ART_VANGOGH:
+            drawVanGogh();
             break;
 
         case ART_KANDINSKY:
@@ -155,6 +157,10 @@ static void drawArtworkBackground(const Segment *segment)
 
         case ART_KANDINSKY:
             drawKandinskyBackground(segment->innerRadius, segment->outerRadius);
+            break;
+
+        case ART_VANGOGH:
+            drawVanGoghBackground(segment->innerRadius, segment->outerRadius);
             break;
 
         default:
