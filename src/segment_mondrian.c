@@ -24,7 +24,7 @@ static const int CELL_COLOR[4][4] =
 
 static const float PALETTE[4][3] =
 {
-    {1.00f,1.00f,1.00f}, /* blanco */
+    {0.95f,0.95f,0.92f}, /* blanco (ligeramente calido, igual que el resto de la paleta) */
     {0.85f,0.15f,0.12f}, /* rojo */
     {0.12f,0.32f,0.82f}, /* azul */
     {0.95f,0.82f,0.12f}  /* amarillo */
@@ -55,13 +55,13 @@ static void drawBlocks(float innerRadius, float outerRadius)
    dibujada a mano, no perfectamente uniforme. */
 static void drawGridLines(float innerRadius, float outerRadius)
 {
-    static const float radialLineWidth[5]  = {5.0f, 3.5f, 4.5f, 3.0f, 5.0f};
-    static const float arcLineWidth[5]     = {5.0f, 3.0f, 4.5f, 3.5f, 5.0f};
+    static const float radialLineWidth[5]  = {4.5f, 3.0f, 4.0f, 2.5f, 4.5f};
+    static const float arcLineWidth[5]     = {4.5f, 2.5f, 4.0f, 3.0f, 4.5f};
 
     float span = outerRadius - innerRadius;
     int i;
 
-    glColor3f(0.0f,0.0f,0.0f);
+    glColor3f(0.08f,0.08f,0.08f);
 
     /* lineas radiales (una por cada division angular) */
     for(i = 0; i < 5; i++)
