@@ -4,7 +4,11 @@
 
 #include "segments.h"
 #include "utils.h"
+<<<<<<< HEAD
 #include "segment_monet.h"
+=======
+#include "segment_mondrian.h"
+>>>>>>> feature/mondrian
 
 Segment segments[6];
 
@@ -122,6 +126,7 @@ static void drawArtwork(ArtworkType artwork)
             break;
 
         case ART_MONDRIAN:
+            drawMondrian();
             break;
 
         case ART_MONET:
@@ -141,8 +146,13 @@ static void drawArtworkBackground(const Segment *segment)
 {
     switch(segment->artwork)
     {
+<<<<<<< HEAD
         case ART_MONET:
             drawMonetBackground(segment->innerRadius, segment->outerRadius);
+=======
+        case ART_MONDRIAN:
+            drawMondrianBackground(segment->innerRadius, segment->outerRadius);
+>>>>>>> feature/mondrian
             break;
 
         default:
