@@ -4,6 +4,7 @@
 
 #include "clock.h"
 #include "utils.h"
+#include <time.h>
 
 void drawClock(void)
 {
@@ -31,3 +32,37 @@ void drawClock(void)
         drawLine(x1,y1,x2,y2);
     }
 }
+
+typedef struct
+{
+    int hour;
+    int minute;
+    int second;
+
+} ClockTime;
+
+ClockTime getCurrentTime(void)
+{
+    time_t now;
+
+    time(&now);
+
+    struct tm *current = localtime(&now);
+
+    ClockTime t;
+
+    t.hour = current->tm_hour;
+    t.minute = current->tm_min;
+    t.second = current->tm_sec;
+
+    return t;
+}
+
+float hourAngle(ClockTime t){
+    return (t.hour % 12) * 30.0f
+         + t.minute * 0.5f;
+}
+
+float minuteAngle(ClockTime t);
+
+float secondAngle(ClockTime t);
