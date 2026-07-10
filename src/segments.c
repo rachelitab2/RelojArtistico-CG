@@ -8,6 +8,7 @@
 #include "segment_mondrian.h"
 #include "segment_kandinsky.h"
 #include "segment_vangogh.h"
+#include "segment_klimt.h"
 
 Segment segments[6];
 
@@ -135,6 +136,7 @@ static void drawArtwork(ArtworkType artwork)
             break;
 
         case ART_KLIMT:
+            drawKlimt();
             break;
     }
 }
@@ -161,6 +163,10 @@ static void drawArtworkBackground(const Segment *segment)
 
         case ART_VANGOGH:
             drawVanGoghBackground(segment->innerRadius, segment->outerRadius);
+            break;
+
+        case ART_KLIMT:
+            drawKlimtBackground(segment->innerRadius, segment->outerRadius);
             break;
 
         default:
