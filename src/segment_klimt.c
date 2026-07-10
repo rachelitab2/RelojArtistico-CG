@@ -22,7 +22,7 @@ static const float PALETTE[4][3] =
 {
     {0.85f,0.68f,0.28f},
     {0.65f,0.48f,0.14f},
-    {0.10f,0.08f,0.06f},
+    {0.08f,0.08f,0.08f},
     {0.55f,0.10f,0.12f}
 };
 
@@ -57,13 +57,13 @@ static void drawGoldDots(void)
 {
     static const float dots[][3] =
     {
-        {-0.55f, 0.45f, 0.07f},
-        {-0.15f, 0.55f, 0.05f},
-        { 0.30f, 0.40f, 0.06f},
-        {-0.40f,-0.10f, 0.05f},
-        { 0.10f,-0.05f, 0.08f},
-        { 0.50f,-0.20f, 0.05f},
-        {-0.10f,-0.55f, 0.06f}
+        {-0.55f, 0.45f, 0.09f},
+        {-0.15f, 0.55f, 0.07f},
+        { 0.30f, 0.40f, 0.08f},
+        {-0.40f,-0.10f, 0.07f},
+        { 0.10f,-0.05f, 0.10f},
+        { 0.50f,-0.20f, 0.07f},
+        {-0.10f,-0.55f, 0.08f}
     };
 
     const int count = sizeof(dots) / sizeof(dots[0]);
@@ -81,7 +81,7 @@ static void drawSpiral(void)
     int i;
     const int steps = 40;
 
-    glColor3f(0.10f,0.08f,0.06f);
+    glColor3f(0.08f,0.08f,0.08f);
     glLineWidth(3.0f);
 
     glBegin(GL_LINE_STRIP);
@@ -90,7 +90,7 @@ static void drawSpiral(void)
     {
         float t = (float)i / steps;
         float angle = t * 4.0f * 3.1415926535f;
-        float radius = 0.05f + t * 0.35f;
+        float radius = 0.06f + t * 0.45f;
 
         glVertex2f(cosf(angle) * radius, sinf(angle) * radius - 0.20f);
     }
