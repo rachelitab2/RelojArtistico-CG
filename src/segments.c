@@ -4,6 +4,7 @@
 
 #include "segments.h"
 #include "utils.h"
+#include "segment_klimt.h"
 
 Segment segments[6];
 
@@ -127,6 +128,7 @@ static void drawArtwork(ArtworkType artwork)
             break;
 
         case ART_KLIMT:
+            drawKlimt();
             break;
     }
 }
@@ -139,6 +141,10 @@ static void drawArtworkBackground(const Segment *segment)
 {
     switch(segment->artwork)
     {
+        case ART_KLIMT:
+            drawKlimtBackground(segment->innerRadius, segment->outerRadius);
+            break;
+
         default:
             glColor3f(0.30f,0.30f,0.80f);
             drawFilledArc(segment->innerRadius, segment->outerRadius, -25.0f, 25.0f);
