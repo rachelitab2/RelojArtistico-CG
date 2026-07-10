@@ -23,7 +23,7 @@ static const float PALETTE[6][3] =
     {0.82f,0.18f,0.16f},
     {0.15f,0.30f,0.75f},
     {0.93f,0.75f,0.15f},
-    {0.08f,0.08f,0.10f},
+    {0.08f,0.08f,0.08f},
     {0.10f,0.55f,0.55f}
 };
 
@@ -57,16 +57,16 @@ void drawKandinskyBackground(float innerRadius, float outerRadius)
 static void drawCircles(void)
 {
     glColor3f(0.95f,0.95f,0.92f);
-    drawFilledCircle(0.10f, 0.15f, 0.30f);
+    drawFilledCircle(0.10f, 0.15f, 0.32f);
 
     glColor3f(0.82f,0.18f,0.16f);
-    drawFilledCircle(0.10f, 0.15f, 0.20f);
+    drawFilledCircle(0.10f, 0.15f, 0.21f);
 
     glColor3f(0.15f,0.30f,0.75f);
-    drawFilledCircle(0.10f, 0.15f, 0.10f);
+    drawFilledCircle(0.10f, 0.15f, 0.11f);
 
     glColor3f(0.93f,0.75f,0.15f);
-    drawFilledCircle(-0.45f,-0.40f, 0.14f);
+    drawFilledCircle(-0.45f,-0.40f, 0.16f);
 }
 
 /* Lineas rectas que cruzan la composicion, otro motivo tipico */
