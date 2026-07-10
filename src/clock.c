@@ -31,15 +31,15 @@ void drawClock(void)
 
         drawLine(x1,y1,x2,y2);
     }
+    
+    ClockTime current = getCurrentTime();
+
+drawHourHand(current);
+
+drawMinuteHand(current);
+
+drawSecondHand(current);
 }
-
-typedef struct
-{
-    int hour;
-    int minute;
-    int second;
-
-} ClockTime;
 
 ClockTime getCurrentTime(void)
 {
@@ -63,6 +63,50 @@ float hourAngle(ClockTime t){
          + t.minute * 0.5f;
 }
 
-float minuteAngle(ClockTime t);
+float minuteAngle(ClockTime t){
+    return t.minute * 6.0f
+         + t.second * 0.1f;
+}
 
-float secondAngle(ClockTime t);
+float secondAngle(ClockTime t){
+    return t.second * 6.0f;
+}
+void drawHourHand(ClockTime t)
+{
+    float angle = degreesToRadians(hourAngle(t));
+
+    float x = 0.18f * sin(angle);
+    float y = 0.18f * cos(angle);
+
+    glColor3f(1.0f,1.0f,1.0f);
+
+    glLineWidth(5.0f);
+
+    drawLine(0.0f,0.0f,x,y);
+}
+void drawMinuteHand(ClockTime t)
+{
+    float angle = degreesToRadians(minuteAngle(t));
+
+    float x = 0.27f * sin(angle);
+    float y = 0.27f * cos(angle);
+
+    glColor3f(0.90f,0.90f,0.90f);
+
+    glLineWidth(3.0f);
+
+    drawLine(0.0f,0.0f,x,y);
+}
+void drawSecondHand(ClockTime t)
+{
+    float angle = degreesToRadians(secondAngle(t));
+
+    float x = 0.31f * sin(angle);
+    float y = 0.31f * cos(angle);
+
+    glColor3f(1.0f,0.2f,0.2f);
+
+    glLineWidth(1.5f);
+
+    drawLine(0.0f,0.0f,x,y);
+}

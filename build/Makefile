@@ -248,6 +248,78 @@ src/segment_kandinsky.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\RelojArtistico.dir\build.make CMakeFiles/RelojArtistico.dir/src/segment_kandinsky.c.s
 .PHONY : src/segment_kandinsky.c.s
 
+src/segment_klimt.obj: src/segment_klimt.c.obj
+.PHONY : src/segment_klimt.obj
+
+# target to build an object file
+src/segment_klimt.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\RelojArtistico.dir\build.make CMakeFiles/RelojArtistico.dir/src/segment_klimt.c.obj
+.PHONY : src/segment_klimt.c.obj
+
+src/segment_klimt.i: src/segment_klimt.c.i
+.PHONY : src/segment_klimt.i
+
+# target to preprocess a source file
+src/segment_klimt.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\RelojArtistico.dir\build.make CMakeFiles/RelojArtistico.dir/src/segment_klimt.c.i
+.PHONY : src/segment_klimt.c.i
+
+src/segment_klimt.s: src/segment_klimt.c.s
+.PHONY : src/segment_klimt.s
+
+# target to generate assembly for a file
+src/segment_klimt.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\RelojArtistico.dir\build.make CMakeFiles/RelojArtistico.dir/src/segment_klimt.c.s
+.PHONY : src/segment_klimt.c.s
+
+src/segment_mondrian.obj: src/segment_mondrian.c.obj
+.PHONY : src/segment_mondrian.obj
+
+# target to build an object file
+src/segment_mondrian.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\RelojArtistico.dir\build.make CMakeFiles/RelojArtistico.dir/src/segment_mondrian.c.obj
+.PHONY : src/segment_mondrian.c.obj
+
+src/segment_mondrian.i: src/segment_mondrian.c.i
+.PHONY : src/segment_mondrian.i
+
+# target to preprocess a source file
+src/segment_mondrian.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\RelojArtistico.dir\build.make CMakeFiles/RelojArtistico.dir/src/segment_mondrian.c.i
+.PHONY : src/segment_mondrian.c.i
+
+src/segment_mondrian.s: src/segment_mondrian.c.s
+.PHONY : src/segment_mondrian.s
+
+# target to generate assembly for a file
+src/segment_mondrian.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\RelojArtistico.dir\build.make CMakeFiles/RelojArtistico.dir/src/segment_mondrian.c.s
+.PHONY : src/segment_mondrian.c.s
+
+src/segment_monet.obj: src/segment_monet.c.obj
+.PHONY : src/segment_monet.obj
+
+# target to build an object file
+src/segment_monet.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\RelojArtistico.dir\build.make CMakeFiles/RelojArtistico.dir/src/segment_monet.c.obj
+.PHONY : src/segment_monet.c.obj
+
+src/segment_monet.i: src/segment_monet.c.i
+.PHONY : src/segment_monet.i
+
+# target to preprocess a source file
+src/segment_monet.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\RelojArtistico.dir\build.make CMakeFiles/RelojArtistico.dir/src/segment_monet.c.i
+.PHONY : src/segment_monet.c.i
+
+src/segment_monet.s: src/segment_monet.c.s
+.PHONY : src/segment_monet.s
+
+# target to generate assembly for a file
+src/segment_monet.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\RelojArtistico.dir\build.make CMakeFiles/RelojArtistico.dir/src/segment_monet.c.s
+.PHONY : src/segment_monet.c.s
+
 src/segment_vangogh.obj: src/segment_vangogh.c.obj
 .PHONY : src/segment_vangogh.obj
 
@@ -344,6 +416,15 @@ help:
 	@echo ... src/segment_kandinsky.obj
 	@echo ... src/segment_kandinsky.i
 	@echo ... src/segment_kandinsky.s
+	@echo ... src/segment_klimt.obj
+	@echo ... src/segment_klimt.i
+	@echo ... src/segment_klimt.s
+	@echo ... src/segment_mondrian.obj
+	@echo ... src/segment_mondrian.i
+	@echo ... src/segment_mondrian.s
+	@echo ... src/segment_monet.obj
+	@echo ... src/segment_monet.i
+	@echo ... src/segment_monet.s
 	@echo ... src/segment_vangogh.obj
 	@echo ... src/segment_vangogh.i
 	@echo ... src/segment_vangogh.s

@@ -215,4 +215,5 @@ CMakeFiles/RelojArtistico.dir/src/main.c.obj: \
  C:/msys64/mingw64/include/GL/glu.h \
  C:/msys64/mingw64/include/GL/freeglut_ext.h \
  C:/msys64/mingw64/include/GL/freeglut_ucall.h \
- C:/Users/rache/proyectos/RelojArtistico/include/display.h
+ C:/Users/rache/proyectos/RelojArtistico/include/display.h \
+ C:/Users/rache/proyectos/RelojArtistico/include/segments.h

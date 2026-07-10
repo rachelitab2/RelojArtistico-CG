@@ -46,5 +46,23 @@
   "command": "C:\\msys64\\mingw64\\bin\\gcc.exe  @CMakeFiles/RelojArtistico.dir/includes_C.rsp -g -std=gnu99 -o CMakeFiles\\RelojArtistico.dir\\src\\segment_kandinsky.c.obj -c C:\\Users\\rache\\proyectos\\RelojArtistico\\src\\segment_kandinsky.c",
   "file": "C:/Users/rache/proyectos/RelojArtistico/src/segment_kandinsky.c",
   "output": "CMakeFiles/RelojArtistico.dir/src/segment_kandinsky.c.obj"
+},
+{
+  "directory": "C:/Users/rache/proyectos/RelojArtistico/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe  @CMakeFiles/RelojArtistico.dir/includes_C.rsp -g -std=gnu99 -o CMakeFiles\\RelojArtistico.dir\\src\\segment_mondrian.c.obj -c C:\\Users\\rache\\proyectos\\RelojArtistico\\src\\segment_mondrian.c",
+  "file": "C:/Users/rache/proyectos/RelojArtistico/src/segment_mondrian.c",
+  "output": "CMakeFiles/RelojArtistico.dir/src/segment_mondrian.c.obj"
+},
+{
+  "directory": "C:/Users/rache/proyectos/RelojArtistico/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe  @CMakeFiles/RelojArtistico.dir/includes_C.rsp -g -std=gnu99 -o CMakeFiles\\RelojArtistico.dir\\src\\segment_monet.c.obj -c C:\\Users\\rache\\proyectos\\RelojArtistico\\src\\segment_monet.c",
+  "file": "C:/Users/rache/proyectos/RelojArtistico/src/segment_monet.c",
+  "output": "CMakeFiles/RelojArtistico.dir/src/segment_monet.c.obj"
+},
+{
+  "directory": "C:/Users/rache/proyectos/RelojArtistico/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe  @CMakeFiles/RelojArtistico.dir/includes_C.rsp -g -std=gnu99 -o CMakeFiles\\RelojArtistico.dir\\src\\segment_klimt.c.obj -c C:\\Users\\rache\\proyectos\\RelojArtistico\\src\\segment_klimt.c",
+  "file": "C:/Users/rache/proyectos/RelojArtistico/src/segment_klimt.c",
+  "output": "CMakeFiles/RelojArtistico.dir/src/segment_klimt.c.obj"
 }
 ]

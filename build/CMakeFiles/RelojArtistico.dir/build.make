@@ -191,6 +191,51 @@ CMakeFiles/RelojArtistico.dir/src/segment_kandinsky.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/RelojArtistico.dir/src/segment_kandinsky.c.s"
 	C:\msys64\mingw64\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Users\rache\proyectos\RelojArtistico\src\segment_kandinsky.c -o CMakeFiles\RelojArtistico.dir\src\segment_kandinsky.c.s
 
+CMakeFiles/RelojArtistico.dir/src/segment_mondrian.c.obj: CMakeFiles/RelojArtistico.dir/flags.make
+CMakeFiles/RelojArtistico.dir/src/segment_mondrian.c.obj: CMakeFiles/RelojArtistico.dir/includes_C.rsp
+CMakeFiles/RelojArtistico.dir/src/segment_mondrian.c.obj: C:/Users/rache/proyectos/RelojArtistico/src/segment_mondrian.c
+CMakeFiles/RelojArtistico.dir/src/segment_mondrian.c.obj: CMakeFiles/RelojArtistico.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\rache\proyectos\RelojArtistico\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building C object CMakeFiles/RelojArtistico.dir/src/segment_mondrian.c.obj"
+	C:\msys64\mingw64\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/RelojArtistico.dir/src/segment_mondrian.c.obj -MF CMakeFiles\RelojArtistico.dir\src\segment_mondrian.c.obj.d -o CMakeFiles\RelojArtistico.dir\src\segment_mondrian.c.obj -c C:\Users\rache\proyectos\RelojArtistico\src\segment_mondrian.c
+
+CMakeFiles/RelojArtistico.dir/src/segment_mondrian.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/RelojArtistico.dir/src/segment_mondrian.c.i"
+	C:\msys64\mingw64\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Users\rache\proyectos\RelojArtistico\src\segment_mondrian.c > CMakeFiles\RelojArtistico.dir\src\segment_mondrian.c.i
+
+CMakeFiles/RelojArtistico.dir/src/segment_mondrian.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/RelojArtistico.dir/src/segment_mondrian.c.s"
+	C:\msys64\mingw64\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Users\rache\proyectos\RelojArtistico\src\segment_mondrian.c -o CMakeFiles\RelojArtistico.dir\src\segment_mondrian.c.s
+
+CMakeFiles/RelojArtistico.dir/src/segment_monet.c.obj: CMakeFiles/RelojArtistico.dir/flags.make
+CMakeFiles/RelojArtistico.dir/src/segment_monet.c.obj: CMakeFiles/RelojArtistico.dir/includes_C.rsp
+CMakeFiles/RelojArtistico.dir/src/segment_monet.c.obj: C:/Users/rache/proyectos/RelojArtistico/src/segment_monet.c
+CMakeFiles/RelojArtistico.dir/src/segment_monet.c.obj: CMakeFiles/RelojArtistico.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\rache\proyectos\RelojArtistico\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building C object CMakeFiles/RelojArtistico.dir/src/segment_monet.c.obj"
+	C:\msys64\mingw64\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/RelojArtistico.dir/src/segment_monet.c.obj -MF CMakeFiles\RelojArtistico.dir\src\segment_monet.c.obj.d -o CMakeFiles\RelojArtistico.dir\src\segment_monet.c.obj -c C:\Users\rache\proyectos\RelojArtistico\src\segment_monet.c
+
+CMakeFiles/RelojArtistico.dir/src/segment_monet.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/RelojArtistico.dir/src/segment_monet.c.i"
+	C:\msys64\mingw64\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Users\rache\proyectos\RelojArtistico\src\segment_monet.c > CMakeFiles\RelojArtistico.dir\src\segment_monet.c.i
+
+CMakeFiles/RelojArtistico.dir/src/segment_monet.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/RelojArtistico.dir/src/segment_monet.c.s"
+	C:\msys64\mingw64\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Users\rache\proyectos\RelojArtistico\src\segment_monet.c -o CMakeFiles\RelojArtistico.dir\src\segment_monet.c.s
+
+CMakeFiles/RelojArtistico.dir/src/segment_klimt.c.obj: CMakeFiles/RelojArtistico.dir/flags.make
+CMakeFiles/RelojArtistico.dir/src/segment_klimt.c.obj: CMakeFiles/RelojArtistico.dir/includes_C.rsp
+CMakeFiles/RelojArtistico.dir/src/segment_klimt.c.obj: C:/Users/rache/proyectos/RelojArtistico/src/segment_klimt.c
+CMakeFiles/RelojArtistico.dir/src/segment_klimt.c.obj: CMakeFiles/RelojArtistico.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\rache\proyectos\RelojArtistico\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building C object CMakeFiles/RelojArtistico.dir/src/segment_klimt.c.obj"
+	C:\msys64\mingw64\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/RelojArtistico.dir/src/segment_klimt.c.obj -MF CMakeFiles\RelojArtistico.dir\src\segment_klimt.c.obj.d -o CMakeFiles\RelojArtistico.dir\src\segment_klimt.c.obj -c C:\Users\rache\proyectos\RelojArtistico\src\segment_klimt.c
+
+CMakeFiles/RelojArtistico.dir/src/segment_klimt.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/RelojArtistico.dir/src/segment_klimt.c.i"
+	C:\msys64\mingw64\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Users\rache\proyectos\RelojArtistico\src\segment_klimt.c > CMakeFiles\RelojArtistico.dir\src\segment_klimt.c.i
+
+CMakeFiles/RelojArtistico.dir/src/segment_klimt.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/RelojArtistico.dir/src/segment_klimt.c.s"
+	C:\msys64\mingw64\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Users\rache\proyectos\RelojArtistico\src\segment_klimt.c -o CMakeFiles\RelojArtistico.dir\src\segment_klimt.c.s
+
 # Object files for target RelojArtistico
 RelojArtistico_OBJECTS = \
 "CMakeFiles/RelojArtistico.dir/src/main.c.obj" \
@@ -200,7 +245,10 @@ RelojArtistico_OBJECTS = \
 "CMakeFiles/RelojArtistico.dir/src/utils.c.obj" \
 "CMakeFiles/RelojArtistico.dir/src/segment_hokusai.c.obj" \
 "CMakeFiles/RelojArtistico.dir/src/segment_vangogh.c.obj" \
-"CMakeFiles/RelojArtistico.dir/src/segment_kandinsky.c.obj"
+"CMakeFiles/RelojArtistico.dir/src/segment_kandinsky.c.obj" \
+"CMakeFiles/RelojArtistico.dir/src/segment_mondrian.c.obj" \
+"CMakeFiles/RelojArtistico.dir/src/segment_monet.c.obj" \
+"CMakeFiles/RelojArtistico.dir/src/segment_klimt.c.obj"
 
 # External object files for target RelojArtistico
 RelojArtistico_EXTERNAL_OBJECTS =
@@ -213,11 +261,14 @@ RelojArtistico.exe: CMakeFiles/RelojArtistico.dir/src/utils.c.obj
 RelojArtistico.exe: CMakeFiles/RelojArtistico.dir/src/segment_hokusai.c.obj
 RelojArtistico.exe: CMakeFiles/RelojArtistico.dir/src/segment_vangogh.c.obj
 RelojArtistico.exe: CMakeFiles/RelojArtistico.dir/src/segment_kandinsky.c.obj
+RelojArtistico.exe: CMakeFiles/RelojArtistico.dir/src/segment_mondrian.c.obj
+RelojArtistico.exe: CMakeFiles/RelojArtistico.dir/src/segment_monet.c.obj
+RelojArtistico.exe: CMakeFiles/RelojArtistico.dir/src/segment_klimt.c.obj
 RelojArtistico.exe: CMakeFiles/RelojArtistico.dir/build.make
 RelojArtistico.exe: CMakeFiles/RelojArtistico.dir/linkLibs.rsp
 RelojArtistico.exe: CMakeFiles/RelojArtistico.dir/objects1.rsp
 RelojArtistico.exe: CMakeFiles/RelojArtistico.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=C:\Users\rache\proyectos\RelojArtistico\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Linking C executable RelojArtistico.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=C:\Users\rache\proyectos\RelojArtistico\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Linking C executable RelojArtistico.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\RelojArtistico.dir\link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

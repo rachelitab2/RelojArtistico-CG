@@ -16,6 +16,9 @@ set(SOURCES
     src/segment_hokusai.c
     src/segment_vangogh.c
     src/segment_kandinsky.c
+    src/segment_mondrian.c
+    src/segment_monet.c
+    src/segment_klimt.c
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})

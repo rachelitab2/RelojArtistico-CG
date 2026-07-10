@@ -211,4 +211,9 @@ CMakeFiles/RelojArtistico.dir/src/clock.c.obj: \
  C:/msys64/mingw64/include/GL/freeglut_ucall.h \
  C:/msys64/mingw64/include/math.h \
  C:/Users/rache/proyectos/RelojArtistico/include/clock.h \
- C:/Users/rache/proyectos/RelojArtistico/include/utils.h
+ C:/Users/rache/proyectos/RelojArtistico/include/utils.h \
+ C:/msys64/mingw64/include/time.h C:/msys64/mingw64/include/sys/timeb.h \
+ C:/msys64/mingw64/include/sec_api/sys/timeb_s.h \
+ C:/msys64/mingw64/include/_timeval.h \
+ C:/msys64/mingw64/include/pthread_time.h \
+ C:/msys64/mingw64/include/pthread_compat.h

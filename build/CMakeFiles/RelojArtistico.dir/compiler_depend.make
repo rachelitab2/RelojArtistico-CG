@@ -15,6 +15,7 @@ CMakeFiles/RelojArtistico.dir/src/clock.c.obj: C:/Users/rache/proyectos/RelojArt
   C:/msys64/mingw64/include/_mingw_secapi.h \
   C:/msys64/mingw64/include/_mingw_stdarg.h \
   C:/msys64/mingw64/include/_mingw_unicode.h \
+  C:/msys64/mingw64/include/_timeval.h \
   C:/msys64/mingw64/include/apiset.h \
   C:/msys64/mingw64/include/apisetcconv.h \
   C:/msys64/mingw64/include/basetsd.h \
@@ -66,6 +67,8 @@ CMakeFiles/RelojArtistico.dir/src/clock.c.obj: C:/Users/rache/proyectos/RelojArt
   C:/msys64/mingw64/include/pshpack2.h \
   C:/msys64/mingw64/include/pshpack4.h \
   C:/msys64/mingw64/include/pshpack8.h \
+  C:/msys64/mingw64/include/pthread_compat.h \
+  C:/msys64/mingw64/include/pthread_time.h \
   C:/msys64/mingw64/include/realtimeapiset.h \
   C:/msys64/mingw64/include/reason.h \
   C:/msys64/mingw64/include/sal.h \
@@ -73,6 +76,7 @@ CMakeFiles/RelojArtistico.dir/src/clock.c.obj: C:/Users/rache/proyectos/RelojArt
   C:/msys64/mingw64/include/sec_api/stdlib_s.h \
   C:/msys64/mingw64/include/sec_api/stralign_s.h \
   C:/msys64/mingw64/include/sec_api/string_s.h \
+  C:/msys64/mingw64/include/sec_api/sys/timeb_s.h \
   C:/msys64/mingw64/include/securityappcontainer.h \
   C:/msys64/mingw64/include/securitybaseapi.h \
   C:/msys64/mingw64/include/specstrings.h \
@@ -83,10 +87,12 @@ CMakeFiles/RelojArtistico.dir/src/clock.c.obj: C:/Users/rache/proyectos/RelojArt
   C:/msys64/mingw64/include/string.h \
   C:/msys64/mingw64/include/stringapiset.h \
   C:/msys64/mingw64/include/synchapi.h \
+  C:/msys64/mingw64/include/sys/timeb.h \
   C:/msys64/mingw64/include/sysinfoapi.h \
   C:/msys64/mingw64/include/systemtopologyapi.h \
   C:/msys64/mingw64/include/threadpoolapiset.h \
   C:/msys64/mingw64/include/threadpoollegacyapiset.h \
+  C:/msys64/mingw64/include/time.h \
   C:/msys64/mingw64/include/timezoneapi.h \
   C:/msys64/mingw64/include/tvout.h \
   C:/msys64/mingw64/include/utilapiset.h \
@@ -241,6 +247,7 @@ CMakeFiles/RelojArtistico.dir/src/display.c.obj: C:/Users/rache/proyectos/RelojA
   C:/msys64/mingw64/include/GL/glu.h \
   C:/msys64/mingw64/include/_mingw.h \
   C:/msys64/mingw64/include/_mingw_mac.h \
+  C:/msys64/mingw64/include/_mingw_off_t.h \
   C:/msys64/mingw64/include/_mingw_secapi.h \
   C:/msys64/mingw64/include/_mingw_stdarg.h \
   C:/msys64/mingw64/include/_mingw_unicode.h \
@@ -254,6 +261,7 @@ CMakeFiles/RelojArtistico.dir/src/display.c.obj: C:/Users/rache/proyectos/RelojA
   C:/msys64/mingw64/include/consoleapi3.h \
   C:/msys64/mingw64/include/corecrt.h \
   C:/msys64/mingw64/include/corecrt_memory.h \
+  C:/msys64/mingw64/include/corecrt_stdio_config.h \
   C:/msys64/mingw64/include/corecrt_wctype.h \
   C:/msys64/mingw64/include/corecrt_wstdlib.h \
   C:/msys64/mingw64/include/crtdefs.h \
@@ -298,6 +306,7 @@ CMakeFiles/RelojArtistico.dir/src/display.c.obj: C:/Users/rache/proyectos/RelojA
   C:/msys64/mingw64/include/reason.h \
   C:/msys64/mingw64/include/sal.h \
   C:/msys64/mingw64/include/sdkddkver.h \
+  C:/msys64/mingw64/include/sec_api/stdio_s.h \
   C:/msys64/mingw64/include/sec_api/stdlib_s.h \
   C:/msys64/mingw64/include/sec_api/stralign_s.h \
   C:/msys64/mingw64/include/sec_api/string_s.h \
@@ -306,10 +315,12 @@ CMakeFiles/RelojArtistico.dir/src/display.c.obj: C:/Users/rache/proyectos/RelojA
   C:/msys64/mingw64/include/specstrings.h \
   C:/msys64/mingw64/include/stdarg.h \
   C:/msys64/mingw64/include/stddef.h \
+  C:/msys64/mingw64/include/stdio.h \
   C:/msys64/mingw64/include/stdlib.h \
   C:/msys64/mingw64/include/stralign.h \
   C:/msys64/mingw64/include/string.h \
   C:/msys64/mingw64/include/stringapiset.h \
+  C:/msys64/mingw64/include/swprintf.inl \
   C:/msys64/mingw64/include/synchapi.h \
   C:/msys64/mingw64/include/sysinfoapi.h \
   C:/msys64/mingw64/include/systemtopologyapi.h \
@@ -457,7 +468,6 @@ CMakeFiles/RelojArtistico.dir/src/display.c.obj: C:/Users/rache/proyectos/RelojA
   C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/xtestintrin.h
 
 CMakeFiles/RelojArtistico.dir/src/main.c.obj: C:/Users/rache/proyectos/RelojArtistico/src/main.c \
-  C:/Users/rache/proyectos/RelojArtistico/include/clock.h \
   C:/Users/rache/proyectos/RelojArtistico/include/display.h \
   C:/msys64/mingw64/include/GL/freeglut.h \
   C:/msys64/mingw64/include/GL/freeglut_ext.h \
@@ -467,6 +477,7 @@ CMakeFiles/RelojArtistico.dir/src/main.c.obj: C:/Users/rache/proyectos/RelojArti
   C:/msys64/mingw64/include/GL/glu.h \
   C:/msys64/mingw64/include/_mingw.h \
   C:/msys64/mingw64/include/_mingw_mac.h \
+  C:/msys64/mingw64/include/_mingw_off_t.h \
   C:/msys64/mingw64/include/_mingw_secapi.h \
   C:/msys64/mingw64/include/_mingw_stdarg.h \
   C:/msys64/mingw64/include/_mingw_unicode.h \
@@ -480,6 +491,7 @@ CMakeFiles/RelojArtistico.dir/src/main.c.obj: C:/Users/rache/proyectos/RelojArti
   C:/msys64/mingw64/include/consoleapi3.h \
   C:/msys64/mingw64/include/corecrt.h \
   C:/msys64/mingw64/include/corecrt_memory.h \
+  C:/msys64/mingw64/include/corecrt_stdio_config.h \
   C:/msys64/mingw64/include/corecrt_wctype.h \
   C:/msys64/mingw64/include/corecrt_wstdlib.h \
   C:/msys64/mingw64/include/crtdefs.h \
@@ -524,6 +536,7 @@ CMakeFiles/RelojArtistico.dir/src/main.c.obj: C:/Users/rache/proyectos/RelojArti
   C:/msys64/mingw64/include/reason.h \
   C:/msys64/mingw64/include/sal.h \
   C:/msys64/mingw64/include/sdkddkver.h \
+  C:/msys64/mingw64/include/sec_api/stdio_s.h \
   C:/msys64/mingw64/include/sec_api/stdlib_s.h \
   C:/msys64/mingw64/include/sec_api/stralign_s.h \
   C:/msys64/mingw64/include/sec_api/string_s.h \
@@ -532,10 +545,12 @@ CMakeFiles/RelojArtistico.dir/src/main.c.obj: C:/Users/rache/proyectos/RelojArti
   C:/msys64/mingw64/include/specstrings.h \
   C:/msys64/mingw64/include/stdarg.h \
   C:/msys64/mingw64/include/stddef.h \
+  C:/msys64/mingw64/include/stdio.h \
   C:/msys64/mingw64/include/stdlib.h \
   C:/msys64/mingw64/include/stralign.h \
   C:/msys64/mingw64/include/string.h \
   C:/msys64/mingw64/include/stringapiset.h \
+  C:/msys64/mingw64/include/swprintf.inl \
   C:/msys64/mingw64/include/synchapi.h \
   C:/msys64/mingw64/include/sysinfoapi.h \
   C:/msys64/mingw64/include/systemtopologyapi.h \
@@ -1181,8 +1196,6 @@ C:/msys64/mingw64/include/GL/freeglut_std.h:
 
 C:/msys64/mingw64/include/GL/gl.h:
 
-C:/msys64/mingw64/include/pshpack4.h:
-
 C:/msys64/mingw64/include/GL/glu.h:
 
 C:/msys64/mingw64/include/imm.h:
@@ -1211,6 +1224,10 @@ C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/avx10_2convertintrin
 
 C:/msys64/mingw64/include/_mingw_unicode.h:
 
+C:/msys64/mingw64/include/psdk_inc/intrin-impl.h:
+
+C:/msys64/mingw64/include/_timeval.h:
+
 C:/msys64/mingw64/include/consoleapi2.h:
 
 C:/msys64/mingw64/include/apisetcconv.h:
@@ -1220,6 +1237,8 @@ C:/msys64/mingw64/include/basetsd.h:
 C:/msys64/mingw64/include/ioapiset.h:
 
 C:/msys64/mingw64/include/stralign.h:
+
+C:/msys64/mingw64/include/pthread_time.h:
 
 C:/msys64/mingw64/include/bemapiset.h:
 
@@ -1301,11 +1320,13 @@ C:/msys64/mingw64/include/processtopologyapi.h:
 
 C:/msys64/mingw64/include/profileapi.h:
 
-C:/msys64/mingw64/include/psdk_inc/intrin-impl.h:
-
 C:/msys64/mingw64/include/stdio.h:
 
 C:/msys64/mingw64/include/pshpack1.h:
+
+C:/msys64/mingw64/include/pshpack4.h:
+
+C:/msys64/mingw64/include/pthread_compat.h:
 
 C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/pmmintrin.h:
 
@@ -1322,6 +1343,8 @@ C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/avx512vpopcntdqintri
 C:/msys64/mingw64/include/sec_api/stdlib_s.h:
 
 C:/msys64/mingw64/include/sec_api/stralign_s.h:
+
+C:/msys64/mingw64/include/sec_api/sys/timeb_s.h:
 
 C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/vaesintrin.h:
 
@@ -1345,6 +1368,8 @@ C:/msys64/mingw64/include/stringapiset.h:
 
 C:/msys64/mingw64/include/synchapi.h:
 
+C:/msys64/mingw64/include/sys/timeb.h:
+
 C:/msys64/mingw64/include/systemtopologyapi.h:
 
 C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/amxmovrsintrin.h:
@@ -1352,6 +1377,8 @@ C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/16.1.0/include/amxmovrsintrin.h:
 C:/msys64/mingw64/include/threadpoolapiset.h:
 
 C:/msys64/mingw64/include/threadpoollegacyapiset.h:
+
+C:/msys64/mingw64/include/time.h:
 
 C:/msys64/mingw64/include/timezoneapi.h:
 
@@ -1609,14 +1636,6 @@ C:/Users/rache/proyectos/RelojArtistico/include/display.h:
 
 C:/Users/rache/proyectos/RelojArtistico/include/segments.h:
 
-C:/Users/rache/proyectos/RelojArtistico/src/segment_hokusai.c:
-
-C:/Users/rache/proyectos/RelojArtistico/src/segment_kandinsky.c:
-
-C:/Users/rache/proyectos/RelojArtistico/src/segment_vangogh.c:
-
-C:/Users/rache/proyectos/RelojArtistico/src/segments.c:
-
 C:/msys64/mingw64/include/_mingw_off_t.h:
 
 C:/msys64/mingw64/include/corecrt_stdio_config.h:
@@ -1624,5 +1643,13 @@ C:/msys64/mingw64/include/corecrt_stdio_config.h:
 C:/msys64/mingw64/include/sec_api/stdio_s.h:
 
 C:/msys64/mingw64/include/swprintf.inl:
+
+C:/Users/rache/proyectos/RelojArtistico/src/segment_hokusai.c:
+
+C:/Users/rache/proyectos/RelojArtistico/src/segment_kandinsky.c:
+
+C:/Users/rache/proyectos/RelojArtistico/src/segment_vangogh.c:
+
+C:/Users/rache/proyectos/RelojArtistico/src/segments.c:
 
 C:/Users/rache/proyectos/RelojArtistico/src/utils.c:

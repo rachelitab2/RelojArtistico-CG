@@ -5,6 +5,23 @@
 #include "segments.h"
 #include "utils.h"
 
+Segment segments[6];
+
+void initSegments(void)
+{
+    segments[0] = (Segment){0.0f,   0.42f,0.82f,0.0f,ART_HOKUSAI};
+
+    segments[1] = (Segment){60.0f,  0.42f,0.82f,0.0f,ART_VANGOGH};
+
+    segments[2] = (Segment){120.0f, 0.42f,0.82f,0.0f,ART_KANDINSKY};
+
+    segments[3] = (Segment){180.0f, 0.42f,0.82f,0.0f,ART_MONDRIAN};
+
+    segments[4] = (Segment){240.0f, 0.42f,0.82f,0.0f,ART_MONET};
+
+    segments[5] = (Segment){300.0f, 0.42f,0.82f,0.0f,ART_KLIMT};
+}
+
 static float rotation = 0.0f;
 
 void drawSegment(float angle)
@@ -58,17 +75,12 @@ glPopMatrix();
 }
 void drawSegments(void)
 {
-drawSegment(0.0f);
+    int i;
 
-    drawSegment(60.0f);
-
-    drawSegment(120.0f);
-
-    drawSegment(180.0f);
-
-    drawSegment(240.0f);
-
-    drawSegment(300.0f);
+    for(i = 0; i < 6; i++)
+    {
+        drawSegment(i * 60.0f);
+    }
 }
 void updateSegments(void)
 {

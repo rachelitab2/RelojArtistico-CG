@@ -1,16 +1,6 @@
 #ifndef CLOCK_H
 #define CLOCK_H
 
-void drawClock(void);
-
-void drawClockFace(void);
-void drawHourMarks(void);
-
-void drawHourHand(void);
-void drawMinuteHand(void);
-void drawSecondHand(void);
-
-void updateSystemTime(void);
 typedef struct
 {
     int hour;
@@ -18,6 +8,17 @@ typedef struct
     int second;
 
 } ClockTime;
+
+void drawClock(void);
+
+void drawClockFace(void);
+void drawHourMarks(void);
+
+void drawHourHand(ClockTime t);
+void drawMinuteHand(ClockTime t);
+void drawSecondHand(ClockTime t);
+
+void updateSystemTime(void);
 
 ClockTime getCurrentTime(void);
 
