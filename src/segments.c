@@ -4,11 +4,9 @@
 
 #include "segments.h"
 #include "utils.h"
-<<<<<<< HEAD
 #include "segment_monet.h"
-=======
 #include "segment_mondrian.h"
->>>>>>> feature/mondrian
+#include "segment_kandinsky.h"
 
 Segment segments[6];
 
@@ -123,6 +121,7 @@ static void drawArtwork(ArtworkType artwork)
             break;
 
         case ART_KANDINSKY:
+            drawKandinsky();
             break;
 
         case ART_MONDRIAN:
@@ -146,13 +145,16 @@ static void drawArtworkBackground(const Segment *segment)
 {
     switch(segment->artwork)
     {
-<<<<<<< HEAD
         case ART_MONET:
             drawMonetBackground(segment->innerRadius, segment->outerRadius);
-=======
+            break;
+
         case ART_MONDRIAN:
             drawMondrianBackground(segment->innerRadius, segment->outerRadius);
->>>>>>> feature/mondrian
+            break;
+
+        case ART_KANDINSKY:
+            drawKandinskyBackground(segment->innerRadius, segment->outerRadius);
             break;
 
         default:
