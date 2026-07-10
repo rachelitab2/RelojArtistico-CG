@@ -4,6 +4,7 @@
 
 #include "segments.h"
 #include "utils.h"
+#include "segment_hokusai.h"
 
 Segment segments[6];
 
@@ -101,6 +102,7 @@ static void drawArtwork(ArtworkType artwork)
     switch(artwork)
     {
         case ART_HOKUSAI:
+         drawHokusai();
             break;
 
         case ART_VANGOGH:
