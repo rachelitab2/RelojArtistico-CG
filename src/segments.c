@@ -9,6 +9,7 @@
 #include "segment_kandinsky.h"
 #include "segment_vangogh.h"
 #include "segment_klimt.h"
+#include "segment_hokusai.h"
 
 Segment segments[6];
 
@@ -117,6 +118,7 @@ static void drawArtwork(ArtworkType artwork)
     switch(artwork)
     {
         case ART_HOKUSAI:
+            drawHokusai();
             break;
 
         case ART_VANGOGH:
@@ -167,6 +169,10 @@ static void drawArtworkBackground(const Segment *segment)
 
         case ART_KLIMT:
             drawKlimtBackground(segment->innerRadius, segment->outerRadius);
+            break;
+
+        case ART_HOKUSAI:
+            drawHokusaiBackground(segment->innerRadius, segment->outerRadius);
             break;
 
         default:
