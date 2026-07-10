@@ -59,12 +59,12 @@ static void drawCypress(void)
 {
     static const float path[][3] =
     {
-        {-0.55f,-0.90f, 0.10f},
-        {-0.60f,-0.55f, 0.14f},
-        {-0.52f,-0.15f, 0.16f},
-        {-0.60f, 0.25f, 0.13f},
-        {-0.50f, 0.60f, 0.09f},
-        {-0.58f, 0.90f, 0.03f}
+        {-0.55f,-0.90f, 0.12f},
+        {-0.60f,-0.55f, 0.17f},
+        {-0.52f,-0.15f, 0.19f},
+        {-0.60f, 0.25f, 0.16f},
+        {-0.50f, 0.60f, 0.11f},
+        {-0.58f, 0.90f, 0.04f}
     };
 
     const int count = sizeof(path) / sizeof(path[0]);
@@ -112,7 +112,7 @@ static void drawMoon(void)
 {
     glColor3f(0.97f,0.92f,0.65f);
 
-    drawFilledCircle(0.35f, 0.55f, 0.22f);
+    drawFilledCircle(0.35f, 0.55f, 0.27f);
 }
 
 void drawVanGogh(void)
