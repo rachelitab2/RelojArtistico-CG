@@ -211,5 +211,10 @@ CMakeFiles/RelojArtistico.dir/src/display.c.obj: \
  C:/msys64/mingw64/include/GL/freeglut_ucall.h \
  C:/Users/rache/proyectos/RelojArtistico/include/display.h \
  C:/Users/rache/proyectos/RelojArtistico/include/clock.h \
- C:/Users/rache/proyectos/RelojArtistico/include/clock.h \
- C:/Users/rache/proyectos/RelojArtistico/include/segments.h
+ C:/Users/rache/proyectos/RelojArtistico/include/segments.h \
+ C:/Users/rache/proyectos/RelojArtistico/include/utils.h \
+ C:/msys64/mingw64/include/stdio.h \
+ C:/msys64/mingw64/include/corecrt_stdio_config.h \
+ C:/msys64/mingw64/include/_mingw_off_t.h \
+ C:/msys64/mingw64/include/swprintf.inl \
+ C:/msys64/mingw64/include/sec_api/stdio_s.h
