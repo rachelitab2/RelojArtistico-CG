@@ -10,35 +10,69 @@ void drawClock(void)
 {
     int i;
 
-    glColor3f(0.15f,0.15f,0.15f);
+    static int smoothingEnabled = 0;
 
-    drawFilledCircle(0.0f,0.0f,0.35f);
+    if(!smoothingEnabled)
+    {
+        glEnable(GL_LINE_SMOOTH);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 
-    glColor3f(1.0f,1.0f,1.0f);
+        smoothingEnabled = 1;
+    }
 
-    drawCircle(0.0f,0.0f,0.35f);
+    const float faceRadius = 0.30f;
 
+    glColor3f(0.10f,0.10f,0.12f);
+
+    drawFilledCircle(0.0f,0.0f,faceRadius);
+
+    glColor3f(0.85f,0.85f,0.88f);
+
+    glLineWidth(1.2f);
+
+    drawCircle(0.0f,0.0f,faceRadius);
 
     for(i=0;i<12;i++)
     {
         float angle=degreesToRadians(i*30);
+        int isMajor = (i % 3 == 0);
 
-        float x1=0.30f*sin(angle);
-        float y1=0.30f*cos(angle);
+        float tickOuter = faceRadius - 0.01f;
+        float tickInner = isMajor ? (faceRadius - 0.08f) : (faceRadius - 0.05f);
 
-        float x2=0.34f*sin(angle);
-        float y2=0.34f*cos(angle);
+        float x1 = tickInner*sin(angle);
+        float y1 = tickInner*cos(angle);
+
+        float x2 = tickOuter*sin(angle);
+        float y2 = tickOuter*cos(angle);
+
+        if(isMajor)
+        {
+            glColor3f(0.90f,0.90f,0.92f);
+            glLineWidth(2.2f);
+        }
+        else
+        {
+            glColor3f(0.55f,0.55f,0.58f);
+            glLineWidth(1.0f);
+        }
 
         drawLine(x1,y1,x2,y2);
     }
-    
+
     ClockTime current = getCurrentTime();
 
-drawHourHand(current);
+    drawHourHand(current);
 
-drawMinuteHand(current);
+    drawMinuteHand(current);
 
-drawSecondHand(current);
+    drawSecondHand(current);
+
+    glColor3f(0.85f,0.65f,0.25f);
+
+    drawFilledCircle(0.0f,0.0f,0.015f);
 }
 
 ClockTime getCurrentTime(void)
@@ -75,12 +109,12 @@ void drawHourHand(ClockTime t)
 {
     float angle = degreesToRadians(hourAngle(t));
 
-    float x = 0.18f * sin(angle);
-    float y = 0.18f * cos(angle);
+    float x = 0.15f * sin(angle);
+    float y = 0.15f * cos(angle);
 
-    glColor3f(1.0f,1.0f,1.0f);
+    glColor3f(0.92f,0.92f,0.90f);
 
-    glLineWidth(5.0f);
+    glLineWidth(4.0f);
 
     drawLine(0.0f,0.0f,x,y);
 }
@@ -88,12 +122,12 @@ void drawMinuteHand(ClockTime t)
 {
     float angle = degreesToRadians(minuteAngle(t));
 
-    float x = 0.27f * sin(angle);
-    float y = 0.27f * cos(angle);
+    float x = 0.23f * sin(angle);
+    float y = 0.23f * cos(angle);
 
-    glColor3f(0.90f,0.90f,0.90f);
+    glColor3f(0.75f,0.75f,0.78f);
 
-    glLineWidth(3.0f);
+    glLineWidth(2.4f);
 
     drawLine(0.0f,0.0f,x,y);
 }
@@ -101,12 +135,12 @@ void drawSecondHand(ClockTime t)
 {
     float angle = degreesToRadians(secondAngle(t));
 
-    float x = 0.31f * sin(angle);
-    float y = 0.31f * cos(angle);
+    float x = 0.27f * sin(angle);
+    float y = 0.27f * cos(angle);
 
-    glColor3f(1.0f,0.2f,0.2f);
+    glColor3f(0.85f,0.65f,0.25f);
 
-    glLineWidth(1.5f);
+    glLineWidth(1.0f);
 
     drawLine(0.0f,0.0f,x,y);
 }

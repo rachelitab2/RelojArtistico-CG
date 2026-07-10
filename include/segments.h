@@ -28,8 +28,10 @@ typedef struct
 
 void initSegments(void);
 
-void updateSegments(void);
-
 void drawSegment(const Segment *segment);
+
+void drawSegments(void);
+
+void updateSegments(void);
 
 #endif
