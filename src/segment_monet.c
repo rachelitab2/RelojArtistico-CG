@@ -9,10 +9,10 @@ static const float RADIUS_FRACTION[5] = {0.00f, 0.30f, 0.55f, 0.78f, 1.00f};
 
 static const float BAND_COLOR[4][3] =
 {
-    {0.16f,0.30f,0.28f},
-    {0.22f,0.42f,0.36f},
-    {0.30f,0.52f,0.48f},
-    {0.42f,0.62f,0.58f}
+    {0.14f,0.34f,0.30f},
+    {0.18f,0.46f,0.38f},
+    {0.24f,0.56f,0.50f},
+    {0.34f,0.64f,0.56f}
 };
 
 static void drawBands(float innerRadius, float outerRadius)
@@ -49,7 +49,7 @@ static void drawBridge(void)
     int i;
 
     glColor3f(0.55f,0.30f,0.20f);
-    glLineWidth(5.0f);
+    glLineWidth(4.5f);
 
     glBegin(GL_LINE_STRIP);
     for(i = 0; i < count; i++)
@@ -62,11 +62,11 @@ static void drawLilyPads(void)
 {
     static const float pads[][3] =
     {
-        {-0.55f,-0.55f,0.10f},
-        {-0.10f,-0.65f,0.08f},
-        { 0.35f,-0.50f,0.11f},
-        { 0.05f,-0.15f,0.07f},
-        {-0.35f,-0.20f,0.06f}
+        {-0.55f,-0.55f,0.14f},
+        {-0.10f,-0.65f,0.11f},
+        { 0.35f,-0.50f,0.15f},
+        { 0.05f,-0.15f,0.10f},
+        {-0.35f,-0.20f,0.09f}
     };
 
     const int count = sizeof(pads) / sizeof(pads[0]);
