@@ -22,19 +22,21 @@ void initSegments(void)
     segments[5] = (Segment){300.0f, 0.42f,0.82f,0.0f,ART_KLIMT};
 }
 
-static float rotation = 0.0f;
+static float wheelRotation = 0.0f;
 
-void drawSegment(float angle)
+static void drawArtwork(ArtworkType artwork);
+
+void drawSegment(const Segment *segment)
 {
 glPushMatrix();
 
-glRotatef(angle + rotation,0.0f,0.0f,1.0f);
+glRotatef(segment->angle + wheelRotation, 0.0f, 0.0f, 1.0f);
 
 glColor3f(0.30f,0.30f,0.80f);
 
 drawFilledArc(
-    0.42f,
-    0.82f,
+   segment->innerRadius
+  ,segment->outerRadius,
     -25.0f,
      25.0f
 );
@@ -42,34 +44,36 @@ drawFilledArc(
 glColor3f(1.0f,1.0f,1.0f);
 
 drawArc(
-    0.82f,
+    segment->outerRadius,
     -25.0f,
      25.0f
 );
 
 drawArc(
-    0.42f,
+    segment->innerRadius,
     -25.0f,
      25.0f
 );
 
-drawLine(0.42f,0.0f,0.82f,0.0f);
+drawLine(segment->innerRadius,0.0f,segment->outerRadius,0.0f);
 
-float x1 = cos(degreesToRadians(25))*0.42f;
-float y1 = sin(degreesToRadians(25))*0.42f;
+float x1 = cos(degreesToRadians(25))*segment->innerRadius;
+float y1 = sin(degreesToRadians(25))*segment->innerRadius;
 
-float x2 = cos(degreesToRadians(25))*0.82f;
-float y2 = sin(degreesToRadians(25))*0.82f;
+float x2 = cos(degreesToRadians(25))*segment->outerRadius;
+float y2 = sin(degreesToRadians(25))*segment->outerRadius;
+
+drawLine(x1,y1,x2,y2);
+
+x1 = cos(degreesToRadians(-25))*segment->innerRadius;
+y1 = sin(degreesToRadians(-25))*segment->innerRadius;
+
+x2 = cos(degreesToRadians(-25))*segment->outerRadius;
+y2 = sin(degreesToRadians(-25))*segment->outerRadius;
 
 drawLine(x1,y1,x2,y2);
 
-x1 = cos(degreesToRadians(-25))*0.42f;
-y1 = sin(degreesToRadians(-25))*0.42f;
-
-x2 = cos(degreesToRadians(-25))*0.82f;
-y2 = sin(degreesToRadians(-25))*0.82f;
-
-drawLine(x1,y1,x2,y2);
+drawArtwork(segment->artwork);
 
 glPopMatrix();
 }
@@ -79,15 +83,39 @@ void drawSegments(void)
 
     for(i = 0; i < 6; i++)
     {
-        drawSegment(i * 60.0f);
+        drawSegment(&segments[i]);
     }
 }
 void updateSegments(void)
 {
-    rotation += 1.0f;
+    wheelRotation += 1.0f;
 
-    if(rotation >= 360.0f)
-        rotation = 0.0f;
+    if(wheelRotation >= 360.0f)
+        wheelRotation = 0.0f;
 
     glutPostRedisplay();
+}
+
+static void drawArtwork(ArtworkType artwork)
+{
+    switch(artwork)
+    {
+        case ART_HOKUSAI:
+            break;
+
+        case ART_VANGOGH:
+            break;
+
+        case ART_KANDINSKY:
+            break;
+
+        case ART_MONDRIAN:
+            break;
+
+        case ART_MONET:
+            break;
+
+        case ART_KLIMT:
+            break;
+    }
 }

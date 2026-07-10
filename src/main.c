@@ -1,11 +1,8 @@
-#include <stdio.h>
 #include <GL/freeglut.h>
 
 #include "display.h"
 #include "segments.h"
 
-initDisplay();
-initSegments();
 
 void reshape(int width, int height)
 {
@@ -48,11 +45,13 @@ int main(int argc,char** argv)
 
     initDisplay();
 
+    initSegments();   
+
     glutDisplayFunc(display);
 
     glutReshapeFunc(reshape);
 
-    glutTimerFunc(16, timer, 0);
+    glutTimerFunc(16,timer,0);
 
     glutMainLoop();
 

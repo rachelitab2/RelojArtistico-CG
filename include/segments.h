@@ -20,7 +20,7 @@ typedef struct
 
     float outerRadius;
 
-    float rotation;
+    float animation;
 
     ArtworkType artwork;
 
@@ -30,14 +30,6 @@ void initSegments(void);
 
 void updateSegments(void);
 
-void drawSegments(void)
-{
-    int i;
-
-    for(i = 0; i < 6; i++)
-    {
-        drawSegment(segments[i].angle);
-    }
-}
+void drawSegment(const Segment *segment);
 
 #endif
