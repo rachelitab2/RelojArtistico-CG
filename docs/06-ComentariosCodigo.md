@@ -204,3 +204,5 @@ La estrategia adoptada prioriza la claridad, la mantenibilidad y la comprensión
 El uso de comentarios orientados a responsabilidades, algoritmos y decisiones de diseño permitió mantener un código organizado, fácil de seguir y coherente con la arquitectura modular implementada durante el desarrollo del Reloj Artístico.
 
 Asimismo, esta documentación servirá como apoyo para futuras ampliaciones del proyecto y facilitará las actividades de mantenimiento y revisión del software.
+
+<!-- actualización -->

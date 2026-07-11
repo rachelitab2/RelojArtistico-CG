@@ -163,3 +163,5 @@ Las pruebas realizadas permitieron validar el correcto funcionamiento del proyec
 Los resultados obtenidos demuestran que el sistema cumple los objetivos planteados durante la etapa de diseño, mantiene una arquitectura estable y presenta un comportamiento consistente durante su ejecución.
 
 La combinación de pruebas de compilación, integración y funcionamiento permitió entregar una versión final estable del Reloj Artístico, preparada para su demostración y evaluación académica.
+
+<!-- actualización -->

@@ -176,3 +176,5 @@ Escena correctamente compuesta.
 Las decisiones técnicas documentadas en este apartado permitieron mantener un proyecto consistente, modular y alineado con los objetivos académicos de la asignatura.
 
 Su registro facilita el mantenimiento futuro del software y proporciona contexto sobre las soluciones adoptadas durante la implementación.
+
+<!-- actualización -->

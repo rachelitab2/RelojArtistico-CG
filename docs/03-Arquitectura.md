@@ -572,3 +572,5 @@ Desde el punto de vista académico, el proyecto constituye una aplicación prác
 
 Finalmente, la arquitectura propuesta proporciona una base sólida para futuras ampliaciones del proyecto, permitiendo incorporar nuevas funcionalidades sin alterar significativamente la organización general del software.
 
+<!-- actualización -->
+

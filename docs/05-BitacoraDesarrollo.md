@@ -171,3 +171,5 @@ La construcción del Reloj Artístico representó la integración de los conocim
 El desarrollo se realizó de manera incremental, incorporando nuevas funcionalidades conforme avanzaba el proyecto y validando continuamente la estabilidad de la aplicación.
 
 Como resultado, se obtuvo un sistema modular, funcional y documentado, capaz de representar un reloj analógico acompañado por seis composiciones artísticas inspiradas en obras reconocidas de la historia del arte.
+
+<!-- actualización -->

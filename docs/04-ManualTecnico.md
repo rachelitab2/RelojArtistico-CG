@@ -656,5 +656,5 @@ Asimismo, la documentación presentada complementa los registros de arquitectura
 
 Finalmente, la combinación de C99, OpenGL, FreeGLUT, Git y CMake permitió desarrollar una aplicación gráfica estructurada, reutilizable y alineada con los principios de ingeniería de software y computación gráfica estudiados durante la asignatura.
 
-
+<!-- actualización -->
 
