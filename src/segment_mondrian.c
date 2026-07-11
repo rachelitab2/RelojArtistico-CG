@@ -30,6 +30,8 @@ static const float PALETTE[4][3] =
     {0.95f,0.82f,0.12f}  /* amarillo */
 };
 
+/* misma tecnica de rejilla que vangogh.c/kandinsky.c/klimt.c, copiada
+   con distinta paleta (ver nota en segment_vangogh.c) */
 static void drawBlocks(float innerRadius, float outerRadius)
 {
     float span = outerRadius - innerRadius;
@@ -97,6 +99,9 @@ void drawMondrianBackground(float innerRadius,
     drawGridLines(innerRadius, outerRadius);
 }
 
+/* CUESTIONABLE: sin primer plano; a diferencia de las otras 5 obras,
+   toda la composicion de Mondrian vive en drawMondrianBackground()
+   (es intencional: es solo bloques y lineas, fiel al estilo real). */
 void drawMondrian(void)
 {
 }

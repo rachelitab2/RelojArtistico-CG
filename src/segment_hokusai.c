@@ -187,6 +187,7 @@ static void drawFoam(void)
     glEnd();
 }
 
+/* primer plano, en orden: fondo -> montana -> ola -> espuma encima */
 void drawHokusai(void)
 {
     drawMountFuji();

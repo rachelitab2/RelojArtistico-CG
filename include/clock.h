@@ -9,8 +9,9 @@ typedef struct
 
 } ClockTime;
 
-void drawClock(void);
+void drawClock(void); /* caratula + manecillas, un solo llamado por frame */
 
+/* CUESTIONABLE: declaradas pero nunca implementadas en clock.c */
 void drawClockFace(void);
 void drawHourMarks(void);
 
@@ -18,8 +19,8 @@ void drawHourHand(ClockTime t);
 void drawMinuteHand(ClockTime t);
 void drawSecondHand(ClockTime t);
 
-void updateSystemTime(void);
+void updateSystemTime(void); /* CUESTIONABLE: declarada, nunca implementada */
 
-ClockTime getCurrentTime(void);
+ClockTime getCurrentTime(void); /* hora real del sistema */
 
 #endif

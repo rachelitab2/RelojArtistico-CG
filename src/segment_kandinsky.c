@@ -27,6 +27,8 @@ static const float PALETTE[6][3] =
     {0.10f,0.55f,0.55f}
 };
 
+/* misma tecnica de rejilla que vangogh.c/mondrian.c/klimt.c, copiada
+   con distinta paleta (ver nota en segment_vangogh.c) */
 static void drawBlocks(float innerRadius, float outerRadius)
 {
     float span = outerRadius - innerRadius;
@@ -69,7 +71,10 @@ static void drawCircles(void)
     drawFilledCircle(-0.45f,-0.40f, 0.16f);
 }
 
-/* Lineas rectas que cruzan la composicion, otro motivo tipico */
+/* Lineas rectas que cruzan la composicion, otro motivo tipico.
+   CUESTIONABLE: el color (0.08,0.08,0.10) casi coincide pero no es
+   identico al negro "unificado" (0.08,0.08,0.08) que usan las demas
+   obras (mondrian, klimt) para sus lineas/contornos. */
 static void drawLines(void)
 {
     glColor3f(0.08f,0.08f,0.10f);
@@ -84,6 +89,7 @@ static void drawLines(void)
     drawLine(-0.95f, 0.10f, 0.95f, 0.30f);
 }
 
+/* primer plano: lineas debajo, circulos encima */
 void drawKandinsky(void)
 {
     drawLines();

@@ -27,6 +27,9 @@ static const float PALETTE[4][3] =
     {0.95f,0.85f,0.35f}
 };
 
+/* CUESTIONABLE: esta misma rejilla de celdas (radio x angulo) se repite
+   copiada en kandinsky.c, mondrian.c y klimt.c con distinta paleta;
+   podria ser una sola funcion compartida en vez de 4 copias. */
 static void drawBlocks(float innerRadius, float outerRadius)
 {
     float span = outerRadius - innerRadius;
@@ -115,6 +118,7 @@ static void drawMoon(void)
     drawFilledCircle(0.35f, 0.55f, 0.27f);
 }
 
+/* primer plano: luna al fondo, cipres encima */
 void drawVanGogh(void)
 {
     drawMoon();

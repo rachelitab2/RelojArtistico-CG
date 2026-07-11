@@ -12,10 +12,11 @@
 #include "segment_klimt.h"
 #include "segment_hokusai.h"
 
-Segment segments[6];
+Segment segments[6]; /* los 6 sectores del reloj, en orden fijo */
 
 void initSegments(void)
 {
+    /* angulo, radio interior, radio exterior, animation (sin uso), obra */
     segments[0] = (Segment){0.0f,   0.42f,0.82f,0.0f,ART_HOKUSAI};
 
     segments[1] = (Segment){60.0f,  0.42f,0.82f,0.0f,ART_VANGOGH};
@@ -29,35 +30,32 @@ void initSegments(void)
     segments[5] = (Segment){300.0f, 0.42f,0.82f,0.0f,ART_KLIMT};
 }
 
-static float wheelRotation = 0.0f;
-static const float ARTWORK_MARGIN = 0.85f;
-static const float HIGHLIGHT_PULSE_SPEED = 0.025f; /* ciclo completo ~4s a 16ms/tick */
+static float wheelRotation = 0.0f; /* grados, avanza en updateSegments() */
+static const float ARTWORK_MARGIN = 0.85f; /* margen de seguridad del lienzo local */
+static const float HIGHLIGHT_PULSE_SPEED = 0.025f; /* ciclo completo ~4s */
 
-/* Fase 2: obra destacada segun la hora real. */
+/* obra destacada segun la hora real */
 static int activeArtworkIndex = 0;
 static float highlightPulsePhase = 0.0f;
 
 static void drawArtwork(ArtworkType artwork);
 static void drawArtworkBackground(const Segment *segment);
 
-/* Convierte la hora real (24h, vía getCurrentTime()) al indice de la
-   obra que corresponde destacar, siguiendo un reloj de 12 horas donde
-   la secuencia de las 6 obras se repite dos veces por dia:
-       12 -> Hokusai(0)   1 -> VanGogh(1)   2 -> Kandinsky(2)
-        3 -> Mondrian(3)  4 -> Monet(4)     5 -> Klimt(5)
-        6 -> Hokusai(0)   7 -> VanGogh(1)   8 -> Kandinsky(2)
-        9 -> Mondrian(3) 10 -> Monet(4)    11 -> Klimt(5)
-   El indice resultante coincide con el orden de ArtworkType y con el
-   orden en que initSegments() asigna las obras a los 6 segmentos. */
+/* Hora (24h) -> indice de obra activa. Reloj de 12h, la secuencia de
+   6 obras se repite dos veces al dia (12=Hokusai(0) ... 5=Klimt(5),
+   6=Hokusai(0) otra vez). El indice coincide con el orden de
+   ArtworkType y con el de initSegments(). */
 static int computeActiveArtworkIndex(ClockTime t)
 {
-    int hour12 = t.hour % 12; /* reloj de 12 horas: 0 representa las 12 */
+    int hour12 = t.hour % 12;
 
-    return hour12 % 6; /* la secuencia de 6 obras se repite cada 6 horas */
+    return hour12 % 6;
 }
 
 void drawSegment(const Segment *segment)
 {
+/* CUESTIONABLE: funciona por aritmetica de punteros; solo es valido
+   si "segment" apunta dentro del array global segments[]. */
 int segmentIndex = (int)(segment - segments);
 int isActive = (segmentIndex == activeArtworkIndex);
 
@@ -67,8 +65,7 @@ glRotatef(segment->angle + wheelRotation, 0.0f, 0.0f, 1.0f);
 
 drawArtworkBackground(segment);
 
-/* Borde dorado, un poco mas grueso, solo para el segmento activo;
-   el resto conserva el borde blanco de siempre. */
+/* borde dorado y mas grueso solo si es el segmento activo */
 if(isActive)
 {
     glColor3f(0.82f,0.68f,0.28f);
@@ -109,6 +106,8 @@ y2 = sin(degreesToRadians(-25))*segment->outerRadius;
 drawLine(x1,y1,x2,y2);
 
 {
+    /* lienzo local de la obra: centrado en el sector y escalado para
+       que quepa completo (radial o angular, el que sea mas chico). */
     float midRadius = (segment->innerRadius + segment->outerRadius) * 0.5f;
 
     float radialHalfWidth = (segment->outerRadius - segment->innerRadius) * 0.5f;
@@ -123,10 +122,8 @@ drawLine(x1,y1,x2,y2);
 
         glScalef(canvasScale, canvasScale, 1.0f);
 
-        /* Escala adicional muy sutil (hasta ~1.08x) con pulso lento,
-           unicamente para el contenido de drawArtwork() del segmento
-           activo. El fondo, los arcos y las lineas radiales, ya
-           dibujados antes de este bloque, no se ven afectados. */
+        /* pulso: solo escala el contenido de drawArtwork() del activo,
+           no el fondo ni el borde (esos ya se dibujaron arriba). */
         if(isActive)
         {
             float highlightScale = 1.04f + 0.04f*sinf(highlightPulsePhase);
@@ -147,17 +144,13 @@ drawLine(x1,y1,x2,y2);
     glPopMatrix();
 }
 
-/* Overlay calido de muy baja opacidad sobre el segmento activo,
-   para dar sensacion de iluminacion extra sin alterar sus colores.
-   Se asegura el blending aqui mismo (glEnable es idempotente, no
-   pasa nada si clock.c ya lo habia activado) en vez de asumir que
-   sigue encendido: si por algun motivo no lo estaba, el alpha se
-   ignoraba y este color quedaba opaco, tapando la obra entera (bug
-   ya observado: cubria a Monet cuando era el destacado). No se
-   desactiva despues porque clock.c lo deja encendido de forma
-   permanente para el antialiasing de sus lineas. */
+/* overlay calido y muy transparente sobre el activo, solo iluminacion */
 if(isActive)
 {
+    /* se activa el blend aqui mismo por si acaso: si no estuviera
+       encendido, este color se veria opaco y taparia la obra entera
+       (paso una vez con Monet). No se desactiva porque clock.c lo
+       necesita encendido siempre para el antialiasing de sus lineas. */
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -169,7 +162,7 @@ if(isActive)
 glPopMatrix();
 }
 
-/* Nombre visible de cada obra, para la etiqueta del centro del reloj. */
+/* nombre de cada obra, para la etiqueta del centro */
 static const char* getArtworkName(ArtworkType artwork)
 {
     switch(artwork)
@@ -185,12 +178,9 @@ static const char* getArtworkName(ArtworkType artwork)
     return "";
 }
 
-/* Convierte un ancho en pixeles (tal como lo reporta GLUT) a unidades
-   del mundo, usando la misma logica de aspect ratio que reshape() en
-   main.c: si la ventana es mas ancha que alta el rango vertical del
-   mundo es fijo (2.0), si es mas alta que ancha el que es fijo es el
-   horizontal. Asi el texto se centra correctamente sin importar el
-   tamano de la ventana. */
+/* pixeles (los que reporta GLUT) -> unidades del mundo, usando el mismo
+   calculo de aspect ratio que reshape() en main.c. Sirve para centrar
+   texto sin importar el tamano de la ventana. */
 static float pixelsToWorldUnits(int pixels)
 {
     GLint viewport[4];
@@ -208,8 +198,7 @@ static float pixelsToWorldUnits(int pixels)
     return (float)pixels * worldHeight / (float)viewport[3];
 }
 
-/* Dibuja "text" centrado horizontalmente en centerX, con la linea base
-   en y. Usa glutBitmapWidth() para medir el texto antes de dibujarlo. */
+/* dibuja "text" centrado en centerX, linea base en y */
 static void drawCenteredBitmapText(float centerX, float y, void *font, const char *text)
 {
     int totalPixelWidth = 0;
@@ -227,17 +216,14 @@ static void drawCenteredBitmapText(float centerX, float y, void *font, const cha
         glutBitmapCharacter(font, text[i]);
 }
 
-/* Etiqueta discreta dentro del circulo central: hora actual (reloj de
-   12 horas, reutilizando getCurrentTime()) y nombre de la obra
-   destacada (segments[activeArtworkIndex]). Se dibuja desplazada
-   hacia abajo del pivote para no competir con las manecillas ni las
-   marcas de hora. */
+/* hora + nombre de la obra activa, dentro de la carátula, debajo del
+   pivote para no chocar con las manecillas ni las marcas de hora */
 static void drawActiveArtworkLabel(void)
 {
     ClockTime t = getCurrentTime();
     int hour12 = t.hour % 12;
     int displayHour = (hour12 == 0) ? 12 : hour12;
-    char timeText[16]; /* "12:15" ocupa 6 bytes; se deja margen para que gcc no advierta sobre el peor caso teorico de %02d */
+    char timeText[16]; /* "12:15" son 6 bytes; sobra espacio a proposito */
     const char *artworkName;
 
     sprintf(timeText, "%02d:%02d", displayHour, t.minute);
@@ -279,6 +265,7 @@ void updateSegments(void)
     glutPostRedisplay();
 }
 
+/* dispatcher: obra en el lienzo local, segun ArtworkType */
 static void drawArtwork(ArtworkType artwork)
 {
     switch(artwork)
@@ -309,10 +296,9 @@ static void drawArtwork(ArtworkType artwork)
     }
 }
 
-/* Pinta el fondo respetando la forma real del sector (arco relleno
-   entre innerRadius y outerRadius), evitando huecos entre el arte
-   y el borde curvo del segmento. Cada obra puede pintar su propio
-   fondo; las que aun no tienen contenido usan el azul de referencia. */
+/* dispatcher: fondo real del sector, segun ArtworkType. El default ya
+   es inalcanzable (las 6 obras tienen su propio case), se deja como
+   respaldo. */
 static void drawArtworkBackground(const Segment *segment)
 {
     switch(segment->artwork)

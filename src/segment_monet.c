@@ -4,7 +4,9 @@
 #include "utils.h"
 
 /* Fondo con la geometria real del sector: bandas suaves en
-   verdes y azules, transicion tenue tipo estanque impresionista. */
+   verdes y azules, transicion tenue tipo estanque impresionista.
+   (variante mas simple de la rejilla radio x angulo de las otras
+   obras: aqui solo se subdivide por radio, sin columnas angulares) */
 static const float RADIUS_FRACTION[5] = {0.00f, 0.30f, 0.55f, 0.78f, 1.00f};
 
 static const float BAND_COLOR[4][3] =
@@ -57,7 +59,8 @@ static void drawBridge(void)
     glEnd();
 }
 
-/* Nenufares dispersos sobre el agua */
+/* Nenufares dispersos sobre el agua: circulo verde (hoja) con un
+   circulo mas chico y claro encima (flor) */
 static void drawLilyPads(void)
 {
     static const float pads[][3] =
@@ -82,6 +85,7 @@ static void drawLilyPads(void)
     }
 }
 
+/* primer plano: nenufares abajo, puente arriba */
 void drawMonet(void)
 {
     drawLilyPads();

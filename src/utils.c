@@ -18,6 +18,7 @@ void drawLine(float x1, float y1, float x2, float y2)
     glEnd();
 }
 
+/* circulo hueco, 64 segmentos fijos (no se ajusta segun el radio) */
 void drawCircle(float x, float y, float radius)
 {
     int i;
@@ -37,6 +38,7 @@ void drawCircle(float x, float y, float radius)
     glEnd();
 }
 
+/* circulo relleno con abanico de triangulos desde el centro */
 void drawFilledCircle(float x, float y, float radius)
 {
     int i;
@@ -58,6 +60,8 @@ void drawFilledCircle(float x, float y, float radius)
     glEnd();
 }
 
+/* arco (linea), paso fijo de 2 grados. CUESTIONABLE: si endAngle-startAngle
+   no es multiplo de 2, el ultimo punto no cae exacto en endAngle. */
 void drawArc(float radius,
              float startAngle,
              float endAngle)
@@ -79,6 +83,7 @@ void drawArc(float radius,
     glEnd();
 }
 
+/* anillo relleno entre dos radios, mismo paso de 2 grados que drawArc */
 void drawFilledArc(float innerRadius,
                    float outerRadius,
                    float startAngle,

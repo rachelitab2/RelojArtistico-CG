@@ -6,10 +6,13 @@
 #include "utils.h"
 #include <time.h>
 
+/* Dibuja la caratula completa: fondo, marcas, manecillas y pivote.
+   Se llama una vez por frame desde display.c. */
 void drawClock(void)
 {
     int i;
 
+    /* activa antialiasing una sola vez, se queda encendido siempre */
     static int smoothingEnabled = 0;
 
     if(!smoothingEnabled)
@@ -34,6 +37,7 @@ void drawClock(void)
 
     drawCircle(0.0f,0.0f,faceRadius);
 
+    /* 12 marcas; cada 3 (12/3/6/9) se dibuja mas larga y gruesa */
     for(i=0;i<12;i++)
     {
         float angle=degreesToRadians(i*30);
@@ -72,9 +76,10 @@ void drawClock(void)
 
     glColor3f(0.85f,0.65f,0.25f);
 
-    drawFilledCircle(0.0f,0.0f,0.015f);
+    drawFilledCircle(0.0f,0.0f,0.015f); /* pivote central */
 }
 
+/* hora real del sistema, sin cache: se llama una vez por frame */
 ClockTime getCurrentTime(void)
 {
     time_t now;
@@ -92,11 +97,17 @@ ClockTime getCurrentTime(void)
     return t;
 }
 
+/* CUESTIONABLE: hourAngle/minuteAngle/secondAngle no son "static" pero
+   tampoco estan declaradas en clock.h; solo se usan dentro de este
+   archivo. Deberian ser static o quedar expuestas en el header. */
+
+/* angulo de la manecilla de hora: 30 grados por hora + arrastre por minuto */
 float hourAngle(ClockTime t){
     return (t.hour % 12) * 30.0f
          + t.minute * 0.5f;
 }
 
+/* 6 grados por minuto + arrastre por segundo */
 float minuteAngle(ClockTime t){
     return t.minute * 6.0f
          + t.second * 0.1f;

@@ -26,6 +26,8 @@ static const float PALETTE[4][3] =
     {0.55f,0.10f,0.12f}
 };
 
+/* misma tecnica de rejilla que vangogh.c/kandinsky.c/mondrian.c, copiada
+   con distinta paleta (ver nota en segment_vangogh.c) */
 static void drawBlocks(float innerRadius, float outerRadius)
 {
     float span = outerRadius - innerRadius;
@@ -75,7 +77,8 @@ static void drawGoldDots(void)
         drawFilledCircle(dots[i][0], dots[i][1], dots[i][2]);
 }
 
-/* Espiral simple hecha con segmentos, otro motivo de Klimt */
+/* Espiral simple hecha con segmentos, otro motivo de Klimt.
+   Parametrica: angulo y radio crecen juntos con "t" de 0 a 1. */
 static void drawSpiral(void)
 {
     int i;
@@ -98,6 +101,7 @@ static void drawSpiral(void)
     glEnd();
 }
 
+/* primer plano: espiral debajo, puntos dorados encima */
 void drawKlimt(void)
 {
     drawSpiral();
