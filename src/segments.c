@@ -148,9 +148,19 @@ drawLine(x1,y1,x2,y2);
 }
 
 /* Overlay calido de muy baja opacidad sobre el segmento activo,
-   para dar sensacion de iluminacion extra sin alterar sus colores. */
+   para dar sensacion de iluminacion extra sin alterar sus colores.
+   Se asegura el blending aqui mismo (glEnable es idempotente, no
+   pasa nada si clock.c ya lo habia activado) en vez de asumir que
+   sigue encendido: si por algun motivo no lo estaba, el alpha se
+   ignoraba y este color quedaba opaco, tapando la obra entera (bug
+   ya observado: cubria a Monet cuando era el destacado). No se
+   desactiva despues porque clock.c lo deja encendido de forma
+   permanente para el antialiasing de sus lineas. */
 if(isActive)
 {
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     glColor4f(1.0f,0.92f,0.75f,0.05f);
 
     drawFilledArc(segment->innerRadius, segment->outerRadius, -25.0f, 25.0f);
