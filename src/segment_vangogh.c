@@ -8,7 +8,10 @@
    bandas radiales x angulares en tonos de azul, con un par de celdas
    amarillas sueltas simulando estrellas dentro del remolino. */
 static const float RADIUS_FRACTION[5] = {0.00f, 0.25f, 0.50f, 0.75f, 1.00f};
-static const float ANGLE_DEG[5]       = {-25.0f,-12.0f,  0.0f, 12.0f, 25.0f};
+
+/* fracciones del semiancho real del sector, no grados fijos (ver
+   nota equivalente en segment_kandinsky.c) */
+static const float ANGLE_FRACTION[5]  = {-1.00f,-0.48f, 0.00f, 0.48f, 1.00f};
 
 /* 0 = azul profundo, 1 = azul medio, 2 = azul remolino, 3 = estrella */
 static const int CELL_COLOR[4][4] =
@@ -30,7 +33,7 @@ static const float PALETTE[4][3] =
 /* CUESTIONABLE: esta misma rejilla de celdas (radio x angulo) se repite
    copiada en kandinsky.c, mondrian.c y klimt.c con distinta paleta;
    podria ser una sola funcion compartida en vez de 4 copias. */
-static void drawBlocks(float innerRadius, float outerRadius)
+static void drawBlocks(float innerRadius, float outerRadius, float halfAngle)
 {
     float span = outerRadius - innerRadius;
     int row, col;
@@ -43,17 +46,19 @@ static void drawBlocks(float innerRadius, float outerRadius)
         for(col = 0; col < 4; col++)
         {
             const float *color = PALETTE[CELL_COLOR[row][col]];
+            float a0 = ANGLE_FRACTION[col] * halfAngle;
+            float a1 = ANGLE_FRACTION[col+1] * halfAngle;
 
             glColor3f(color[0], color[1], color[2]);
 
-            drawFilledArc(r0, r1, ANGLE_DEG[col], ANGLE_DEG[col+1]);
+            drawFilledArc(r0, r1, a0, a1);
         }
     }
 }
 
-void drawVanGoghBackground(float innerRadius, float outerRadius)
+void drawVanGoghBackground(float innerRadius, float outerRadius, float halfAngle)
 {
-    drawBlocks(innerRadius, outerRadius);
+    drawBlocks(innerRadius, outerRadius, halfAngle);
 }
 
 /* Ciprés: ribbon central con grosor variable, mismo patron que

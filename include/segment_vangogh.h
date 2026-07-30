@@ -5,6 +5,6 @@
 
 void drawVanGogh(void);
 
-void drawVanGoghBackground(float innerRadius, float outerRadius);
+void drawVanGoghBackground(float innerRadius, float outerRadius, float halfAngle);
 
 #endif
