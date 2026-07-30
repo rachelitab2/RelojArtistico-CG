@@ -159,7 +159,7 @@ static void drawPanelBackground(float x, float y, float width, float height)
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glColor4f(0.02f, 0.02f, 0.025f, 0.82f);
+    glColor4f(0.02f, 0.02f, 0.025f, 0.68f);
 
     glBegin(GL_QUADS);
         glVertex2f(x, y);
@@ -168,7 +168,7 @@ static void drawPanelBackground(float x, float y, float width, float height)
         glVertex2f(x, y - height);
     glEnd();
 
-    glColor4f(1.0f, 1.0f, 1.0f, 0.16f);
+    glColor4f(1.0f, 1.0f, 1.0f, 0.10f);
 
     glLineWidth(1.0f);
 

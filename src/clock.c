@@ -54,13 +54,13 @@ void drawClock(void)
 
         if(isMajor)
         {
-            glColor3f(0.90f,0.90f,0.92f);
-            glLineWidth(2.2f);
+            glColor3f(0.70f,0.70f,0.74f);
+            glLineWidth(1.6f);
         }
         else
         {
-            glColor3f(0.55f,0.55f,0.58f);
-            glLineWidth(1.0f);
+            glColor3f(0.42f,0.42f,0.46f);
+            glLineWidth(0.8f);
         }
 
         drawLine(x1,y1,x2,y2);
@@ -123,9 +123,9 @@ void drawHourHand(ClockTime t)
     float x = 0.15f * sin(angle);
     float y = 0.15f * cos(angle);
 
-    glColor3f(0.92f,0.92f,0.90f);
+    glColor3f(0.75f,0.75f,0.74f);
 
-    glLineWidth(4.0f);
+    glLineWidth(3.0f);
 
     drawLine(0.0f,0.0f,x,y);
 }
@@ -136,9 +136,9 @@ void drawMinuteHand(ClockTime t)
     float x = 0.23f * sin(angle);
     float y = 0.23f * cos(angle);
 
-    glColor3f(0.75f,0.75f,0.78f);
+    glColor3f(0.60f,0.60f,0.64f);
 
-    glLineWidth(2.4f);
+    glLineWidth(1.8f);
 
     drawLine(0.0f,0.0f,x,y);
 }

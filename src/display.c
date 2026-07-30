@@ -8,9 +8,17 @@
 #include "ui.h"
 #include <stdio.h>
 
+#define FRAME_INTERVAL_MS 33
+
+static const float WHEEL_VERTICAL_OFFSET = -0.12f; /* baja el reloj/rueda, deja aire arriba */
+
 void initDisplay(void)
 {
     glClearColor(0.05f,0.05f,0.05f,1.0f); /* fondo casi negro */
+
+    printf("OpenGL vendor: %s\n", glGetString(GL_VENDOR));
+    printf("OpenGL renderer: %s\n", glGetString(GL_RENDERER));
+    printf("OpenGL version: %s\n", glGetString(GL_VERSION));
 }
 
 /* Se ejecuta cada frame. Dibuja todo en orden: reloj, anillo decorativo,
@@ -35,6 +43,9 @@ glClearColor(
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
+   glPushMatrix();
+   glTranslatef(0.0f, WHEEL_VERTICAL_OFFSET, 0.0f);
+
    drawClock();
 
     glEnable(GL_BLEND);
@@ -55,6 +66,10 @@ drawCircle(0.0f, 0.0f, 0.90f);
 
     drawSegments();
 
+   glPopMatrix();
+
+    /* fuera del translate: la UI usa coordenadas de pantalla via
+       getWorldBounds(), no debe moverse con la rueda. */
     drawUserInterface();
 
     glutSwapBuffers();
@@ -65,9 +80,11 @@ drawCircle(0.0f, 0.0f, 0.90f);
    es obligatorio por la firma que exige glutTimerFunc. */
 void timer(int value)
 {
+    (void)value;
+
     updateSegments();
 
     glutPostRedisplay();
 
-    glutTimerFunc(16,timer,0);
+    glutTimerFunc(FRAME_INTERVAL_MS,timer,0);
 }

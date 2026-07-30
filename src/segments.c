@@ -44,6 +44,7 @@ static const float TARGET_ANGLE = 90.0f; /* posicion protagonista: arriba al cen
 static const float BASE_HALF_ANGLE = 26.0f; /* semiancho de un sector normal (~52 grados) */
 static const float ACTIVE_HALF_ANGLE = 50.0f; /* semiancho del sector activo (~100 grados) */
 static const float LAYOUT_SMOOTHING = 0.12f; /* velocidad de convergencia por frame */
+static const float SECTOR_GAP_DEG = 1.0f; /* separador fino entre sectores */
 
 /* obra destacada segun la hora real */
 static int activeArtworkIndex = 0;
@@ -88,7 +89,7 @@ static int computeActiveArtworkIndex(ClockTime t)
    dibujar; ya no depende de segment->angle ni de un giro continuo. */
 static void updateSectorLayout(void)
 {
-    static const float DISTANCE_ALPHA[4] = {1.0f, 0.55f, 0.32f, 0.22f};
+    static const float DISTANCE_ALPHA[4] = {1.0f, 0.68f, 0.46f, 0.32f};
     float cursor = 0.0f;
     float shift;
     int i;
@@ -139,6 +140,9 @@ Segment renderSegment = *segment;
 float halfAngle = sectorHalfAngle[segmentIndex];
 float alpha = sectorAlpha[segmentIndex];
 
+float drawHalfAngle = halfAngle - SECTOR_GAP_DEG;
+if(drawHalfAngle < 1.0f) drawHalfAngle = 1.0f;
+
 if(isActive)
 {
     renderSegment.outerRadius += 0.08f;
@@ -148,7 +152,7 @@ glPushMatrix();
 
 glRotatef(sectorCenterAngle[segmentIndex], 0.0f, 0.0f, 1.0f);
 
-drawArtworkBackground(&renderSegment, halfAngle);
+drawArtworkBackground(&renderSegment, drawHalfAngle);
 
 /* El sector activo toma el acento cromatico de su obra para que el
    destaque pertenezca al mismo sistema visual del panel informativo. */
@@ -156,42 +160,55 @@ if(isActive)
 {
     ArtworkColor accent = getArtworkInfo(renderSegment.artwork)->accentColor;
 
-    glColor3f(accent.red, accent.green, accent.blue);
-    glLineWidth(2.4f);
+    glColor4f(accent.red, accent.green, accent.blue, 0.85f);
+    glLineWidth(2.0f);
 }
 else
 {
-glColor3f(1.0f,1.0f,1.0f);
-    glLineWidth(1.4f);
+glColor4f(1.0f,1.0f,1.0f,0.30f);
+    glLineWidth(1.0f);
 }
 
 drawArc(
     renderSegment.outerRadius,
-    -halfAngle,
-     halfAngle
+    -drawHalfAngle,
+     drawHalfAngle
 );
 
 drawArc(
     renderSegment.innerRadius,
-    -halfAngle,
-     halfAngle
+    -drawHalfAngle,
+     drawHalfAngle
 );
 
-float x1 = cos(degreesToRadians(halfAngle))*renderSegment.innerRadius;
-float y1 = sin(degreesToRadians(halfAngle))*renderSegment.innerRadius;
+float x1 = cos(degreesToRadians(drawHalfAngle))*renderSegment.innerRadius;
+float y1 = sin(degreesToRadians(drawHalfAngle))*renderSegment.innerRadius;
 
-float x2 = cos(degreesToRadians(halfAngle))*renderSegment.outerRadius;
-float y2 = sin(degreesToRadians(halfAngle))*renderSegment.outerRadius;
+float x2 = cos(degreesToRadians(drawHalfAngle))*renderSegment.outerRadius;
+float y2 = sin(degreesToRadians(drawHalfAngle))*renderSegment.outerRadius;
+
+drawLine(x1,y1,x2,y2);
+
+x1 = cos(degreesToRadians(-drawHalfAngle))*renderSegment.innerRadius;
+y1 = sin(degreesToRadians(-drawHalfAngle))*renderSegment.innerRadius;
+
+x2 = cos(degreesToRadians(-drawHalfAngle))*renderSegment.outerRadius;
+y2 = sin(degreesToRadians(-drawHalfAngle))*renderSegment.outerRadius;
 
 drawLine(x1,y1,x2,y2);
 
-x1 = cos(degreesToRadians(-halfAngle))*renderSegment.innerRadius;
-y1 = sin(degreesToRadians(-halfAngle))*renderSegment.innerRadius;
+/* halo externo sutil: un arco ancho y muy transparente justo afuera
+   del borde, para que el destaque se sienta como resplandor y no
+   como un recuadro duro. */
+if(isActive)
+{
+    ArtworkColor haloColor = getArtworkInfo(renderSegment.artwork)->accentColor;
 
-x2 = cos(degreesToRadians(-halfAngle))*renderSegment.outerRadius;
-y2 = sin(degreesToRadians(-halfAngle))*renderSegment.outerRadius;
+    glColor4f(haloColor.red, haloColor.green, haloColor.blue, 0.20f);
+    glLineWidth(5.0f);
 
-drawLine(x1,y1,x2,y2);
+    drawArc(renderSegment.outerRadius + 0.015f, -drawHalfAngle, drawHalfAngle);
+}
 
 {
     /* lienzo local de la obra: centrado en el sector y escalado para
@@ -246,7 +263,13 @@ if(isActive)
 
     glColor4f(accent.red, accent.green, accent.blue, 0.08f);
 
-    drawFilledArc(renderSegment.innerRadius, renderSegment.outerRadius, -halfAngle, halfAngle);
+    drawFilledArc(renderSegment.innerRadius, renderSegment.outerRadius, -drawHalfAngle, drawHalfAngle);
+
+    /* segunda pasada: banda mas brillante pegada al borde exterior,
+       para que el overlay no se sienta como un tinte plano uniforme. */
+    glColor4f(accent.red, accent.green, accent.blue, 0.16f);
+
+    drawFilledArc(renderSegment.outerRadius - 0.05f, renderSegment.outerRadius, -drawHalfAngle, drawHalfAngle);
 }
 else
 {
@@ -256,9 +279,9 @@ else
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glColor4f(0.0f, 0.0f, 0.0f, 1.0f - alpha);
+    glColor4f(0.0f, 0.0f, 0.0f, (1.0f - alpha) * 0.75f);
 
-    drawFilledArc(renderSegment.innerRadius, renderSegment.outerRadius, -halfAngle, halfAngle);
+    drawFilledArc(renderSegment.innerRadius, renderSegment.outerRadius, -drawHalfAngle, drawHalfAngle);
 }
 
 glPopMatrix();
@@ -378,7 +401,6 @@ void updateSegments(void)
     if(highlightPulsePhase >= 2.0f*3.1415926535f)
         highlightPulsePhase -= 2.0f*3.1415926535f;
 
-    glutPostRedisplay();
 }
 /* dispatcher: obra en el lienzo local, segun ArtworkType */
 static void drawArtwork(ArtworkType artwork)
