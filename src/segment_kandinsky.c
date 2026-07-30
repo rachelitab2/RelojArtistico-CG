@@ -6,7 +6,12 @@
 /* Fondo con la geometria real del sector: rejilla de bandas
    radiales x angulares con paleta abstracta y contrastante. */
 static const float RADIUS_FRACTION[5] = {0.00f, 0.22f, 0.50f, 0.78f, 1.00f};
-static const float ANGLE_DEG[5]       = {-25.0f,-13.0f,  1.0f, 14.0f, 25.0f};
+
+/* fracciones del semiancho real del sector, no grados fijos: el sector
+   activo puede ser mas ancho que uno normal (ver sectorHalfAngle en
+   segments.c), y la rejilla debe cubrirlo completo en vez de dejar
+   franjas vacias a los lados. */
+static const float ANGLE_FRACTION[5]  = {-1.00f,-0.52f, 0.04f, 0.56f, 1.00f};
 
 /* 0 = crema, 1 = rojo, 2 = azul, 3 = amarillo, 4 = negro, 5 = teal */
 static const int CELL_COLOR[4][4] =
@@ -29,7 +34,7 @@ static const float PALETTE[6][3] =
 
 /* misma tecnica de rejilla que vangogh.c/mondrian.c/klimt.c, copiada
    con distinta paleta (ver nota en segment_vangogh.c) */
-static void drawBlocks(float innerRadius, float outerRadius)
+static void drawBlocks(float innerRadius, float outerRadius, float halfAngle)
 {
     float span = outerRadius - innerRadius;
     int row, col;
@@ -42,17 +47,19 @@ static void drawBlocks(float innerRadius, float outerRadius)
         for(col = 0; col < 4; col++)
         {
             const float *color = PALETTE[CELL_COLOR[row][col]];
+            float a0 = ANGLE_FRACTION[col] * halfAngle;
+            float a1 = ANGLE_FRACTION[col+1] * halfAngle;
 
             glColor3f(color[0], color[1], color[2]);
 
-            drawFilledArc(r0, r1, ANGLE_DEG[col], ANGLE_DEG[col+1]);
+            drawFilledArc(r0, r1, a0, a1);
         }
     }
 }
 
-void drawKandinskyBackground(float innerRadius, float outerRadius)
+void drawKandinskyBackground(float innerRadius, float outerRadius, float halfAngle)
 {
-    drawBlocks(innerRadius, outerRadius);
+    drawBlocks(innerRadius, outerRadius, halfAngle);
 }
 
 /* Circulos concentricos superpuestos, motivo recurrente de Kandinsky */

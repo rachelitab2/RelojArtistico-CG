@@ -59,7 +59,7 @@ static float sectorHalfAngle[6];
 static int sectorLayoutInitialized = 0;
 
 static void drawArtwork(ArtworkType artwork);
-static void drawArtworkBackground(const Segment *segment);
+static void drawArtworkBackground(const Segment *segment, float halfAngle);
 
 /* Hora (24h) -> indice de obra activa, segun el intervalo elegido en
    app_config.c (15/30/60 min). Con 60 min equivale al calculo viejo
@@ -148,7 +148,7 @@ glPushMatrix();
 
 glRotatef(sectorCenterAngle[segmentIndex], 0.0f, 0.0f, 1.0f);
 
-drawArtworkBackground(&renderSegment);
+drawArtworkBackground(&renderSegment, halfAngle);
 
 /* El sector activo toma el acento cromatico de su obra para que el
    destaque pertenezca al mismo sistema visual del panel informativo. */
@@ -414,7 +414,7 @@ static void drawArtwork(ArtworkType artwork)
 /* dispatcher: fondo real del sector, segun ArtworkType. El default ya
    es inalcanzable (las 6 obras tienen su propio case), se deja como
    respaldo. */
-static void drawArtworkBackground(const Segment *segment)
+static void drawArtworkBackground(const Segment *segment, float halfAngle)
 {
     switch(segment->artwork)
     {
@@ -427,7 +427,7 @@ case ART_MONDRIAN:
     break;
 
         case ART_KANDINSKY:
-            drawKandinskyBackground(segment->innerRadius, segment->outerRadius);
+            drawKandinskyBackground(segment->innerRadius, segment->outerRadius, halfAngle);
             break;
 
         case ART_VANGOGH:

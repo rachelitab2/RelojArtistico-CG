@@ -5,6 +5,6 @@
 
 void drawKandinsky(void);
 
-void drawKandinskyBackground(float innerRadius, float outerRadius);
+void drawKandinskyBackground(float innerRadius, float outerRadius, float halfAngle);
 
 #endif
