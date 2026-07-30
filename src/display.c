@@ -4,7 +4,9 @@
 #include "clock.h"
 #include "segments.h"
 #include "utils.h"
-                #include <stdio.h>
+#include "artwork_catalog.h"
+#include "ui.h"
+#include <stdio.h>
 
 void initDisplay(void)
 {
@@ -15,35 +17,45 @@ void initDisplay(void)
    segmentos, y al final intercambia buffers. */
 void display(void)
 {
+
+    const ArtworkInfo *activeArtwork = getArtworkInfo(getActiveArtworkType());
+ArtworkColor background = activeArtwork->backgroundColor;
+ArtworkColor accent = activeArtwork->accentColor;
+const float backgroundBlend = 0.55f;
+
+glClearColor(
+    0.04f * (1.0f - backgroundBlend) + background.red * backgroundBlend,
+    0.04f * (1.0f - backgroundBlend) + background.green * backgroundBlend,
+    0.05f * (1.0f - backgroundBlend) + background.blue * backgroundBlend,
+    1.0f
+);
+    
     glClear(GL_COLOR_BUFFER_BIT);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    drawClock();
-    glColor3f(1.0f,1.0f,0.0f);
-    drawArc(0.80f,0.0f,60.0f); /* marca decorativa amarilla, sin funcion real */
+   drawClock();
 
-    glLineWidth(8.0f);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    drawCircle(0.0f,0.0f,0.80f);
+    glColor4f(accent.red, accent.green, accent.blue, 0.28f);
+    glLineWidth(1.2f);
+    drawCircle(0.0f, 0.0f, 0.80f);
 
     /* anillo exterior con color pulsante (verde-amarillo). CUESTIONABLE:
        es independiente del pulso dorado del segmento destacado en
        segments.c; son dos animaciones de "brillo" separadas sin relacion
        entre si. */
-    static float color = 0.0f;
+    glColor4f(accent.red, accent.green, accent.blue, 0.62f);
+    glLineWidth(2.5f);
 
-color += 0.01f;
-
-if(color > 1.0f)
-    color = 0.0f;
-
-glColor3f(color,1.0f,0.0f);
-
-drawCircle(0.0f,0.0f,0.90f);
+drawCircle(0.0f, 0.0f, 0.90f);
 
     drawSegments();
+
+    drawUserInterface();
 
     glutSwapBuffers();
 }

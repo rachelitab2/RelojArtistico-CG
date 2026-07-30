@@ -36,4 +36,8 @@ void drawSegments(void);
 
 void updateSegments(void);
 
+ArtworkType getActiveArtworkType(void);
+
+int getActiveArtworkIndex(void);
+
 #endif

@@ -13,6 +13,9 @@ set(SOURCES
     src/clock.c
     src/segments.c
     src/utils.c
+    src/artwork_catalog.c
+    src/app_config.c
+    src/ui.c
     src/segment_hokusai.c
     src/segment_vangogh.c
     src/segment_kandinsky.c

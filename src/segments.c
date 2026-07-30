@@ -11,8 +11,12 @@
 #include "segment_vangogh.h"
 #include "segment_klimt.h"
 #include "segment_hokusai.h"
+#include "artwork_catalog.h"
+#include "app_config.h"
 
 Segment segments[6]; /* los 6 sectores del reloj, en orden fijo */
+
+static void updateSectorLayout(void);
 
 void initSegments(void)
 {
@@ -28,28 +32,101 @@ void initSegments(void)
     segments[4] = (Segment){240.0f, 0.42f,0.82f,0.0f,ART_MONET};
 
     segments[5] = (Segment){300.0f, 0.42f,0.82f,0.0f,ART_KLIMT};
+
+    /* evita un primer frame degenerado: sin esto, sectorCenterAngle y
+       sectorHalfAngle quedarian en 0 hasta el primer updateSegments(). */
+    updateSectorLayout();
 }
 
-static float wheelRotation = 0.0f; /* grados, avanza en updateSegments() */
 static const float ARTWORK_MARGIN = 0.85f; /* margen de seguridad del lienzo local */
 static const float HIGHLIGHT_PULSE_SPEED = 0.025f; /* ciclo completo ~4s */
+static const float TARGET_ANGLE = 90.0f; /* posicion protagonista: arriba al centro */
+static const float BASE_HALF_ANGLE = 26.0f; /* semiancho de un sector normal (~52 grados) */
+static const float ACTIVE_HALF_ANGLE = 50.0f; /* semiancho del sector activo (~100 grados) */
+static const float LAYOUT_SMOOTHING = 0.12f; /* velocidad de convergencia por frame */
 
 /* obra destacada segun la hora real */
 static int activeArtworkIndex = 0;
 static float highlightPulsePhase = 0.0f;
 
+/* estado animado del layout: cuanto "crece" cada sector hacia el activo (0..1),
+   su atenuacion visual (1=brillo normal, 0=oscurecido), y el angulo/semiancho
+   ya empaquetado que usa drawSegment() para dibujar. */
+static float sectorWidthFactor[6];
+static float sectorAlpha[6];
+static float sectorCenterAngle[6];
+static float sectorHalfAngle[6];
+static int sectorLayoutInitialized = 0;
+
 static void drawArtwork(ArtworkType artwork);
 static void drawArtworkBackground(const Segment *segment);
 
-/* Hora (24h) -> indice de obra activa. Reloj de 12h, la secuencia de
-   6 obras se repite dos veces al dia (12=Hokusai(0) ... 5=Klimt(5),
-   6=Hokusai(0) otra vez). El indice coincide con el orden de
-   ArtworkType y con el de initSegments(). */
+/* Hora (24h) -> indice de obra activa, segun el intervalo elegido en
+   app_config.c (15/30/60 min). Con 60 min equivale al calculo viejo
+   (hour % 12 % 6); con intervalos mas cortos la obra activa cambia
+   mas seguido dentro de las mismas 12 horas. */
 static int computeActiveArtworkIndex(ClockTime t)
 {
-    int hour12 = t.hour % 12;
+    int minutesIntoHalfDay = (t.hour % 12) * 60 + t.minute;
+    int slotMinutes;
 
-    return hour12 % 6;
+    switch(getChangeInterval())
+    {
+        case CHANGE_INTERVAL_15_MINUTES: slotMinutes = 15; break;
+        case CHANGE_INTERVAL_60_MINUTES: slotMinutes = 60; break;
+        case CHANGE_INTERVAL_30_MINUTES:
+        default:                         slotMinutes = 30; break;
+    }
+
+    return (minutesIntoHalfDay / slotMinutes) % 6;
+}
+
+/* Anima y empaqueta los 6 sectores cada frame: el activo crece en ancho
+   angular y los demas se comprimen, atenuados segun su distancia circular
+   al activo (mismo criterio que el mockup de referencia). El resultado
+   (sectorCenterAngle/sectorHalfAngle) es lo que usa drawSegment() para
+   dibujar; ya no depende de segment->angle ni de un giro continuo. */
+static void updateSectorLayout(void)
+{
+    static const float DISTANCE_ALPHA[4] = {1.0f, 0.55f, 0.32f, 0.22f};
+    float cursor = 0.0f;
+    float shift;
+    int i;
+
+    if(!sectorLayoutInitialized)
+    {
+        for(i = 0; i < 6; i++)
+        {
+            sectorWidthFactor[i] = (i == activeArtworkIndex) ? 1.0f : 0.0f;
+            sectorAlpha[i] = (i == activeArtworkIndex) ? 1.0f : DISTANCE_ALPHA[1];
+        }
+
+        sectorLayoutInitialized = 1;
+    }
+
+    for(i = 0; i < 6; i++)
+    {
+        int distance = abs(i - activeArtworkIndex);
+        float widthTarget;
+        float alphaTarget;
+
+        if(distance > 3) distance = 6 - distance;
+
+        widthTarget = (i == activeArtworkIndex) ? 1.0f : 0.0f;
+        alphaTarget = DISTANCE_ALPHA[distance];
+
+        sectorWidthFactor[i] += (widthTarget - sectorWidthFactor[i]) * LAYOUT_SMOOTHING;
+        sectorAlpha[i] += (alphaTarget - sectorAlpha[i]) * LAYOUT_SMOOTHING;
+
+        sectorHalfAngle[i] = BASE_HALF_ANGLE + (ACTIVE_HALF_ANGLE - BASE_HALF_ANGLE) * sectorWidthFactor[i];
+        sectorCenterAngle[i] = cursor + sectorHalfAngle[i];
+        cursor += 2.0f * sectorHalfAngle[i];
+    }
+
+    shift = TARGET_ANGLE - sectorCenterAngle[activeArtworkIndex];
+
+    for(i = 0; i < 6; i++)
+        sectorCenterAngle[i] += shift;
 }
 
 void drawSegment(const Segment *segment)
@@ -58,61 +135,72 @@ void drawSegment(const Segment *segment)
    si "segment" apunta dentro del array global segments[]. */
 int segmentIndex = (int)(segment - segments);
 int isActive = (segmentIndex == activeArtworkIndex);
+Segment renderSegment = *segment;
+float halfAngle = sectorHalfAngle[segmentIndex];
+float alpha = sectorAlpha[segmentIndex];
+
+if(isActive)
+{
+    renderSegment.outerRadius += 0.08f;
+}
 
 glPushMatrix();
 
-glRotatef(segment->angle + wheelRotation, 0.0f, 0.0f, 1.0f);
+glRotatef(sectorCenterAngle[segmentIndex], 0.0f, 0.0f, 1.0f);
 
-drawArtworkBackground(segment);
+drawArtworkBackground(&renderSegment);
 
-/* borde dorado y mas grueso solo si es el segmento activo */
+/* El sector activo toma el acento cromatico de su obra para que el
+   destaque pertenezca al mismo sistema visual del panel informativo. */
 if(isActive)
 {
-    glColor3f(0.82f,0.68f,0.28f);
-    glLineWidth(2.0f);
+    ArtworkColor accent = getArtworkInfo(renderSegment.artwork)->accentColor;
+
+    glColor3f(accent.red, accent.green, accent.blue);
+    glLineWidth(2.4f);
 }
 else
 {
-    glColor3f(1.0f,1.0f,1.0f);
+glColor3f(1.0f,1.0f,1.0f);
     glLineWidth(1.4f);
 }
 
 drawArc(
-    segment->outerRadius,
-    -25.0f,
-     25.0f
+    renderSegment.outerRadius,
+    -halfAngle,
+     halfAngle
 );
 
 drawArc(
-    segment->innerRadius,
-    -25.0f,
-     25.0f
+    renderSegment.innerRadius,
+    -halfAngle,
+     halfAngle
 );
 
-float x1 = cos(degreesToRadians(25))*segment->innerRadius;
-float y1 = sin(degreesToRadians(25))*segment->innerRadius;
+float x1 = cos(degreesToRadians(halfAngle))*renderSegment.innerRadius;
+float y1 = sin(degreesToRadians(halfAngle))*renderSegment.innerRadius;
 
-float x2 = cos(degreesToRadians(25))*segment->outerRadius;
-float y2 = sin(degreesToRadians(25))*segment->outerRadius;
+float x2 = cos(degreesToRadians(halfAngle))*renderSegment.outerRadius;
+float y2 = sin(degreesToRadians(halfAngle))*renderSegment.outerRadius;
 
 drawLine(x1,y1,x2,y2);
 
-x1 = cos(degreesToRadians(-25))*segment->innerRadius;
-y1 = sin(degreesToRadians(-25))*segment->innerRadius;
+x1 = cos(degreesToRadians(-halfAngle))*renderSegment.innerRadius;
+y1 = sin(degreesToRadians(-halfAngle))*renderSegment.innerRadius;
 
-x2 = cos(degreesToRadians(-25))*segment->outerRadius;
-y2 = sin(degreesToRadians(-25))*segment->outerRadius;
+x2 = cos(degreesToRadians(-halfAngle))*renderSegment.outerRadius;
+y2 = sin(degreesToRadians(-halfAngle))*renderSegment.outerRadius;
 
 drawLine(x1,y1,x2,y2);
 
 {
     /* lienzo local de la obra: centrado en el sector y escalado para
        que quepa completo (radial o angular, el que sea mas chico). */
-    float midRadius = (segment->innerRadius + segment->outerRadius) * 0.5f;
+    float midRadius = (renderSegment.innerRadius + renderSegment.outerRadius) * 0.5f;
 
-    float radialHalfWidth = (segment->outerRadius - segment->innerRadius) * 0.5f;
+    float radialHalfWidth = (renderSegment.outerRadius - renderSegment.innerRadius) * 0.5f;
 
-    float angularHalfWidth = midRadius * tanf(degreesToRadians(25.0f));
+    float angularHalfWidth = midRadius * tanf(degreesToRadians(halfAngle));
 
     float canvasScale = (radialHalfWidth < angularHalfWidth ? radialHalfWidth : angularHalfWidth) * ARTWORK_MARGIN;
 
@@ -122,23 +210,23 @@ drawLine(x1,y1,x2,y2);
 
         glScalef(canvasScale, canvasScale, 1.0f);
 
-        /* pulso: solo escala el contenido de drawArtwork() del activo,
-           no el fondo ni el borde (esos ya se dibujaron arriba). */
+        /* El pulso se mantiene sutil: la expansion principal del activo ya
+           ocurre en el radio exterior del sector completo. */
         if(isActive)
         {
-            float highlightScale = 1.04f + 0.04f*sinf(highlightPulsePhase);
+            float highlightScale = 1.03f + 0.025f*sinf(highlightPulsePhase);
 
             glPushMatrix();
 
                 glScalef(highlightScale, highlightScale, 1.0f);
 
-                drawArtwork(segment->artwork);
+        drawArtwork(renderSegment.artwork);
 
-            glPopMatrix();
-        }
+    glPopMatrix();
+}
         else
         {
-            drawArtwork(segment->artwork);
+            drawArtwork(renderSegment.artwork);
         }
 
     glPopMatrix();
@@ -154,9 +242,23 @@ if(isActive)
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glColor4f(1.0f,0.92f,0.75f,0.05f);
+    ArtworkColor accent = getArtworkInfo(renderSegment.artwork)->accentColor;
 
-    drawFilledArc(segment->innerRadius, segment->outerRadius, -25.0f, 25.0f);
+    glColor4f(accent.red, accent.green, accent.blue, 0.08f);
+
+    drawFilledArc(renderSegment.innerRadius, renderSegment.outerRadius, -halfAngle, halfAngle);
+}
+else
+{
+    /* atenuacion de los sectores no activos: mismo mecanismo de overlay,
+       oscurece en vez de iluminar, y su fuerza depende de la distancia
+       circular al sector activo (calculada en updateSectorLayout). */
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glColor4f(0.0f, 0.0f, 0.0f, 1.0f - alpha);
+
+    drawFilledArc(renderSegment.innerRadius, renderSegment.outerRadius, -halfAngle, halfAngle);
 }
 
 glPopMatrix();
@@ -244,18 +346,32 @@ void drawSegments(void)
     for(i = 0; i < 6; i++)
     {
         drawSegment(&segments[i]);
-    }
+    }   
 
     drawActiveArtworkLabel();
 }
+
+ArtworkType getActiveArtworkType(void)
+{
+    return segments[activeArtworkIndex].artwork;
+}
+
+int getActiveArtworkIndex(void)
+{
+    return activeArtworkIndex;
+}
+
 void updateSegments(void)
 {
-    wheelRotation += 0.01f;
-
-    if(wheelRotation >= 360.0f)
-        wheelRotation = 0.0f;
-
+    /*
+     * La rueda ya no rota continuamente: funciona como una galeria.
+     * activeArtworkIndex decide cual obra crece y se centra arriba;
+     * updateSectorLayout() anima ese cambio (ancho y atenuacion) suavemente
+     * cada frame, sin necesitar un estado de transicion explicito.
+     */
     activeArtworkIndex = computeActiveArtworkIndex(getCurrentTime());
+
+    updateSectorLayout();
 
     highlightPulsePhase += HIGHLIGHT_PULSE_SPEED;
 
@@ -264,7 +380,6 @@ void updateSegments(void)
 
     glutPostRedisplay();
 }
-
 /* dispatcher: obra en el lienzo local, segun ArtworkType */
 static void drawArtwork(ArtworkType artwork)
 {
@@ -303,13 +418,13 @@ static void drawArtworkBackground(const Segment *segment)
 {
     switch(segment->artwork)
     {
-        case ART_MONET:
-            drawMonetBackground(segment->innerRadius, segment->outerRadius);
-            break;
+  case ART_MONET:
+    drawMonetBackground(segment->innerRadius, segment->outerRadius);
+    break;
 
-        case ART_MONDRIAN:
-            drawMondrianBackground(segment->innerRadius, segment->outerRadius);
-            break;
+case ART_MONDRIAN:
+    drawMondrianBackground(segment->innerRadius, segment->outerRadius);
+    break;
 
         case ART_KANDINSKY:
             drawKandinskyBackground(segment->innerRadius, segment->outerRadius);

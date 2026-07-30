@@ -4,6 +4,7 @@
 
 #include "display.h"
 #include "segments.h"
+#include "app_config.h"
 
 
 /* Ajusta glOrtho al redimensionar la ventana para que circulos y
@@ -38,6 +39,36 @@ void reshape(int width, int height)
     glMatrixMode(GL_MODELVIEW);
 }
 
+/*
+ * Entrada minima para la configuracion de la demo.
+ *
+ * Las teclas 1, 2 y 3 actualizan el intervalo elegido sin mezclar esa logica
+ * con el renderizado. En una etapa posterior este bloque puede migrar a un
+ * modulo input.c cuando existan mas interacciones.
+ */
+void keyboard(unsigned char key, int x, int y)
+{
+    (void)x;
+    (void)y;
+
+    switch(key)
+    {
+        case '1':
+            setChangeInterval(CHANGE_INTERVAL_15_MINUTES);
+            break;
+
+        case '2':
+            setChangeInterval(CHANGE_INTERVAL_30_MINUTES);
+            break;
+
+        case '3':
+            setChangeInterval(CHANGE_INTERVAL_60_MINUTES);
+            break;
+    }
+
+    glutPostRedisplay();
+}
+
 int main(int argc,char** argv)
 {
     glutInit(&argc,argv);
@@ -60,6 +91,8 @@ int main(int argc,char** argv)
     glutDisplayFunc(display);
 
     glutReshapeFunc(reshape);
+
+    glutKeyboardFunc(keyboard);
 
     glutTimerFunc(16,timer,0); /* arranca el reloj de animacion (16ms) */
 
