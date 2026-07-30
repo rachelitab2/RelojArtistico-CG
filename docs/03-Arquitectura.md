@@ -202,6 +202,36 @@ Piet Mondrian.
 Claude Monet.
 Gustav Klimt.
 
+4.7 Modulo artwork_catalog.c
+
+El modulo artwork_catalog.c centraliza la informacion textual y visual de las obras artisticas.
+
+Su responsabilidad consiste en almacenar los metadatos de cada obra, incluyendo titulo, autor, anio, movimiento artistico, descripcion, color de fondo, color de acento y paleta cromatica.
+
+Esta separacion evita que la interfaz o el motor de segmentos dupliquen informacion artistica. En lugar de almacenar nombres o colores en distintos archivos, los modulos consultan el catalogo mediante getArtworkInfo().
+
+Gracias a esta decision, futuras funcionalidades como imagenes de referencia, musica por obra o fichas extendidas podran integrarse sin modificar directamente las funciones de dibujo de cada obra.
+
+4.8 Modulo ui.c
+
+El modulo ui.c implementa la capa de interfaz grafica del proyecto.
+
+Esta capa no dibuja el reloj ni las obras, sino elementos informativos y de control, como el panel descriptivo de la obra activa, la paleta cromatica y el selector de intervalo de cambio.
+
+La interfaz consulta el catalogo de obras para mostrar informacion artistica y utiliza los colores de acento para mantener coherencia visual con la obra activa.
+
+Separar la UI del renderizado principal permite evolucionar la experiencia de usuario sin sobrecargar display.c ni segments.c.
+
+4.9 Modulo app_config.c
+
+El modulo app_config.c encapsula la configuracion activa de la aplicacion.
+
+Actualmente administra el intervalo de cambio de obra, permitiendo seleccionar entre 15 minutos, 30 minutos y 1 hora.
+
+Esta configuracion es utilizada por el motor de segmentos para determinar que obra debe estar activa y por la interfaz para mostrar la opcion seleccionada.
+
+Su separacion permite que nuevas preferencias puedan agregarse posteriormente sin mezclar estado de configuracion con logica grafica.
+
 5. Flujo Completo de Ejecución
 
 La aplicación sigue el modelo de ejecución basado en eventos implementado por FreeGLUT. Después de inicializar el entorno gráfico, el programa permanece dentro del ciclo principal (glutMainLoop()), donde la biblioteca se encarga de invocar automáticamente las funciones registradas para el dibujo y la actualización de la escena.

@@ -164,7 +164,32 @@ planificación y mantenimiento de aplicaciones gráficas.
 
 Asimismo, la experiencia permitió comprender la importancia de una arquitectura bien definida y de una documentación consistente para facilitar el desarrollo colaborativo y el mantenimiento futuro del proyecto.
 
-13. Conclusiones
+13. Evolucion Visual Tipo Galeria
+
+En una etapa posterior del desarrollo se realizo una evolucion visual del proyecto con el objetivo de acercar el reloj artistico a una experiencia tipo galeria.
+
+El equipo identifico que la rotacion continua de los segmentos generaba movimiento, pero no favorecia la lectura de la obra activa. Tambien se observo que la informacion artistica necesitaba una presentacion mas clara y que los colores de la escena debian responder a la identidad visual de cada obra.
+
+Actividades realizadas
+
+Creacion de un catalogo centralizado de obras.
+Incorporacion de titulo, autor, anio, movimiento, descripcion, color de fondo, color de acento y paleta por obra.
+Implementacion de un panel informativo para la obra activa.
+Incorporacion de un selector de intervalo de cambio de obra.
+Eliminacion de la rotacion continua de la rueda.
+Implementacion de una composicion tipo galeria con obra activa ampliada.
+Atenuacion visual de obras secundarias.
+Parametrizacion de los fondos de las seis obras para soportar sectores de ancho variable.
+Integracion de las ramas de trabajo en develop.
+Compilacion y validacion sin warnings.
+
+Resultado
+
+La aplicacion evoluciono desde un reloj con segmentos artisticos en rotacion continua hacia una composicion visual mas intencional. La obra activa ahora ocupa un lugar protagonista, el panel informativo refuerza el contexto artistico y el selector de intervalo permite controlar la frecuencia de cambio.
+
+Esta etapa mantuvo la arquitectura modular existente y preparo el proyecto para futuras ampliaciones, como imagenes de referencia, musica por obra, controles mediante mouse y una posible evolucion 3D en una fase posterior.
+
+14. Conclusiones
 
 La construcción del Reloj Artístico representó la integración de los conocimientos adquiridos durante la asignatura de Computación Gráfica I, combinando programación gráfica, organización del software y trabajo colaborativo.
 
