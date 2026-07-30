@@ -17,7 +17,7 @@ static const float BAND_COLOR[4][3] =
     {0.34f,0.64f,0.56f}
 };
 
-static void drawBands(float innerRadius, float outerRadius)
+static void drawBands(float innerRadius, float outerRadius, float halfAngle)
 {
     float span = outerRadius - innerRadius;
     int row;
@@ -29,13 +29,13 @@ static void drawBands(float innerRadius, float outerRadius)
 
         glColor3f(BAND_COLOR[row][0], BAND_COLOR[row][1], BAND_COLOR[row][2]);
 
-        drawFilledArc(r0, r1, -25.0f, 25.0f);
+        drawFilledArc(r0, r1, -halfAngle, halfAngle);
     }
 }
 
-void drawMonetBackground(float innerRadius, float outerRadius)
+void drawMonetBackground(float innerRadius, float outerRadius, float halfAngle)
 {
-    drawBands(innerRadius, outerRadius);
+    drawBands(innerRadius, outerRadius, halfAngle);
 }
 
 /* Puente curvo: aproximado con segmentos de linea siguiendo un arco */
