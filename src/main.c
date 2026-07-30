@@ -6,6 +6,11 @@
 #include "segments.h"
 #include "app_config.h"
 
+#ifdef _WIN32
+__declspec(dllexport) unsigned long NvOptimusEnablement = 0x00000001;
+__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
+#endif
+
 
 /* Ajusta glOrtho al redimensionar la ventana para que circulos y
    sectores no se deformen. Agranda el eje mas largo segun el aspect
@@ -94,7 +99,7 @@ int main(int argc,char** argv)
 
     glutKeyboardFunc(keyboard);
 
-    glutTimerFunc(16,timer,0); /* arranca el reloj de animacion (16ms) */
+    glutTimerFunc(33,timer,0); /* arranca el reloj de animacion (~30 FPS) */
 
     glutMainLoop(); /* nunca retorna en uso normal */
 
