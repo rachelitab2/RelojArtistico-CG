@@ -7,6 +7,7 @@
 void drawMondrian(void);
 
 void drawMondrianBackground(float innerRadius,
-                            float outerRadius);
+                            float outerRadius,
+                            float halfAngle);
 
 #endif
