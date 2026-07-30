@@ -7,7 +7,10 @@
 /* Fondo con la geometria real del sector: mosaico de bandas
    radiales x angulares en tonos dorados con acentos oscuros. */
 static const float RADIUS_FRACTION[5] = {0.00f, 0.24f, 0.50f, 0.76f, 1.00f};
-static const float ANGLE_DEG[5]       = {-25.0f,-10.0f,  2.0f, 13.0f, 25.0f};
+
+/* fracciones del semiancho real del sector, no grados fijos (ver
+   nota equivalente en segment_kandinsky.c) */
+static const float ANGLE_FRACTION[5]  = {-1.00f,-0.40f, 0.08f, 0.52f, 1.00f};
 
 /* 0 = dorado claro, 1 = dorado oscuro, 2 = negro, 3 = rojo profundo */
 static const int CELL_COLOR[4][4] =
@@ -28,7 +31,7 @@ static const float PALETTE[4][3] =
 
 /* misma tecnica de rejilla que vangogh.c/kandinsky.c/mondrian.c, copiada
    con distinta paleta (ver nota en segment_vangogh.c) */
-static void drawBlocks(float innerRadius, float outerRadius)
+static void drawBlocks(float innerRadius, float outerRadius, float halfAngle)
 {
     float span = outerRadius - innerRadius;
     int row, col;
@@ -41,17 +44,19 @@ static void drawBlocks(float innerRadius, float outerRadius)
         for(col = 0; col < 4; col++)
         {
             const float *color = PALETTE[CELL_COLOR[row][col]];
+            float a0 = ANGLE_FRACTION[col] * halfAngle;
+            float a1 = ANGLE_FRACTION[col+1] * halfAngle;
 
             glColor3f(color[0], color[1], color[2]);
 
-            drawFilledArc(r0, r1, ANGLE_DEG[col], ANGLE_DEG[col+1]);
+            drawFilledArc(r0, r1, a0, a1);
         }
     }
 }
 
-void drawKlimtBackground(float innerRadius, float outerRadius)
+void drawKlimtBackground(float innerRadius, float outerRadius, float halfAngle)
 {
-    drawBlocks(innerRadius, outerRadius);
+    drawBlocks(innerRadius, outerRadius, halfAngle);
 }
 
 /* Puntos dorados dispersos, motivo textil recurrente en Klimt */

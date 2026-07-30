@@ -419,11 +419,11 @@ static void drawArtworkBackground(const Segment *segment, float halfAngle)
     switch(segment->artwork)
     {
   case ART_MONET:
-    drawMonetBackground(segment->innerRadius, segment->outerRadius);
+    drawMonetBackground(segment->innerRadius, segment->outerRadius, halfAngle);
     break;
 
 case ART_MONDRIAN:
-    drawMondrianBackground(segment->innerRadius, segment->outerRadius);
+    drawMondrianBackground(segment->innerRadius, segment->outerRadius, halfAngle);
     break;
 
         case ART_KANDINSKY:
@@ -431,15 +431,15 @@ case ART_MONDRIAN:
             break;
 
         case ART_VANGOGH:
-            drawVanGoghBackground(segment->innerRadius, segment->outerRadius);
+            drawVanGoghBackground(segment->innerRadius, segment->outerRadius, halfAngle);
             break;
 
         case ART_KLIMT:
-            drawKlimtBackground(segment->innerRadius, segment->outerRadius);
+            drawKlimtBackground(segment->innerRadius, segment->outerRadius, halfAngle);
             break;
 
         case ART_HOKUSAI:
-            drawHokusaiBackground(segment->innerRadius, segment->outerRadius);
+            drawHokusaiBackground(segment->innerRadius, segment->outerRadius, halfAngle);
             break;
 
         default:

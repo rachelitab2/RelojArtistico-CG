@@ -5,6 +5,6 @@
 
 void drawKlimt(void);
 
-void drawKlimtBackground(float innerRadius, float outerRadius);
+void drawKlimtBackground(float innerRadius, float outerRadius, float halfAngle);
 
 #endif
