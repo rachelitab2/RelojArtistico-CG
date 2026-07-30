@@ -6,6 +6,6 @@
 
 void drawHokusai(void);
 
-void drawHokusaiBackground(float innerRadius, float outerRadius);
+void drawHokusaiBackground(float innerRadius, float outerRadius, float halfAngle);
 
 #endif

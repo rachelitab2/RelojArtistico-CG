@@ -9,24 +9,24 @@
    sector exactamente, sin huecos entre el arte y el borde curvo.
    El cielo queda en un solo tono crema limpio; el mar se divide en
    tres bandas de azul para dar sensacion de profundidad. */
-void drawHokusaiBackground(float innerRadius, float outerRadius)
+void drawHokusaiBackground(float innerRadius, float outerRadius, float halfAngle)
 {
     float midRadius = (innerRadius + outerRadius) * 0.5f;
     float seaSpan = midRadius - innerRadius;
 
     /* cielo: mitad exterior del sector */
     glColor3f(0.92f,0.87f,0.68f);
-    drawFilledArc(midRadius, outerRadius, -25.0f, 25.0f);
+    drawFilledArc(midRadius, outerRadius, -halfAngle, halfAngle);
 
     /* mar: mitad interior, tres tonos de azul de mas oscuro a mas claro */
     glColor3f(0.10f,0.28f,0.52f);
-    drawFilledArc(innerRadius, innerRadius + seaSpan*0.35f, -25.0f, 25.0f);
+    drawFilledArc(innerRadius, innerRadius + seaSpan*0.35f, -halfAngle, halfAngle);
 
     glColor3f(0.16f,0.38f,0.62f);
-    drawFilledArc(innerRadius + seaSpan*0.35f, innerRadius + seaSpan*0.70f, -25.0f, 25.0f);
+    drawFilledArc(innerRadius + seaSpan*0.35f, innerRadius + seaSpan*0.70f, -halfAngle, halfAngle);
 
     glColor3f(0.24f,0.48f,0.72f);
-    drawFilledArc(innerRadius + seaSpan*0.70f, midRadius, -25.0f, 25.0f);
+    drawFilledArc(innerRadius + seaSpan*0.70f, midRadius, -halfAngle, halfAngle);
 }
 
 /* Monte Fuji pequeno al fondo: base azul (como neblina sobre el mar)
