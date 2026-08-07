@@ -17,6 +17,7 @@
 #include "segment_taeuber_arp.h"
 #include "segment_alma_thomas.h"
 #include "segment_seurat.h"
+#include "segment_escher.h"
 #include "artwork_catalog.h"
 #include "app_config.h"
 
@@ -40,7 +41,7 @@ const ArtworkType ROOM_30_MIN[ROOM_SIZE] =
 {
     ART_MONET,
     ART_VANGOGH,
-    ART_HOKUSAI,
+    ART_ESCHER,
     ART_SEURAT,
     ART_ALMA_THOMAS,
     ART_PAUL_KLEE
@@ -479,9 +480,9 @@ static void drawArtwork(ArtworkType artwork)
         case ART_TAEUBER_ARP: drawTaeuberArp();  break;
         case ART_ALMA_THOMAS: drawAlmaThomas();  break;
         case ART_SEURAT:      drawSeurat();      break;
+        case ART_ESCHER:      drawEscher();      break;
 
         /* --- placeholders --- */
-        case ART_HOKUSAI:
         case ART_PAUL_KLEE:
         case ART_HILMA:
         case ART_JOAN_MIRO:
@@ -551,8 +552,11 @@ static void drawArtworkBackground(const Segment *segment, float halfAngle)
             drawSeuratBackground(segment->innerRadius, segment->outerRadius, halfAngle);
             break;
 
+        case ART_ESCHER:
+            drawEscherBackground(segment->innerRadius, segment->outerRadius, halfAngle);
+            break;
+
         /* todas las obras sin implementar usan el fondo placeholder */
-        case ART_HOKUSAI:
         case ART_PAUL_KLEE:
         case ART_HILMA:
         case ART_JOAN_MIRO:

@@ -31,6 +31,7 @@ set(SOURCES
     src/segment_taeuber_arp.c
     src/segment_alma_thomas.c
     src/segment_seurat.c
+    src/segment_escher.c
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
