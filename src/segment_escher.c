@@ -39,7 +39,7 @@ static void drawFilledTriangle(float x1, float y1, float x2, float y2, float x3,
 
 static void drawFilledEllipse(float cx, float cy, float rx, float ry)
 {
-    static const int STEPS = 16;
+    static const int STEPS = 10;
     int i;
 
     glBegin(GL_TRIANGLE_FAN);

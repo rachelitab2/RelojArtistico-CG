@@ -47,13 +47,40 @@ static float hashf(float x, float y)
     return s - floorf(s);
 }
 
+/* drawFilledCircle() de utils.c usa 64 segmentos, pensado para circulos
+   grandes; para un punto de radio ~0.01 eso es miles de vertices
+   desperdiciados por nada (el poligono es indistinguible de un circulo
+   a ese tamano). Con cientos de puntos por fotograma en esta trama, la
+   diferencia es real: un octogono aca corta el costo por punto ~8x sin
+   cambio visible. */
+static void drawDot(float x, float y, float radius)
+{
+    static const int STEPS = 8;
+    int i;
+
+    glBegin(GL_TRIANGLE_FAN);
+        glVertex2f(x, y);
+
+        for(i = 0; i <= STEPS; i++)
+        {
+            float angle = 2.0f * 3.1415926535f * (float)i / (float)STEPS;
+
+            glVertex2f(x + radius * cosf(angle), y + radius * sinf(angle));
+        }
+    glEnd();
+}
+
 void drawSeuratBackground(float innerRadius, float outerRadius, float halfAngle)
 {
-    /* paso mucho mas chico que la primera version: sin una base solida
-       detras, cualquier hueco entre puntos dejaba ver el negro del
-       fondo del reloj -- por eso se pedia "mas puntos" y "un fondo". */
-    static const float RADIAL_STEP  = 0.014f;
-    static const float ANGULAR_STEP = 1.6f;   /* grados */
+    /* la version anterior (0.014 / 1.6) se veia bien pero generaba del
+       orden de 2000 puntos en el sector activo -- de a 64 segmentos por
+       drawFilledCircle(), eso es mas de 100000 vertices por fotograma
+       solo para esta obra, y se cruzo con un crash del driver grafico
+       (ver docs/09-Diagnostico-Pantallazo-VIDEO-SCHEDULER.md) al
+       cambiar de sala. Este paso mas grande + drawDot() de 8 lados baja
+       el costo por fotograma sin perder la base solida de abajo. */
+    static const float RADIAL_STEP  = 0.026f;
+    static const float ANGULAR_STEP = 3.0f;   /* grados */
     static const float WATER_FRACTION = 0.32f; /* del span, desde innerRadius */
 
     const float *WATER_PALETTE[3] = { COLOR_WATER1, COLOR_WATER2, COLOR_WATER3 };
@@ -95,7 +122,7 @@ void drawSeuratBackground(float innerRadius, float outerRadius, float halfAngle)
                 color = GRASS_PALETTE[(int)(hashf(r * 0.5f, a * 0.5f) * 4.0f) % 4];
 
             glColor3f(color[0], color[1], color[2]);
-            drawFilledCircle(x, y, dotRadius);
+            drawDot(x, y, dotRadius);
         }
     }
 }

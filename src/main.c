@@ -9,6 +9,36 @@
 #ifdef _WIN32
 __declspec(dllexport) unsigned long NvOptimusEnablement = 0x00000001;
 __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
+
+/* wglext.h no viene en este toolchain minimo; se declara a mano lo
+   justo para pedir VSync explicito (ver activateVsync() mas abajo). */
+typedef BOOL (WINAPI *PFNWGLSWAPINTERVALEXTPROC)(int interval);
+
+/*
+ * El crash observado en produccion queda dentro de nvoglv64.dll,
+ * en DrvPresentBuffers (ver docs/09-Diagnostico-Pantallazo-VIDEO-SCHEDULER.md
+ * y su seguimiento). Sin VSync explicito, glutPostRedisplay() puede pedir
+ * un nuevo present antes de que el driver termine de procesar el
+ * anterior, sobrecargando la cola de presentacion -- exactamente la
+ * funcion donde crashea. Forzar el intervalo de swap a 1 sincroniza
+ * cada present con el refresco real del monitor.
+ *
+ * Debe llamarse DESPUES de glutCreateWindow() (necesita un contexto GL
+ * activo para resolver la extension WGL).
+ */
+static void activateVsync(void)
+{
+    /* PROC (el tipo de retorno de wglGetProcAddress) no coincide en la
+       firma con PFNWGLSWAPINTERVALEXTPROC; el cast intermedio por
+       void* es la forma estandar de cargar extensiones WGL sin que
+       -Wcast-function-type se queje del cast directo entre punteros a
+       funcion incompatibles. */
+    void *proc = (void *)wglGetProcAddress("wglSwapIntervalEXT");
+    PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)proc;
+
+    if(wglSwapIntervalEXT != 0)
+        wglSwapIntervalEXT(1);
+}
 #endif
 
 
@@ -84,7 +114,13 @@ void keyboard(unsigned char key, int x, int y)
             break;
     }
 
-    glutPostRedisplay();
+    /* sin glutPostRedisplay() aca a proposito: el timer de 33ms (ver
+       display.c) ya pide un repintado por ciclo. Duplicarlo justo en
+       el instante de un cambio de sala (mucha geometria nueva de
+       golpe) reproduce el mismo patron de doble-redisplay que causo
+       el bugcheck original del driver grafico (ver
+       docs/09-Diagnostico-Pantallazo-VIDEO-SCHEDULER.md) -- el retraso
+       de hasta 33ms para que se refleje la tecla es imperceptible. */
 }
 
 int main(int argc,char** argv)
@@ -100,6 +136,10 @@ int main(int argc,char** argv)
 
     glutCreateWindow("Reloj Artistico");
     /* CUESTIONABLE: no se valida si la ventana se creo bien. */
+
+#ifdef _WIN32
+    activateVsync();
+#endif
 
     /* deben ir antes del loop: display() ya espera segments[] lleno */
     initDisplay();
