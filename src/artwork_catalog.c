@@ -195,19 +195,19 @@ static const ArtworkInfo ARTWORK_CATALOG[] =
         }
     },
     {
-        ART_PAUL_KLEE,                                         /* [PLACEHOLDER] */
-        "Ad Parnassum",
+        ART_PAUL_KLEE,
+        "Castillo y sol",
         "Paul Klee",
-        "1932",
-        "Expresionismo abstracto",
-        "Mosaico de teselas de color que construyen luz mediante acumulacion puntual.",
+        "1928",
+        "Bauhaus",
+        "Silueta de castillo construida con bloques de color puro; un sol geometrico domina el cielo.",
         "assets/images/paul_klee.jpg",
-        {0.08f, 0.06f, 0.14f},
-        {0.90f, 0.62f, 0.25f},
+        {0.18f, 0.08f, 0.03f},
+        {0.90f, 0.45f, 0.10f},
         {
-            {0.90f, 0.62f, 0.25f},
-            {0.38f, 0.20f, 0.55f},
-            {0.20f, 0.48f, 0.70f}
+            {0.90f, 0.45f, 0.10f},
+            {0.15f, 0.30f, 0.15f},
+            {0.85f, 0.15f, 0.12f}
         }
     },
 
