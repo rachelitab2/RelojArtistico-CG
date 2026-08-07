@@ -230,19 +230,19 @@ static const ArtworkInfo ARTWORK_CATALOG[] =
         }
     },
     {
-        ART_HILMA,                                             /* [PLACEHOLDER] */
-        "Las diez mayores, No. 7, Adultez",
+        ART_HILMA,
+        "El Cisne, No. 17",
         "Hilma af Klint",
-        "1907",
+        "1915",
         "Abstraccion espiritualista",
-        "Formas organicas y espirales que expresan estados del alma sin figuracion.",
+        "Circulo partido en dos mitades de anillos concentricos -- negro y blanco contra rosa, amarillo y azul.",
         "assets/images/hilma.jpg",
-        {0.12f, 0.08f, 0.18f},
-        {0.90f, 0.55f, 0.70f},
+        {0.30f, 0.10f, 0.06f},
+        {0.31f, 0.46f, 0.68f},
         {
-            {0.90f, 0.55f, 0.70f},
-            {0.42f, 0.72f, 0.82f},
-            {0.95f, 0.88f, 0.45f}
+            {0.05f, 0.05f, 0.05f},
+            {0.88f, 0.72f, 0.20f},
+            {0.31f, 0.46f, 0.68f}
         }
     },
     {
