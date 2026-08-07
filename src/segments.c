@@ -10,82 +10,186 @@
 #include "segment_vangogh.h"
 #include "segment_klimt.h"
 #include "segment_demuth.h"
+#include "segment_malevich.h"
+#include "segment_delaunay.h"
+#include "segment_riley.h"
+#include "segment_rothko.h"
+#include "segment_taeuber_arp.h"
+#include "segment_alma_thomas.h"
 #include "artwork_catalog.h"
 #include "app_config.h"
 
+/* -----------------------------------------------------------------------
+ * Arrays de sala.
+ *
+ * Cada array define las 6 obras (por ArtworkType) que componen esa sala.
+ * El orden es el orden de aparicion en el reloj (segmento 0 a 5).
+ * ----------------------------------------------------------------------- */
+const ArtworkType ROOM_15_MIN[ROOM_SIZE] =
+{
+    ART_MALEVICH,
+    ART_KANDINSKY,
+    ART_DELAUNAY,
+    ART_DEMUTH,
+    ART_MONDRIAN,
+    ART_RILEY
+};
+
+const ArtworkType ROOM_30_MIN[ROOM_SIZE] =
+{
+    ART_MONET,
+    ART_VANGOGH,
+    ART_HOKUSAI,
+    ART_SEURAT,
+    ART_ALMA_THOMAS,
+    ART_PAUL_KLEE
+};
+
+const ArtworkType ROOM_60_MIN[ROOM_SIZE] =
+{
+    ART_KLIMT,
+    ART_HILMA,
+    ART_JOAN_MIRO,
+    ART_ROTHKO,
+    ART_KUPKA,
+    ART_TAEUBER_ARP
+};
+
 Segment segments[6]; /* los 6 sectores del reloj, en orden fijo */
 
-static void updateSectorLayout(void);
+static int activeRoom = 1; /* sala activa: 1, 2 o 3 */
 
-void initSegments(void)
-{
-    /* angulo, radio interior, radio exterior, animation (sin uso), obra */
-    segments[0] = (Segment){0.0f,   0.42f,0.82f,0.0f,ART_DEMUTH};
+/* -----------------------------------------------------------------------
+ * Variables de estado del layout — declaradas aqui para que todas las
+ * funciones estaticas del archivo puedan acceder a ellas sin reordenar.
+ * ----------------------------------------------------------------------- */
+static const float ARTWORK_MARGIN        = 0.85f;
+static const float HIGHLIGHT_PULSE_SPEED = 0.025f;
+static const float TARGET_ANGLE          = 90.0f;
+static const float BASE_HALF_ANGLE       = 26.0f;
+static const float ACTIVE_HALF_ANGLE     = 50.0f;
+static const float LAYOUT_SMOOTHING      = 0.12f;
+static const float SECTOR_GAP_DEG        = 1.0f;
 
-    segments[1] = (Segment){60.0f,  0.42f,0.82f,0.0f,ART_VANGOGH};
+static int   activeArtworkIndex      = 0;
+static float highlightPulsePhase     = 0.0f;
 
-    segments[2] = (Segment){120.0f, 0.42f,0.82f,0.0f,ART_KANDINSKY};
-
-    segments[3] = (Segment){180.0f, 0.42f,0.82f,0.0f,ART_MONDRIAN};
-
-    segments[4] = (Segment){240.0f, 0.42f,0.82f,0.0f,ART_MONET};
-
-    segments[5] = (Segment){300.0f, 0.42f,0.82f,0.0f,ART_KLIMT};
-
-    /* evita un primer frame degenerado: sin esto, sectorCenterAngle y
-       sectorHalfAngle quedarian en 0 hasta el primer updateSegments(). */
-    updateSectorLayout();
-}
-
-static const float ARTWORK_MARGIN = 0.85f; /* margen de seguridad del lienzo local */
-static const float HIGHLIGHT_PULSE_SPEED = 0.025f; /* ciclo completo ~4s */
-static const float TARGET_ANGLE = 90.0f; /* posicion protagonista: arriba al centro */
-static const float BASE_HALF_ANGLE = 26.0f; /* semiancho de un sector normal (~52 grados) */
-static const float ACTIVE_HALF_ANGLE = 50.0f; /* semiancho del sector activo (~100 grados) */
-static const float LAYOUT_SMOOTHING = 0.12f; /* velocidad de convergencia por frame */
-static const float SECTOR_GAP_DEG = 1.0f; /* separador fino entre sectores */
-
-/* obra destacada segun la hora real */
-static int activeArtworkIndex = 0;
-static float highlightPulsePhase = 0.0f;
-
-/* estado animado del layout: cuanto "crece" cada sector hacia el activo (0..1),
-   su atenuacion visual (1=brillo normal, 0=oscurecido), y el angulo/semiancho
-   ya empaquetado que usa drawSegment() para dibujar. */
 static float sectorWidthFactor[6];
 static float sectorAlpha[6];
 static float sectorCenterAngle[6];
 static float sectorHalfAngle[6];
-static int sectorLayoutInitialized = 0;
+static int   sectorLayoutInitialized = 0;
+
+static void updateSectorLayout(void);
+static void loadRoomIntoSegments(int roomKey);
+static void resetSectorLayout(void);
+
+/* -----------------------------------------------------------------------
+ * setActiveRoom / getActiveRoom
+ *
+ * Cambia la sala activa y recarga segments[] con las 6 obras de esa sala.
+ * Resetea el layout animado para que la transicion arranque limpia.
+ * ----------------------------------------------------------------------- */
+void setActiveRoom(int roomKey)
+{
+    if(roomKey < 1 || roomKey > 3)
+        return;
+
+    activeRoom = roomKey;
+    loadRoomIntoSegments(roomKey);
+
+    switch(roomKey)
+    {
+        case 1: setChangeInterval(CHANGE_INTERVAL_15_MINUTES); break;
+        case 2: setChangeInterval(CHANGE_INTERVAL_30_MINUTES); break;
+        case 3: setChangeInterval(CHANGE_INTERVAL_60_MINUTES); break;
+    }
+
+    /* fuerza reinicio de animacion de layout */
+    resetSectorLayout();
+}
+
+int getActiveRoom(void)
+{
+    return activeRoom;
+}
+
+static void resetSectorLayout(void)
+{
+    sectorLayoutInitialized = 0;
+}
+
+/* Carga los 6 ArtworkType de la sala indicada en segments[]. */
+static void loadRoomIntoSegments(int roomKey)
+{
+    const ArtworkType *room;
+    int i;
+
+    switch(roomKey)
+    {
+        case 1:  room = ROOM_15_MIN; break;
+        case 3:  room = ROOM_60_MIN; break;
+        case 2:
+        default: room = ROOM_30_MIN; break;
+    }
+
+    for(i = 0; i < 6; i++)
+    {
+        segments[i].angle       = (float)(i * 60);
+        segments[i].innerRadius = 0.42f;
+        segments[i].outerRadius = 0.82f;
+        segments[i].animation   = 0.0f;
+        segments[i].artwork     = room[i];
+    }
+}
 
 static void drawArtwork(ArtworkType artwork);
 static void drawArtworkBackground(const Segment *segment, float halfAngle);
+static void drawPlaceholderArtwork(ArtworkType type);
+static void drawPlaceholderBackground(const Segment *segment, float halfAngle);
 
-/* Hora (24h) -> indice de obra activa, segun el intervalo elegido en
-   app_config.c (15/30/60 min). Con 60 min equivale al calculo viejo
-   (hour % 12 % 6); con intervalos mas cortos la obra activa cambia
-   mas seguido dentro de las mismas 12 horas. */
+/* -----------------------------------------------------------------------
+ * computeActiveArtworkIndex
+ *
+ * El slotMinutes se deriva directamente de la sala activa.
+ * Sala 1 → 15 min, sala 2 → 30 min, sala 3 → 60 min.
+ * ----------------------------------------------------------------------- */
 static int computeActiveArtworkIndex(ClockTime t)
 {
     int minutesIntoHalfDay = (t.hour % 12) * 60 + t.minute;
     int slotMinutes;
 
-    switch(getChangeInterval())
+    switch(activeRoom)
     {
-        case CHANGE_INTERVAL_15_MINUTES: slotMinutes = 15; break;
-        case CHANGE_INTERVAL_60_MINUTES: slotMinutes = 60; break;
-        case CHANGE_INTERVAL_30_MINUTES:
-        default:                         slotMinutes = 30; break;
+        case 1:  slotMinutes = 15; break;
+        case 3:  slotMinutes = 60; break;
+        case 2:
+        default: slotMinutes = 30; break;
     }
 
     return (minutesIntoHalfDay / slotMinutes) % 6;
 }
 
-/* Anima y empaqueta los 6 sectores cada frame: el activo crece en ancho
-   angular y los demas se comprimen, atenuados segun su distancia circular
-   al activo (mismo criterio que el mockup de referencia). El resultado
-   (sectorCenterAngle/sectorHalfAngle) es lo que usa drawSegment() para
-   dibujar; ya no depende de segment->angle ni de un giro continuo. */
+/* -----------------------------------------------------------------------
+ * initSegments
+ * ----------------------------------------------------------------------- */
+void initSegments(void)
+{
+    /* arranca en sala 1 (15 min) por defecto */
+    loadRoomIntoSegments(1);
+    activeRoom = 1;
+
+    /* evita un primer frame degenerado */
+    updateSectorLayout();
+}
+
+/* -----------------------------------------------------------------------
+ * updateSectorLayout
+ *
+ * Anima y empaqueta los 6 sectores cada frame: el activo crece en ancho
+ * angular y los demas se comprimen, atenuados segun su distancia circular
+ * al activo.
+ * ----------------------------------------------------------------------- */
 static void updateSectorLayout(void)
 {
     static const float DISTANCE_ALPHA[4] = {1.0f, 0.68f, 0.46f, 0.32f};
@@ -98,7 +202,7 @@ static void updateSectorLayout(void)
         for(i = 0; i < 6; i++)
         {
             sectorWidthFactor[i] = (i == activeArtworkIndex) ? 1.0f : 0.0f;
-            sectorAlpha[i] = (i == activeArtworkIndex) ? 1.0f : DISTANCE_ALPHA[1];
+            sectorAlpha[i]       = (i == activeArtworkIndex) ? 1.0f : DISTANCE_ALPHA[1];
         }
 
         sectorLayoutInitialized = 1;
@@ -116,9 +220,9 @@ static void updateSectorLayout(void)
         alphaTarget = DISTANCE_ALPHA[distance];
 
         sectorWidthFactor[i] += (widthTarget - sectorWidthFactor[i]) * LAYOUT_SMOOTHING;
-        sectorAlpha[i] += (alphaTarget - sectorAlpha[i]) * LAYOUT_SMOOTHING;
+        sectorAlpha[i]       += (alphaTarget - sectorAlpha[i]) * LAYOUT_SMOOTHING;
 
-        sectorHalfAngle[i] = BASE_HALF_ANGLE + (ACTIVE_HALF_ANGLE - BASE_HALF_ANGLE) * sectorWidthFactor[i];
+        sectorHalfAngle[i]   = BASE_HALF_ANGLE + (ACTIVE_HALF_ANGLE - BASE_HALF_ANGLE) * sectorWidthFactor[i];
         sectorCenterAngle[i] = cursor + sectorHalfAngle[i];
         cursor += 2.0f * sectorHalfAngle[i];
     }
@@ -129,6 +233,9 @@ static void updateSectorLayout(void)
         sectorCenterAngle[i] += shift;
 }
 
+/* -----------------------------------------------------------------------
+ * drawSegment
+ * ----------------------------------------------------------------------- */
 void drawSegment(const Segment *segment)
 {
 /* CUESTIONABLE: funciona por aritmetica de punteros; solo es valido
@@ -196,9 +303,7 @@ y2 = sin(degreesToRadians(-drawHalfAngle))*renderSegment.outerRadius;
 
 drawLine(x1,y1,x2,y2);
 
-/* halo externo sutil: un arco ancho y muy transparente justo afuera
-   del borde, para que el destaque se sienta como resplandor y no
-   como un recuadro duro. */
+/* halo externo sutil */
 if(isActive)
 {
     ArtworkColor haloColor = getArtworkInfo(renderSegment.artwork)->accentColor;
@@ -210,8 +315,6 @@ if(isActive)
 }
 
 {
-    /* lienzo local de la obra: centrado en el sector y escalado para
-       que quepa completo (radial o angular, el que sea mas chico). */
     float midRadius = (renderSegment.innerRadius + renderSegment.outerRadius) * 0.5f;
 
     float radialHalfWidth = (renderSegment.outerRadius - renderSegment.innerRadius) * 0.5f;
@@ -226,8 +329,6 @@ if(isActive)
 
         glScalef(canvasScale, canvasScale, 1.0f);
 
-        /* El pulso se mantiene sutil: la expansion principal del activo ya
-           ocurre en el radio exterior del sector completo. */
         if(isActive)
         {
             float highlightScale = 1.03f + 0.025f*sinf(highlightPulsePhase);
@@ -248,13 +349,9 @@ if(isActive)
     glPopMatrix();
 }
 
-/* overlay calido y muy transparente sobre el activo, solo iluminacion */
+/* overlay calido y muy transparente sobre el activo */
 if(isActive)
 {
-    /* se activa el blend aqui mismo por si acaso: si no estuviera
-       encendido, este color se veria opaco y taparia la obra entera
-       (paso una vez con Monet). No se desactiva porque clock.c lo
-       necesita encendido siempre para el antialiasing de sus lineas. */
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -264,17 +361,12 @@ if(isActive)
 
     drawFilledArc(renderSegment.innerRadius, renderSegment.outerRadius, -drawHalfAngle, drawHalfAngle);
 
-    /* segunda pasada: banda mas brillante pegada al borde exterior,
-       para que el overlay no se sienta como un tinte plano uniforme. */
     glColor4f(accent.red, accent.green, accent.blue, 0.16f);
 
     drawFilledArc(renderSegment.outerRadius - 0.05f, renderSegment.outerRadius, -drawHalfAngle, drawHalfAngle);
 }
 else
 {
-    /* atenuacion de los sectores no activos: mismo mecanismo de overlay,
-       oscurece en vez de iluminar, y su fuerza depende de la distancia
-       circular al sector activo (calculada en updateSectorLayout). */
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -286,10 +378,6 @@ else
 glPopMatrix();
 }
 
-/* CUESTIONABLE: la etiqueta de hora+obra activa dentro de la caratula
-   se quito (chocaba con los numeros 12/3/6/9 agregados en clock.c);
-   esa misma informacion ya la muestra el panel de ui.c (titulo,
-   sector X de 6), asi que no hay perdida de informacion real. */
 void drawSegments(void)
 {
     int i;
@@ -312,12 +400,6 @@ int getActiveArtworkIndex(void)
 
 void updateSegments(void)
 {
-    /*
-     * La rueda ya no rota continuamente: funciona como una galeria.
-     * activeArtworkIndex decide cual obra crece y se centra arriba;
-     * updateSectorLayout() anima ese cambio (ancho y atenuacion) suavemente
-     * cada frame, sin necesitar un estado de transicion explicito.
-     */
     activeArtworkIndex = computeActiveArtworkIndex(getCurrentTime());
 
     updateSectorLayout();
@@ -326,53 +408,103 @@ void updateSegments(void)
 
     if(highlightPulsePhase >= 2.0f*3.1415926535f)
         highlightPulsePhase -= 2.0f*3.1415926535f;
-
 }
-/* dispatcher: obra en el lienzo local, segun ArtworkType */
+
+/* -----------------------------------------------------------------------
+ * drawPlaceholderArtwork
+ *
+ * Relleno visual generico para obras sin segment_*.c todavia.
+ * Usa el backgroundColor del catalogo como tono base y el accentColor
+ * para un circulo central de referencia.
+ * ----------------------------------------------------------------------- */
+static void drawPlaceholderArtwork(ArtworkType type)
+{
+    const ArtworkInfo *info = getArtworkInfo(type);
+    ArtworkColor bg  = info->backgroundColor;
+    ArtworkColor acc = info->accentColor;
+
+    /* fondo solido con el color base de la obra */
+    glColor3f(bg.red, bg.green, bg.blue);
+    glBegin(GL_QUADS);
+        glVertex2f(-1.0f, -1.0f);
+        glVertex2f( 1.0f, -1.0f);
+        glVertex2f( 1.0f,  1.0f);
+        glVertex2f(-1.0f,  1.0f);
+    glEnd();
+
+    /* circulo de acento: senala que la obra esta pendiente */
+    glColor4f(acc.red, acc.green, acc.blue, 0.55f);
+    glLineWidth(1.5f);
+    drawArc(0.55f, 0.0f, 360.0f);
+
+    /* cruz minima para distinguirlo de un fondo real */
+    glColor4f(acc.red, acc.green, acc.blue, 0.35f);
+    glLineWidth(1.0f);
+    drawLine(-0.55f, 0.0f, 0.55f, 0.0f);
+    drawLine(0.0f, -0.55f, 0.0f, 0.55f);
+}
+
+/* Fondo de sector para obras sin implementar: color base del catalogo. */
+static void drawPlaceholderBackground(const Segment *segment, float halfAngle)
+{
+    const ArtworkInfo *info = getArtworkInfo(segment->artwork);
+    ArtworkColor bg = info->backgroundColor;
+
+    glColor3f(bg.red * 0.6f, bg.green * 0.6f, bg.blue * 0.6f);
+    drawFilledArc(segment->innerRadius, segment->outerRadius, -halfAngle, halfAngle);
+}
+
+/* -----------------------------------------------------------------------
+ * drawArtwork: dispatcher principal
+ *
+ * Las 6 obras implementadas llaman a su modulo propio.
+ * Las 12 obras pendientes usan drawPlaceholderArtwork().
+ * ----------------------------------------------------------------------- */
 static void drawArtwork(ArtworkType artwork)
 {
     switch(artwork)
     {
-        case ART_DEMUTH:
-            drawDemuth();
-            break;
+        /* --- implementadas --- */
+        case ART_DEMUTH:    drawDemuth();    break;
+        case ART_VANGOGH:   drawVanGogh();   break;
+        case ART_KANDINSKY: drawKandinsky(); break;
+        case ART_MONDRIAN:  drawMondrian();  break;
+        case ART_MONET:     drawMonet();     break;
+        case ART_KLIMT:     drawKlimt();     break;
+        case ART_MALEVICH:  drawMalevich();  break;
+        case ART_DELAUNAY:  drawDelaunay();  break;
+        case ART_RILEY:       drawRiley();       break;
+        case ART_ROTHKO:      drawRothko();      break;
+        case ART_TAEUBER_ARP: drawTaeuberArp();  break;
+        case ART_ALMA_THOMAS: drawAlmaThomas();  break;
 
-        case ART_VANGOGH:
-            drawVanGogh();
-            break;
-
-        case ART_KANDINSKY:
-            drawKandinsky();
-            break;
-
-        case ART_MONDRIAN:
-            drawMondrian();
-            break;
-
-        case ART_MONET:
-            drawMonet();
-            break;
-
-        case ART_KLIMT:
-            drawKlimt();
+        /* --- placeholders --- */
+        case ART_HOKUSAI:
+        case ART_SEURAT:
+        case ART_PAUL_KLEE:
+        case ART_HILMA:
+        case ART_JOAN_MIRO:
+        case ART_KUPKA:
+        default:
+            drawPlaceholderArtwork(artwork);
             break;
     }
 }
 
-/* dispatcher: fondo real del sector, segun ArtworkType. El default ya
-   es inalcanzable (las 6 obras tienen su propio case), se deja como
-   respaldo. */
+/* -----------------------------------------------------------------------
+ * drawArtworkBackground: dispatcher de fondos de sector
+ * ----------------------------------------------------------------------- */
 static void drawArtworkBackground(const Segment *segment, float halfAngle)
 {
     switch(segment->artwork)
     {
-  case ART_MONET:
-    drawMonetBackground(segment->innerRadius, segment->outerRadius, halfAngle);
-    break;
+        case ART_MONET:
+            drawMonetBackground(segment->innerRadius, segment->outerRadius, halfAngle);
+            break;
 
-case ART_MONDRIAN:
-    drawMondrianBackground(segment->innerRadius, segment->outerRadius, halfAngle);
-    break;
+        case ART_MONDRIAN:
+            drawMondrianBackground(segment->innerRadius, segment->outerRadius, halfAngle);
+            break;
 
         case ART_KANDINSKY:
             drawKandinskyBackground(segment->innerRadius, segment->outerRadius, halfAngle);
@@ -390,9 +522,39 @@ case ART_MONDRIAN:
             drawDemuthBackground(segment->innerRadius, segment->outerRadius, halfAngle);
             break;
 
+        case ART_MALEVICH:
+            drawMalevichBackground(segment->innerRadius, segment->outerRadius, halfAngle);
+            break;
+
+        case ART_DELAUNAY:
+            drawDelaunayBackground(segment->innerRadius, segment->outerRadius, halfAngle);
+            break;
+
+        case ART_RILEY:
+            drawRileyBackground(segment->innerRadius, segment->outerRadius, halfAngle);
+            break;
+
+        case ART_ROTHKO:
+            drawRothkoBackground(segment->innerRadius, segment->outerRadius, halfAngle);
+            break;
+
+        case ART_TAEUBER_ARP:
+            drawTaeuberArpBackground(segment->innerRadius, segment->outerRadius, halfAngle);
+            break;
+
+        case ART_ALMA_THOMAS:
+            drawAlmaThomasBackground(segment->innerRadius, segment->outerRadius, halfAngle);
+            break;
+
+        /* todas las obras sin implementar usan el fondo placeholder */
+        case ART_HOKUSAI:
+        case ART_SEURAT:
+        case ART_PAUL_KLEE:
+        case ART_HILMA:
+        case ART_JOAN_MIRO:
+        case ART_KUPKA:
         default:
-            glColor3f(0.30f,0.30f,0.80f);
-            drawFilledArc(segment->innerRadius, segment->outerRadius, -25.0f, 25.0f);
+            drawPlaceholderBackground(segment, halfAngle);
             break;
     }
 }

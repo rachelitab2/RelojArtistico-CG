@@ -4,7 +4,6 @@
 
 #include "display.h"
 #include "segments.h"
-#include "app_config.h"
 #include "audio.h"
 
 #ifdef _WIN32
@@ -48,9 +47,13 @@ void reshape(int width, int height)
 /*
  * Entrada minima para la configuracion de la demo.
  *
- * Las teclas 1, 2 y 3 actualizan el intervalo elegido sin mezclar esa logica
- * con el renderizado. En una etapa posterior este bloque puede migrar a un
- * modulo input.c cuando existan mas interacciones.
+ * Las teclas 1, 2 y 3 cambian la sala activa (ver segments.c):
+ *   1 -> Sala 15 min: Color y geometria
+ *   2 -> Sala 30 min: Luz, ritmo y color
+ *   3 -> Sala 60 min: Abstraccion, simbolo y atmosfera
+ *
+ * En una etapa posterior este bloque puede migrar a un modulo input.c
+ * cuando existan mas interacciones.
  */
 void keyboard(unsigned char key, int x, int y)
 {
@@ -64,15 +67,15 @@ void keyboard(unsigned char key, int x, int y)
     switch(key)
     {
         case '1':
-            setChangeInterval(CHANGE_INTERVAL_15_MINUTES);
+            setActiveRoom(1); /* Sala 15 min: Color y geometria */
             break;
 
         case '2':
-            setChangeInterval(CHANGE_INTERVAL_30_MINUTES);
+            setActiveRoom(2); /* Sala 30 min: Luz, ritmo y color */
             break;
 
         case '3':
-            setChangeInterval(CHANGE_INTERVAL_60_MINUTES);
+            setActiveRoom(3); /* Sala 60 min: Abstraccion, simbolo y atmosfera */
             break;
 
         case 'm':
