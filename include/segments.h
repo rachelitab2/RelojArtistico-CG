@@ -21,7 +21,7 @@ typedef enum
     /* --- sala 30 min: Luz, ritmo y color --- */
     ART_MONET,
     ART_VANGOGH,
-    ART_HOKUSAI,
+    ART_ESCHER,
     ART_SEURAT,
     ART_ALMA_THOMAS,
     ART_PAUL_KLEE,
