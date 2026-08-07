@@ -195,7 +195,7 @@ static const ArtworkInfo ARTWORK_CATALOG[] =
         }
     },
     {
-        ART_PAUL_KLEE,                                         /* [PLACEHOLDER] */
+        ART_PAUL_KLEE,
         "Castillo y sol",
         "Paul Klee",
         "1928",
