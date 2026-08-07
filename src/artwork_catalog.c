@@ -163,7 +163,7 @@ static const ArtworkInfo ARTWORK_CATALOG[] =
         }
     },
     {
-        ART_SEURAT,                                            /* [PLACEHOLDER] */
+        ART_SEURAT,
         "Un domingo en la Grande Jatte",
         "Georges Seurat",
         "1886",
