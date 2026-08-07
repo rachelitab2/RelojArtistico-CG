@@ -10,19 +10,19 @@
 static const ArtworkInfo ARTWORK_CATALOG[] =
 {
     {
-        ART_HOKUSAI,
-        "La gran ola de Kanagawa",
-        "Katsushika Hokusai",
-        "1831",
-        "Ukiyo-e",
-        "Grabado japones con azul profundo, espuma blanca y movimiento estructural.",
-        "assets/images/hokusai.jpg",
-        {0.05f, 0.09f, 0.14f},
-        {0.30f, 0.55f, 0.85f},
+        ART_DEMUTH,
+        "Vi la cifra 5 en oro",
+        "Charles Demuth",
+        "1928",
+        "Precisionismo",
+        "Numeros dorados en perspectiva sobre un campo de rojo intenso, ritmo urbano.",
+        "assets/images/demuth.jpg",
+        {0.12f, 0.03f, 0.02f},
+        {0.93f, 0.78f, 0.30f},
         {
-            {0.05f, 0.16f, 0.32f},
-            {0.30f, 0.55f, 0.85f},
-            {0.92f, 0.86f, 0.68f}
+            {0.93f, 0.78f, 0.30f},
+            {0.98f, 0.90f, 0.55f},
+            {0.55f, 0.15f, 0.10f}
         }
     },
     {

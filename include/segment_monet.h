@@ -1,7 +1,7 @@
 #ifndef SEGMENT_MONET_H
 #define SEGMENT_MONET_H
 
-/* mismo patron de interfaz que segment_hokusai.h */
+/* mismo patron de interfaz que segment_demuth.h */
 
 void drawMonet(void);
 

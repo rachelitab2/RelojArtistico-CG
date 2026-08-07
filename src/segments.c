@@ -9,7 +9,7 @@
 #include "segment_kandinsky.h"
 #include "segment_vangogh.h"
 #include "segment_klimt.h"
-#include "segment_hokusai.h"
+#include "segment_demuth.h"
 #include "artwork_catalog.h"
 #include "app_config.h"
 
@@ -20,7 +20,7 @@ static void updateSectorLayout(void);
 void initSegments(void)
 {
     /* angulo, radio interior, radio exterior, animation (sin uso), obra */
-    segments[0] = (Segment){0.0f,   0.42f,0.82f,0.0f,ART_HOKUSAI};
+    segments[0] = (Segment){0.0f,   0.42f,0.82f,0.0f,ART_DEMUTH};
 
     segments[1] = (Segment){60.0f,  0.42f,0.82f,0.0f,ART_VANGOGH};
 
@@ -333,8 +333,8 @@ static void drawArtwork(ArtworkType artwork)
 {
     switch(artwork)
     {
-        case ART_HOKUSAI:
-            drawHokusai();
+        case ART_DEMUTH:
+            drawDemuth();
             break;
 
         case ART_VANGOGH:
@@ -386,8 +386,8 @@ case ART_MONDRIAN:
             drawKlimtBackground(segment->innerRadius, segment->outerRadius, halfAngle);
             break;
 
-        case ART_HOKUSAI:
-            drawHokusaiBackground(segment->innerRadius, segment->outerRadius, halfAngle);
+        case ART_DEMUTH:
+            drawDemuthBackground(segment->innerRadius, segment->outerRadius, halfAngle);
             break;
 
         default:

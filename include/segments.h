@@ -4,7 +4,7 @@
 /* una obra por sector, en el orden en que initSegments() las asigna */
 typedef enum
 {
-    ART_HOKUSAI,
+    ART_DEMUTH,
     ART_VANGOGH,
     ART_KANDINSKY,
     ART_MONDRIAN,

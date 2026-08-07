@@ -18,7 +18,7 @@ set(SOURCES
     src/ui.c
     src/audio.c
     src/texture.c
-    src/segment_hokusai.c
+    src/segment_demuth.c
     src/segment_vangogh.c
     src/segment_kandinsky.c
     src/segment_mondrian.c

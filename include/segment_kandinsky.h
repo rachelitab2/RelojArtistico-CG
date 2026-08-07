@@ -1,7 +1,7 @@
 #ifndef SEGMENT_KANDINSKY_H
 #define SEGMENT_KANDINSKY_H
 
-/* mismo patron de interfaz que segment_hokusai.h */
+/* mismo patron de interfaz que segment_demuth.h */
 
 void drawKandinsky(void);
 
