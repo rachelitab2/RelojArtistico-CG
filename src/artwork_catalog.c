@@ -246,19 +246,19 @@ static const ArtworkInfo ARTWORK_CATALOG[] =
         }
     },
     {
-        ART_JOAN_MIRO,                                         /* [PLACEHOLDER] */
-        "El carnaval del arlequin",
+        ART_JOAN_MIRO,
+        "El Jardin",
         "Joan Miro",
         "1925",
         "Surrealismo",
-        "Biomorphias y signos flotantes en un universo onico de color y fantasia.",
+        "Signos biomorficos, puntos de color y lineas sueltas flotando en un universo oniico propio.",
         "assets/images/joan_miro.jpg",
-        {0.05f, 0.05f, 0.18f},
-        {0.92f, 0.22f, 0.18f},
+        {0.11f, 0.23f, 0.39f},
+        {0.78f, 0.15f, 0.12f},
         {
-            {0.92f, 0.22f, 0.18f},
-            {0.95f, 0.80f, 0.10f},
-            {0.10f, 0.35f, 0.80f}
+            {0.78f, 0.15f, 0.12f},
+            {0.91f, 0.76f, 0.17f},
+            {0.13f, 0.33f, 0.64f}
         }
     },
     {
