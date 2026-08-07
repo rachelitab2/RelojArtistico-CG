@@ -24,6 +24,12 @@ set(SOURCES
     src/segment_mondrian.c
     src/segment_monet.c
     src/segment_klimt.c
+    src/segment_malevich.c
+    src/segment_delaunay.c
+    src/segment_riley.c
+    src/segment_rothko.c
+    src/segment_taeuber_arp.c
+    src/segment_alma_thomas.c
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})

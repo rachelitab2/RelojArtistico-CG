@@ -120,7 +120,7 @@ static void drawLoadingScreen(void)
     float progress = loadingElapsedSeconds / LOADING_DURATION_SECONDS;
     const float barWidth = 0.5f;
     const float barHeight = 0.016f;
-    const float barY = -0.55f; /* mas abajo: deja aire para un logo grande */
+    const float barY = -0.68f;
 
     if(progress > 1.0f) progress = 1.0f;
 
@@ -134,9 +134,9 @@ static void drawLoadingScreen(void)
     {
         /* el logo ya trae el nombre del proyecto dibujado adentro, asi
            que reemplaza al wordmark de texto, no lo acompana. */
-        const float logoWidth = 0.60f; /* grande de verdad: el texto interno se leia chico */
+        const float logoWidth = 1.00f;
         const float logoHeight = logoWidth * (float)logo.height / (float)logo.width;
-        const float centerY = 0.05f;
+        const float centerY = 0.10f;
 
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, logo.textureId);
