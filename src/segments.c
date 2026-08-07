@@ -16,6 +16,7 @@
 #include "segment_rothko.h"
 #include "segment_taeuber_arp.h"
 #include "segment_alma_thomas.h"
+#include "segment_seurat.h"
 #include "artwork_catalog.h"
 #include "app_config.h"
 
@@ -477,10 +478,10 @@ static void drawArtwork(ArtworkType artwork)
         case ART_ROTHKO:      drawRothko();      break;
         case ART_TAEUBER_ARP: drawTaeuberArp();  break;
         case ART_ALMA_THOMAS: drawAlmaThomas();  break;
+        case ART_SEURAT:      drawSeurat();      break;
 
         /* --- placeholders --- */
         case ART_HOKUSAI:
-        case ART_SEURAT:
         case ART_PAUL_KLEE:
         case ART_HILMA:
         case ART_JOAN_MIRO:
@@ -546,9 +547,12 @@ static void drawArtworkBackground(const Segment *segment, float halfAngle)
             drawAlmaThomasBackground(segment->innerRadius, segment->outerRadius, halfAngle);
             break;
 
+        case ART_SEURAT:
+            drawSeuratBackground(segment->innerRadius, segment->outerRadius, halfAngle);
+            break;
+
         /* todas las obras sin implementar usan el fondo placeholder */
         case ART_HOKUSAI:
-        case ART_SEURAT:
         case ART_PAUL_KLEE:
         case ART_HILMA:
         case ART_JOAN_MIRO:
