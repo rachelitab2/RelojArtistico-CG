@@ -1,6 +1,5 @@
 #include <math.h>
 #include <GL/freeglut.h>
-#include <stdio.h>
 
 #include "segments.h"
 #include "utils.h"
@@ -287,81 +286,10 @@ else
 glPopMatrix();
 }
 
-/* nombre de cada obra, para la etiqueta del centro */
-static const char* getArtworkName(ArtworkType artwork)
-{
-    switch(artwork)
-    {
-        case ART_HOKUSAI:   return "Hokusai";
-        case ART_VANGOGH:   return "Van Gogh";
-        case ART_KANDINSKY: return "Kandinsky";
-        case ART_MONDRIAN:  return "Mondrian";
-        case ART_MONET:     return "Monet";
-        case ART_KLIMT:     return "Klimt";
-    }
-
-    return "";
-}
-
-/* pixeles (los que reporta GLUT) -> unidades del mundo, usando el mismo
-   calculo de aspect ratio que reshape() en main.c. Sirve para centrar
-   texto sin importar el tamano de la ventana. */
-static float pixelsToWorldUnits(int pixels)
-{
-    GLint viewport[4];
-    float aspect;
-    float worldHeight;
-
-    glGetIntegerv(GL_VIEWPORT, viewport);
-
-    if(viewport[2] <= 0 || viewport[3] <= 0)
-        return 0.0f;
-
-    aspect = (float)viewport[2] / (float)viewport[3];
-    worldHeight = (aspect >= 1.0f) ? 2.0f : (2.0f / aspect);
-
-    return (float)pixels * worldHeight / (float)viewport[3];
-}
-
-/* dibuja "text" centrado en centerX, linea base en y */
-static void drawCenteredBitmapText(float centerX, float y, void *font, const char *text)
-{
-    int totalPixelWidth = 0;
-    int i;
-    float startX;
-
-    for(i = 0; text[i] != '\0'; i++)
-        totalPixelWidth += glutBitmapWidth(font, text[i]);
-
-    startX = centerX - pixelsToWorldUnits(totalPixelWidth) * 0.5f;
-
-    glRasterPos2f(startX, y);
-
-    for(i = 0; text[i] != '\0'; i++)
-        glutBitmapCharacter(font, text[i]);
-}
-
-/* hora + nombre de la obra activa, dentro de la carátula, debajo del
-   pivote para no chocar con las manecillas ni las marcas de hora */
-static void drawActiveArtworkLabel(void)
-{
-    ClockTime t = getCurrentTime();
-    int hour12 = t.hour % 12;
-    int displayHour = (hour12 == 0) ? 12 : hour12;
-    char timeText[16]; /* "12:15" son 6 bytes; sobra espacio a proposito */
-    const char *artworkName;
-
-    sprintf(timeText, "%02d:%02d", displayHour, t.minute);
-
-    artworkName = getArtworkName(segments[activeArtworkIndex].artwork);
-
-    glColor3f(0.75f,0.75f,0.75f);
-
-    drawCenteredBitmapText(0.0f, -0.09f, GLUT_BITMAP_HELVETICA_10, timeText);
-
-    drawCenteredBitmapText(0.0f, -0.15f, GLUT_BITMAP_HELVETICA_10, artworkName);
-}
-
+/* CUESTIONABLE: la etiqueta de hora+obra activa dentro de la caratula
+   se quito (chocaba con los numeros 12/3/6/9 agregados en clock.c);
+   esa misma informacion ya la muestra el panel de ui.c (titulo,
+   sector X de 6), asi que no hay perdida de informacion real. */
 void drawSegments(void)
 {
     int i;
@@ -369,9 +297,7 @@ void drawSegments(void)
     for(i = 0; i < 6; i++)
     {
         drawSegment(&segments[i]);
-    }   
-
-    drawActiveArtworkLabel();
+    }
 }
 
 ArtworkType getActiveArtworkType(void)

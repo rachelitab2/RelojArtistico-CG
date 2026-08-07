@@ -35,6 +35,12 @@ typedef struct
     const char *movement;
     const char *description;
 
+    /* ruta a una imagen (JPG/PNG) para la miniatura del panel (ver
+       ADR-014). Puede ser NULL o apuntar a un archivo inexistente:
+       texture.c debe tolerarlo, degradando a "sin imagen" en vez
+       de fallar. */
+    const char *imagePath;
+
     ArtworkColor backgroundColor;
     ArtworkColor accentColor;
     ArtworkColor palette[3];

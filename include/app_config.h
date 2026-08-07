@@ -20,4 +20,10 @@ ChangeInterval getChangeInterval(void);
 
 const char *getChangeIntervalLabel(ChangeInterval interval);
 
+/* Pista de audio de fondo asociada a la franja de tiempo (no a la obra
+   individual, ver ADR-015 revisado): asi el numero de audios necesarios
+   no crece si se agregan mas obras al catalogo. Puede devolver NULL o
+   una ruta a un archivo inexistente; audio.c debe tolerarlo. */
+const char *getIntervalMusicPath(ChangeInterval interval);
+
 #endif

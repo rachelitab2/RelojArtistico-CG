@@ -6,11 +6,294 @@
 #include "utils.h"
 #include "artwork_catalog.h"
 #include "ui.h"
+#include "audio.h"
+#include "texture.h"
 #include <stdio.h>
 
 #define FRAME_INTERVAL_MS 33
 
 static const float WHEEL_VERTICAL_OFFSET = -0.12f; /* baja el reloj/rueda, deja aire arriba */
+
+/* Secuencia de arranque (ver ADR-017): carga breve -> intro de las 3
+   franjas de tiempo -> reloj. La intro avanza con cualquier tecla, no
+   con mouse, para no sumar un callback nuevo la vispera de la entrega. */
+typedef enum
+{
+    SCREEN_LOADING,
+    SCREEN_INTRO,
+    SCREEN_CLOCK
+
+} AppScreen;
+
+static AppScreen currentScreen = SCREEN_LOADING;
+static float loadingElapsedSeconds = 0.0f;
+static const float LOADING_DURATION_SECONDS = 2.0f;
+
+static const float GOLD[3] = {0.85f, 0.65f, 0.25f};
+
+/* pixeles -> unidades del mundo y texto centrado: mismo criterio
+   duplicado en segments.c/ui.c/clock.c (ver nota en clock.c). */
+static float pixelsToWorldUnits(int pixels)
+{
+    GLint viewport[4];
+    float aspect;
+    float worldHeight;
+
+    glGetIntegerv(GL_VIEWPORT, viewport);
+
+    if(viewport[2] <= 0 || viewport[3] <= 0)
+        return 0.0f;
+
+    aspect = (float)viewport[2] / (float)viewport[3];
+    worldHeight = (aspect >= 1.0f) ? 2.0f : (2.0f / aspect);
+
+    return (float)pixels * worldHeight / (float)viewport[3];
+}
+
+static void drawCenteredText(float centerX, float y, void *font, const char *text)
+{
+    int totalPixelWidth = 0;
+    int i;
+    float startX;
+
+    for(i = 0; text[i] != '\0'; i++)
+        totalPixelWidth += glutBitmapWidth(font, text[i]);
+
+    startX = centerX - pixelsToWorldUnits(totalPixelWidth) * 0.5f;
+
+    glRasterPos2f(startX, y);
+
+    for(i = 0; text[i] != '\0'; i++)
+        glutBitmapCharacter(font, text[i]);
+}
+
+/* dibuja "RELOJ ARTISTIC" en un color y la ultima "O" en dorado, como
+   acento de marca (eco del logotipo, sin depender de cargar la imagen
+   real todavia). Centrado como una sola pieza. */
+static void drawWordmark(float centerY, void *font)
+{
+    static const char *base = "RELOJ ARTISTIC";
+    static const char *lastLetter = "O";
+    int baseWidthPx = 0;
+    int lastWidthPx = 0;
+    int i;
+    float startX;
+
+    for(i = 0; base[i] != '\0'; i++)
+        baseWidthPx += glutBitmapWidth(font, base[i]);
+
+    for(i = 0; lastLetter[i] != '\0'; i++)
+        lastWidthPx += glutBitmapWidth(font, lastLetter[i]);
+
+    startX = -pixelsToWorldUnits(baseWidthPx + lastWidthPx) * 0.5f;
+
+    glColor3f(0.94f, 0.94f, 0.96f);
+    glRasterPos2f(startX, centerY);
+    for(i = 0; base[i] != '\0'; i++)
+        glutBitmapCharacter(font, base[i]);
+
+    glColor3f(GOLD[0], GOLD[1], GOLD[2]);
+    glRasterPos2f(startX + pixelsToWorldUnits(baseWidthPx), centerY);
+    for(i = 0; lastLetter[i] != '\0'; i++)
+        glutBitmapCharacter(font, lastLetter[i]);
+}
+
+/* linea corta de acento, el mismo recurso que usa el mockup de
+   referencia arriba de cada titular (un "filete" dorado). */
+static void drawAccentRule(float centerX, float y, float halfWidth)
+{
+    glColor3f(GOLD[0], GOLD[1], GOLD[2]);
+    glLineWidth(2.0f);
+
+    glBegin(GL_LINES);
+        glVertex2f(centerX - halfWidth, y);
+        glVertex2f(centerX + halfWidth, y);
+    glEnd();
+}
+
+/* nombre del proyecto, subtitulo y una barra de progreso simulada que
+   avanza con el tiempo transcurrido (no representa carga real de
+   archivos, es una presentacion de marca breve, ver ADR-017). */
+static void drawLoadingScreen(void)
+{
+    Texture logo = loadTexture("assets/logo.png");
+    float progress = loadingElapsedSeconds / LOADING_DURATION_SECONDS;
+    const float barWidth = 0.5f;
+    const float barHeight = 0.016f;
+    const float barY = -0.55f; /* mas abajo: deja aire para un logo grande */
+
+    if(progress > 1.0f) progress = 1.0f;
+
+    glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    if(logo.textureId != 0)
+    {
+        /* el logo ya trae el nombre del proyecto dibujado adentro, asi
+           que reemplaza al wordmark de texto, no lo acompana. */
+        const float logoWidth = 0.60f; /* grande de verdad: el texto interno se leia chico */
+        const float logoHeight = logoWidth * (float)logo.height / (float)logo.width;
+        const float centerY = 0.05f;
+
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, logo.textureId);
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+
+        glBegin(GL_QUADS);
+            glTexCoord2f(0.0f, 1.0f); glVertex2f(-logoWidth * 0.5f, centerY + logoHeight * 0.5f);
+            glTexCoord2f(1.0f, 1.0f); glVertex2f( logoWidth * 0.5f, centerY + logoHeight * 0.5f);
+            glTexCoord2f(1.0f, 0.0f); glVertex2f( logoWidth * 0.5f, centerY - logoHeight * 0.5f);
+            glTexCoord2f(0.0f, 0.0f); glVertex2f(-logoWidth * 0.5f, centerY - logoHeight * 0.5f);
+        glEnd();
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glDisable(GL_TEXTURE_2D); /* critico: si queda encendido, tinta el resto de la UI */
+    }
+    else
+    {
+        /* degradacion segura (ver ADR-014): sin logo.png, se dibuja
+           el wordmark de texto que ya existia antes de esta imagen. */
+        drawAccentRule(0.0f, 0.10f, 0.045f);
+
+        drawWordmark(0.0f, GLUT_BITMAP_TIMES_ROMAN_24);
+
+        glColor3f(0.52f, 0.52f, 0.56f);
+        drawCenteredText(0.0f, -0.10f, GLUT_BITMAP_HELVETICA_10, "ARTE  -  TIEMPO  -  COMPUTACION GRAFICA");
+    }
+
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glColor4f(1.0f, 1.0f, 1.0f, 0.14f);
+    glBegin(GL_QUADS);
+        glVertex2f(-barWidth * 0.5f, barY + barHeight);
+        glVertex2f( barWidth * 0.5f, barY + barHeight);
+        glVertex2f( barWidth * 0.5f, barY);
+        glVertex2f(-barWidth * 0.5f, barY);
+    glEnd();
+
+    glColor3f(GOLD[0], GOLD[1], GOLD[2]);
+    glBegin(GL_QUADS);
+        glVertex2f(-barWidth * 0.5f, barY + barHeight);
+        glVertex2f(-barWidth * 0.5f + barWidth * progress, barY + barHeight);
+        glVertex2f(-barWidth * 0.5f + barWidth * progress, barY);
+        glVertex2f(-barWidth * 0.5f, barY);
+    glEnd();
+
+    glutSwapBuffers();
+}
+
+/* Tarjeta de una franja de tiempo en la pantalla de intro: borde fino,
+   etiqueta dorada, titulo, y dos lineas de descripcion cortas (fijas,
+   sin wrap generico, porque el contenido de cada tarjeta es conocido
+   y breve). */
+static void drawIntroCard(float x, float y, float width, float height,
+                           const char *label, const char *title,
+                           const char *desc1, const char *desc2)
+{
+    float textX = x + pixelsToWorldUnits(16);
+
+    glColor4f(1.0f, 1.0f, 1.0f, 0.05f);
+    glBegin(GL_QUADS);
+        glVertex2f(x, y);
+        glVertex2f(x + width, y);
+        glVertex2f(x + width, y - height);
+        glVertex2f(x, y - height);
+    glEnd();
+
+    glColor4f(1.0f, 1.0f, 1.0f, 0.16f);
+    glLineWidth(1.0f);
+    glBegin(GL_LINE_LOOP);
+        glVertex2f(x, y);
+        glVertex2f(x + width, y);
+        glVertex2f(x + width, y - height);
+        glVertex2f(x, y - height);
+    glEnd();
+
+    glColor3f(GOLD[0], GOLD[1], GOLD[2]);
+    glRasterPos2f(textX, y - pixelsToWorldUnits(22));
+    { int i; for(i = 0; label[i] != '\0'; i++) glutBitmapCharacter(GLUT_BITMAP_HELVETICA_10, label[i]); }
+
+    glColor3f(0.94f, 0.94f, 0.96f);
+    glRasterPos2f(textX, y - pixelsToWorldUnits(42));
+    { int i; for(i = 0; title[i] != '\0'; i++) glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, title[i]); }
+
+    glColor3f(0.60f, 0.60f, 0.64f);
+    glRasterPos2f(textX, y - pixelsToWorldUnits(62));
+    { int i; for(i = 0; desc1[i] != '\0'; i++) glutBitmapCharacter(GLUT_BITMAP_HELVETICA_10, desc1[i]); }
+
+    glRasterPos2f(textX, y - pixelsToWorldUnits(76));
+    { int i; for(i = 0; desc2[i] != '\0'; i++) glutBitmapCharacter(GLUT_BITMAP_HELVETICA_10, desc2[i]); }
+}
+
+/* Pantalla intermedia: explica las 3 franjas de tiempo antes de entrar
+   al reloj. Avanza con cualquier tecla (ver advanceFromIntroScreen),
+   no con mouse, para no sumar un callback nuevo (ver ADR-017). */
+static void drawIntroScreen(void)
+{
+    const float cardWidth = 0.5f;
+    const float cardHeight = 0.42f;
+    const float cardGap = 0.05f;
+    const float cardsTotalWidth = cardWidth * 3.0f + cardGap * 2.0f;
+    const float cardsLeft = -cardsTotalWidth * 0.5f;
+    const float cardsTop = -0.05f;
+    const float buttonWidth = 0.34f;
+    const float buttonHeight = 0.11f;
+    const float buttonY = -0.62f;
+
+    glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    drawAccentRule(-cardsTotalWidth * 0.5f, 0.62f, 0.045f);
+
+    glColor3f(0.94f, 0.94f, 0.96f);
+    glRasterPos2f(cardsLeft, 0.50f);
+    {
+        static const char *headline = "Tres franjas, un mismo reloj";
+        int i;
+        for(i = 0; headline[i] != '\0'; i++)
+            glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, headline[i]);
+    }
+
+    glColor3f(0.66f, 0.66f, 0.70f);
+    drawCenteredText(0.0f, 0.34f, GLUT_BITMAP_HELVETICA_12,
+        "Elegis cada cuanto cambia la obra activa: eso define el ritmo del reloj.");
+
+    drawIntroCard(cardsLeft, cardsTop, cardWidth, cardHeight,
+        "CADA 15 MIN", "Ritmo rapido",
+        "La obra activa", "rota mas seguido.");
+
+    drawIntroCard(cardsLeft + cardWidth + cardGap, cardsTop, cardWidth, cardHeight,
+        "CADA 30 MIN", "Ritmo intermedio",
+        "Configuracion", "por defecto.");
+
+    drawIntroCard(cardsLeft + (cardWidth + cardGap) * 2.0f, cardsTop, cardWidth, cardHeight,
+        "CADA 1 HORA", "Ritmo pausado",
+        "Ideal para mirar", "cada obra con calma.");
+
+    glColor4f(GOLD[0], GOLD[1], GOLD[2], 0.90f);
+    glBegin(GL_QUADS);
+        glVertex2f(-buttonWidth * 0.5f, buttonY + buttonHeight);
+        glVertex2f( buttonWidth * 0.5f, buttonY + buttonHeight);
+        glVertex2f( buttonWidth * 0.5f, buttonY);
+        glVertex2f(-buttonWidth * 0.5f, buttonY);
+    glEnd();
+
+    glColor3f(0.10f, 0.09f, 0.06f);
+    drawCenteredText(0.0f, buttonY + buttonHeight * 0.5f - pixelsToWorldUnits(4),
+        GLUT_BITMAP_HELVETICA_12, "Entrar al reloj");
+
+    glColor3f(0.46f, 0.46f, 0.50f);
+    drawCenteredText(0.0f, buttonY - pixelsToWorldUnits(20),
+        GLUT_BITMAP_HELVETICA_10, "presiona cualquier tecla para continuar");
+
+    glutSwapBuffers();
+}
 
 void initDisplay(void)
 {
@@ -21,10 +304,22 @@ void initDisplay(void)
     printf("OpenGL version: %s\n", glGetString(GL_VERSION));
 }
 
-/* Se ejecuta cada frame. Dibuja todo en orden: reloj, anillo decorativo,
-   segmentos, y al final intercambia buffers. */
+/* Se ejecuta cada frame. El reloj completo solo se dibuja en
+   SCREEN_CLOCK; las otras dos pantallas son autocontenidas (ver
+   ADR-017). */
 void display(void)
 {
+    if(currentScreen == SCREEN_LOADING)
+    {
+        drawLoadingScreen();
+        return;
+    }
+
+    if(currentScreen == SCREEN_INTRO)
+    {
+        drawIntroScreen();
+        return;
+    }
 
     const ArtworkInfo *activeArtwork = getArtworkInfo(getActiveArtworkType());
 ArtworkColor background = activeArtwork->backgroundColor;
@@ -82,9 +377,31 @@ void timer(int value)
 {
     (void)value;
 
-    updateSegments();
+    if(currentScreen == SCREEN_LOADING)
+    {
+        loadingElapsedSeconds += FRAME_INTERVAL_MS / 1000.0f;
+
+        if(loadingElapsedSeconds >= LOADING_DURATION_SECONDS)
+            currentScreen = SCREEN_INTRO;
+    }
+    else if(currentScreen == SCREEN_CLOCK)
+    {
+        updateSegments();
+
+        updateAudioState();
+    }
 
     glutPostRedisplay();
 
     glutTimerFunc(FRAME_INTERVAL_MS,timer,0);
+}
+
+/* Unico punto de salida de SCREEN_INTRO. Se llama desde el manejador
+   de teclado en main.c ante CUALQUIER tecla; si la pantalla actual no
+   es la intro, no hace nada (evita que una tecla cualquiera interfiera
+   con el reloj o la carga). */
+void advanceFromIntroScreen(void)
+{
+    if(currentScreen == SCREEN_INTRO)
+        currentScreen = SCREEN_CLOCK;
 }

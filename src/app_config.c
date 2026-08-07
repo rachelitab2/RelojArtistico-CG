@@ -35,3 +35,20 @@ const char *getChangeIntervalLabel(ChangeInterval interval)
 
     return "30 min";
 }
+
+const char *getIntervalMusicPath(ChangeInterval interval)
+{
+    switch(interval)
+    {
+        case CHANGE_INTERVAL_15_MINUTES:
+            return "assets/audio/sala-15min.wav";
+
+        case CHANGE_INTERVAL_30_MINUTES:
+            return "assets/audio/sala-30min.wav";
+
+        case CHANGE_INTERVAL_60_MINUTES:
+            return "assets/audio/sala-60min.wav";
+    }
+
+    return "assets/audio/sala-30min.wav";
+}

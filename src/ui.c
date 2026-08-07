@@ -6,6 +6,7 @@
 #include "segments.h"
 #include "artwork_catalog.h"
 #include "app_config.h"
+#include "texture.h"
 
 /*
  * Convierte pixeles a unidades del mundo usando la proyeccion actual.
@@ -194,6 +195,58 @@ static void drawAccentStrip(float x, float y, float height, ArtworkColor accent)
     glEnd();
 }
 
+/* Dibuja imagePath dentro de la caja (x,y,width,height) preservando su
+   proporcion real ("contain": nunca la deforma, la centra y deja
+   margen si la caja no tiene el mismo aspecto). Si no hay imagen
+   valida (ver ADR-014), no dibuja nada y devuelve 0 -- quien llama
+   decide que hacer con ese espacio (ver drawArtworkPanel). */
+static int drawArtworkImage(float x, float y, float width, float height, const char *imagePath)
+{
+    Texture tex = loadTexture(imagePath);
+    float imageAspect;
+    float boxAspect;
+    float drawWidth;
+    float drawHeight;
+    float drawX;
+    float drawY;
+
+    if(tex.textureId == 0)
+        return 0;
+
+    imageAspect = (float)tex.width / (float)tex.height;
+    boxAspect = width / height;
+
+    if(imageAspect > boxAspect)
+    {
+        drawWidth = width;
+        drawHeight = width / imageAspect;
+    }
+    else
+    {
+        drawHeight = height;
+        drawWidth = height * imageAspect;
+    }
+
+    drawX = x + (width - drawWidth) * 0.5f;
+    drawY = y - (height - drawHeight) * 0.5f;
+
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, tex.textureId);
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+
+    glBegin(GL_QUADS);
+        glTexCoord2f(0.0f, 1.0f); glVertex2f(drawX, drawY);
+        glTexCoord2f(1.0f, 1.0f); glVertex2f(drawX + drawWidth, drawY);
+        glTexCoord2f(1.0f, 0.0f); glVertex2f(drawX + drawWidth, drawY - drawHeight);
+        glTexCoord2f(0.0f, 0.0f); glVertex2f(drawX, drawY - drawHeight);
+    glEnd();
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_TEXTURE_2D); /* critico: si queda encendido, tinta el resto del panel */
+
+    return 1;
+}
+
 static void drawPaletteSwatch(float x, float y, const ArtworkColor palette[3])
 {
     float size = pixelsToWorldUnits(13);
@@ -313,9 +366,16 @@ static void drawArtworkPanel(void)
 
     const ArtworkInfo *artwork = getArtworkInfo(getActiveArtworkType());
 
+    /* Se prueba la imagen ANTES de fijar panelHeight: sin archivo real
+       todavia (imagePath apunta a un placeholder que no existe), el
+       panel debe quedar exactamente del tamano compacto de siempre,
+       no dejar un hueco vacio reservado para una imagen que no esta. */
+    int hasImage = (loadTexture(artwork->imagePath).textureId != 0);
+    int imageBandPx = hasImage ? 140 : 0; /* 10 margen + 120 imagen + 10 aire */
+
     float margin = pixelsToWorldUnits(26);
     float panelWidth = pixelsToWorldUnits(310);
-    float panelHeight = pixelsToWorldUnits(178);
+    float panelHeight = pixelsToWorldUnits(178 + imageBandPx);
     float contentX;
     float textY;
     char metaText[96];
@@ -335,8 +395,21 @@ static void drawArtworkPanel(void)
     drawPanelBackground(x, y, panelWidth, panelHeight);
     drawAccentStrip(x, y, panelHeight, artwork->accentColor);
 
+    if(hasImage)
+    {
+        float imageMargin = pixelsToWorldUnits(10);
+
+        drawArtworkImage(
+            x + imageMargin,
+            y - imageMargin,
+            panelWidth - imageMargin * 2.0f,
+            pixelsToWorldUnits(120),
+            artwork->imagePath
+        );
+    }
+
    contentX = x + pixelsToWorldUnits(16);
-textY = y - pixelsToWorldUnits(20);
+textY = y - pixelsToWorldUnits(imageBandPx + 20);
 
 snprintf(
     sectorText,

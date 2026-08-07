@@ -5,6 +5,7 @@
 #include "display.h"
 #include "segments.h"
 #include "app_config.h"
+#include "audio.h"
 
 #ifdef _WIN32
 __declspec(dllexport) unsigned long NvOptimusEnablement = 0x00000001;
@@ -56,6 +57,10 @@ void keyboard(unsigned char key, int x, int y)
     (void)x;
     (void)y;
 
+    /* cualquier tecla saca de la pantalla de intro; en cualquier otra
+       pantalla no hace nada (ver display.c) */
+    advanceFromIntroScreen();
+
     switch(key)
     {
         case '1':
@@ -68,6 +73,11 @@ void keyboard(unsigned char key, int x, int y)
 
         case '3':
             setChangeInterval(CHANGE_INTERVAL_60_MINUTES);
+            break;
+
+        case 'm':
+        case 'M':
+            toggleAudioMute();
             break;
     }
 
@@ -92,6 +102,8 @@ int main(int argc,char** argv)
     initDisplay();
 
     initSegments();
+
+    initAudio();
 
     glutDisplayFunc(display);
 

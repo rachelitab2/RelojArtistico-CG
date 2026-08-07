@@ -6,6 +6,47 @@
 #include "utils.h"
 #include <time.h>
 
+/* pixeles (los que reporta GLUT) -> unidades del mundo. Mismo criterio
+   que segments.c/ui.c, duplicado aqui porque clock.c no depende de
+   esos modulos. */
+static float pixelsToWorldUnits(int pixels)
+{
+    GLint viewport[4];
+    float aspect;
+    float worldHeight;
+
+    glGetIntegerv(GL_VIEWPORT, viewport);
+
+    if(viewport[2] <= 0 || viewport[3] <= 0)
+        return 0.0f;
+
+    aspect = (float)viewport[2] / (float)viewport[3];
+    worldHeight = (aspect >= 1.0f) ? 2.0f : (2.0f / aspect);
+
+    return (float)pixels * worldHeight / (float)viewport[3];
+}
+
+/* dibuja "text" centrado en (centerX, centerY), no solo en X: baja la
+   linea base la mitad de la altura aproximada de la fuente. */
+static void drawCenteredBitmapText(float centerX, float centerY, void *font, const char *text)
+{
+    int totalPixelWidth = 0;
+    int i;
+    float startX;
+    float startY;
+
+    for(i = 0; text[i] != '\0'; i++)
+        totalPixelWidth += glutBitmapWidth(font, text[i]);
+
+    startX = centerX - pixelsToWorldUnits(totalPixelWidth) * 0.5f;
+    startY = centerY - pixelsToWorldUnits(10) * 0.35f;
+
+    glRasterPos2f(startX, startY);
+
+    for(i = 0; text[i] != '\0'; i++)
+        glutBitmapCharacter(font, text[i]);
+}
+
 /* Dibuja la caratula completa: fondo, marcas, manecillas y pivote.
    Se llama una vez por frame desde display.c. */
 void drawClock(void)
@@ -37,6 +78,17 @@ void drawClock(void)
 
     drawCircle(0.0f,0.0f,faceRadius);
 
+    /* solo las 4 posiciones cardinales llevan numero (ADR-016): mantiene
+       la caratula legible sin volver a saturarla con los 12 numeros. */
+    static const char *MAJOR_LABELS[4] = {"12", "3", "6", "9"};
+    /* claramente por DENTRO de tickInner (faceRadius-0.08=0.22), no
+       encima: con faceRadius-0.065=0.235 el numero caia entre
+       tickInner y tickOuter y se dibujaba pegado a la propia marca
+       (se veia como "-9"). El centro ya quedo libre (se saco la
+       etiqueta de hora+obra de segments.c), asi que hay espacio de
+       sobra para separarlos bien. */
+    const float numberRadius = faceRadius - 0.13f;
+
     /* 12 marcas; cada 3 (12/3/6/9) se dibuja mas larga y gruesa */
     for(i=0;i<12;i++)
     {
@@ -64,6 +116,18 @@ void drawClock(void)
         }
 
         drawLine(x1,y1,x2,y2);
+
+        if(isMajor)
+        {
+            float numberX = numberRadius*sin(angle);
+            float numberY = numberRadius*cos(angle);
+
+            /* color propio, mas brillante que la marca: a 0.70 se perdia
+               contra el fondo oscuro de la caratula (0.10,0.10,0.12) */
+            glColor3f(0.88f,0.88f,0.90f);
+
+            drawCenteredBitmapText(numberX, numberY, GLUT_BITMAP_HELVETICA_10, MAJOR_LABELS[i/3]);
+        }
     }
 
     ClockTime current = getCurrentTime();

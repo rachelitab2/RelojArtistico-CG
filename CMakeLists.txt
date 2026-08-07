@@ -16,6 +16,8 @@ set(SOURCES
     src/artwork_catalog.c
     src/app_config.c
     src/ui.c
+    src/audio.c
+    src/texture.c
     src/segment_hokusai.c
     src/segment_vangogh.c
     src/segment_kandinsky.c
@@ -30,4 +32,5 @@ target_link_libraries(${PROJECT_NAME}
     opengl32
     glu32
     freeglut
+    winmm
 )

@@ -16,6 +16,7 @@ static const ArtworkInfo ARTWORK_CATALOG[] =
         "1831",
         "Ukiyo-e",
         "Grabado japones con azul profundo, espuma blanca y movimiento estructural.",
+        "assets/images/hokusai.jpg",
         {0.05f, 0.09f, 0.14f},
         {0.30f, 0.55f, 0.85f},
         {
@@ -31,6 +32,7 @@ static const ArtworkInfo ARTWORK_CATALOG[] =
         "1889",
         "Postimpresionismo",
         "Cielo nocturno en movimiento con contraste intenso entre azul y amarillo.",
+        "assets/images/vangogh.jpg",
         {0.04f, 0.05f, 0.12f},
         {0.95f, 0.80f, 0.25f},
         {
@@ -46,6 +48,7 @@ static const ArtworkInfo ARTWORK_CATALOG[] =
         "1923",
         "Abstraccion",
         "Geometria tratada como ritmo visual mediante circulos, angulos y lineas.",
+        "assets/images/kandinsky.jpg",
         {0.10f, 0.08f, 0.12f},
         {0.85f, 0.20f, 0.20f},
         {
@@ -61,6 +64,7 @@ static const ArtworkInfo ARTWORK_CATALOG[] =
         "1930",
         "Neoplasticismo",
         "Reticula ortogonal de lineas negras y bloques de color primario.",
+        "assets/images/mondrian.jpg",
         {0.08f, 0.08f, 0.09f},
         {0.85f, 0.15f, 0.12f},
         {
@@ -76,6 +80,7 @@ static const ArtworkInfo ARTWORK_CATALOG[] =
         "1906",
         "Impresionismo",
         "Superficie de agua y luz construida con tonos verdes y pinceladas suaves.",
+        "assets/images/monet.jpg",
         {0.06f, 0.11f, 0.10f},
         {0.35f, 0.65f, 0.55f},
         {
@@ -91,6 +96,7 @@ static const ArtworkInfo ARTWORK_CATALOG[] =
         "1908",
         "Modernismo vienes",
         "Ornamento dorado y patrones planos que envuelven la figura principal.",
+        "assets/images/klimt.jpg",
         {0.10f, 0.08f, 0.05f},
         {0.85f, 0.68f, 0.28f},
         {
