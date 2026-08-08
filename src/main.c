@@ -97,14 +97,17 @@ void keyboard(unsigned char key, int x, int y)
     switch(key)
     {
         case '1':
+        case '4':
             setActiveRoom(1); /* Sala 15 min: Color y geometria */
             break;
 
         case '2':
+        case '5':
             setActiveRoom(2); /* Sala 30 min: Luz, ritmo y color */
             break;
 
         case '3':
+        case '6':
             setActiveRoom(3); /* Sala 60 min: Abstraccion, simbolo y atmosfera */
             break;
 
