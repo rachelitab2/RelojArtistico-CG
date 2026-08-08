@@ -9,7 +9,22 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-#define TEXTURE_CACHE_CAPACITY 16
+/*
+ * Debe ser mayor que la cantidad de rutas de imagen distintas que
+ * existan en el proyecto (18 obras + logo.png = 19 al momento de
+ * escribir esto). Si se llena, addToCache() descarta la entrada en
+ * silencio (ver mas abajo) y loadTexture() vuelve a ejecutar
+ * stbi_load + glGenTextures + glTexImage2D en CADA frame para esa
+ * ruta -- una textura nueva sin liberar la anterior (no hay
+ * glDeleteTextures en el proyecto), osea una fuga de texturas GPU a
+ * ~60/seg mientras esa obra este activa. Esto es lo que causaba el
+ * crash 0xc0000005 dentro del driver (ver
+ * docs/09-Diagnostico-Pantallazo-VIDEO-SCHEDULER.md): no era un bug
+ * del driver, era agotamiento de recursos GPU por esta fuga una vez
+ * visitadas mas de 16 obras distintas. 32 deja margen para agregar
+ * mas obras sin volver a pisar este limite.
+ */
+#define TEXTURE_CACHE_CAPACITY 32
 
 typedef struct
 {

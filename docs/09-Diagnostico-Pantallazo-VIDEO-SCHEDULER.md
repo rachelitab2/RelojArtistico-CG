@@ -223,3 +223,70 @@ independientes del bug) y se continua el desarrollo. Pendiente para quien
 retome este diagnostico: probar con el driver NVIDIA actualizado (protocolo
 de la seccion "Protocolo de prueba recomendado" arriba, pasos 6-7) para
 confirmar si una version mas nueva resuelve el crash.
+
+## Causa raiz encontrada (2026-08-08): fuga de texturas GPU, no era el driver
+
+La conclusion de la seccion anterior ("la causa esta en el driver de esta
+maquina especifica") era incorrecta. El mismo crash le ocurrio tambien a
+otra integrante del equipo en otra maquina con el mismo patron (teclas 2/5,
+que ambas activan la sala de 30 min) -- un bug de driver de una sola PC no
+explicaria eso. Eso obligo a revisar de nuevo con la hipotesis de que si
+hubiera un patron de llamadas GL del proyecto responsable.
+
+### El bug
+
+`texture.c` cachea cada textura por ruta de archivo para no recargarla en
+cada frame (`TEXTURE_CACHE_CAPACITY`, `findInCache`/`addToCache`). El
+catalogo llego a tener **19 rutas de imagen distintas** (18 obras +
+`logo.png`) mientras la capacidad del cache seguia fija en **16**, un valor
+elegido cuando el proyecto tenia menos obras y nunca se reviso al crecer el
+catalogo.
+
+Cuando el cache se llena, `addToCache()` descarta la entrada nueva en
+silencio ("no crashea, simplemente no cachea esta" dice el comentario
+original -- cierto para esa obra puntual, pero con una consecuencia grave no
+contemplada): `loadTexture()` vuelve a ejecutar `stbi_load` +
+`glGenTextures` + `glTexImage2D` en **cada frame** para esa ruta, generando
+un handle de textura GPU nuevo cada vez. En ningun lugar del proyecto hay un
+`glDeleteTextures` -- los handles viejos nunca se liberan.
+
+`ui.c` llama a `loadTexture(artwork->imagePath)` **dos veces por frame**
+para la obra activa (`drawArtworkPanel` y `drawArtworkImage`). Con el cache
+lleno, eso son 2 texturas nuevas sin liberar por frame, ~60/segundo a 30
+FPS, mientras esa obra este activa -- una fuga de memoria/handles de GPU que
+agota los recursos que administra el driver. El crash resultante
+(`0xc0000005` dentro de `nvoglv64.dll`, en `DrvPresentBuffers`, sin frames
+de codigo propio) es exactamente el sintoma esperable de agotar recursos
+del driver desde afuera: el fallo ocurre *dentro* del driver porque es ahi
+donde se administra el recurso que se agoto, pero el codigo que lo causa es
+la fuga de `texture.c`.
+
+Esto tambien explica por que las pruebas automatizadas de cambio de sala
+rapido (seccion anterior de este documento y la sesion que le siguio) no
+reproducian el crash de forma consistente: para agotar el cache hacen falta
+visitar mas de 16 obras *distintas* como activas -- no alcanza con cambiar
+de sala unas pocas veces en una sesion corta, hace falta el uso interactivo
+mas largo que tuvieron el equipo y la companera de equipo antes de la
+entrega.
+
+### Fix
+
+Un cambio de una linea en `texture.c`: subir `TEXTURE_CACHE_CAPACITY` de 16
+a 32, con margen para agregar mas obras en el futuro sin volver a pisar este
+limite. No se agrego `glDeleteTextures` como mitigacion adicional porque,
+con las 19 rutas actuales cabiendo comodamente en 32 entradas, el cache
+nunca vuelve a llenarse -- la fuga deja de dispararse por completo, no solo
+se atenua.
+
+### Leccion
+
+Las 3 mitigaciones de la seccion anterior (menos draw calls, sin
+`glutPostRedisplay()` duplicado, VSync explicito) redujeron carga de
+renderizado real y valen como buenas practicas, pero apuntaban al sintoma
+equivocado: el crash no era de *cuanto* se dibuja por frame, sino de
+recursos GPU que se filtraban con cada frame nuevo, sin relacion con la
+cantidad de geometria dibujada. Un stack de crash 100% dentro del driver, sin
+frames de la aplicacion, no prueba que la causa este en el driver -- solo
+prueba que el recurso que fallo se administra ahi. Vale la pena revisar
+manejo de recursos (texturas, buffers, handles) antes de asumir que un
+crash asi es responsabilidad exclusiva del driver.
