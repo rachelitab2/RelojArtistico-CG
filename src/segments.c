@@ -21,6 +21,7 @@
 #include "segment_paul_klee.h"
 #include "segment_kupka.h"
 #include "segment_hilma.h"
+#include "segment_joan_miro.h"
 #include "artwork_catalog.h"
 #include "app_config.h"
 
@@ -487,9 +488,9 @@ static void drawArtwork(ArtworkType artwork)
         case ART_PAUL_KLEE:   drawPaulKlee();    break;
         case ART_KUPKA:       drawKupka();       break;
         case ART_HILMA:       drawHilma();       break;
+        case ART_JOAN_MIRO:   drawJoanMiro();    break;
 
         /* --- placeholders --- */
-        case ART_JOAN_MIRO:
         default:
             drawPlaceholderArtwork(artwork);
             break;
@@ -571,8 +572,11 @@ static void drawArtworkBackground(const Segment *segment, float halfAngle)
             drawHilmaBackground(segment->innerRadius, segment->outerRadius, halfAngle);
             break;
 
-        /* todas las obras sin implementar usan el fondo placeholder */
         case ART_JOAN_MIRO:
+            drawJoanMiroBackground(segment->innerRadius, segment->outerRadius, halfAngle);
+            break;
+
+        /* todas las obras sin implementar usan el fondo placeholder */
         default:
             drawPlaceholderBackground(segment, halfAngle);
             break;
