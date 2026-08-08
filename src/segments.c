@@ -81,6 +81,21 @@ static const float SECTOR_GAP_DEG        = 1.0f;
 static int   activeArtworkIndex      = 0;
 static float highlightPulsePhase     = 0.0f;
 
+/* Navegacion manual (Anterior/Siguiente): activeArtworkIndex vive
+   normalmente enganchado a la hora real (computeActiveArtworkIndex).
+   lastNaturalArtworkIndex guarda el ultimo valor "natural" visto; si
+   goToNextArtwork/Previous lo corren manualmente, se desincroniza de
+   proposito -- en cuanto la hora real avanza a un slot distinto del
+   ultimo natural registrado, updateSegments() lo vuelve a enganchar
+   (el automatico "pisa" la eleccion manual, nunca al reves). */
+static int lastNaturalArtworkIndex = -1;
+
+/* Flash breve al cambiar de sala: las 6 obras cambian de golpe (son
+   texturas/geometria distintas, no hay forma de interpolarlas), asi
+   que en vez de eso se atenua la rueda un instante y se recupera sola
+   -- disimula el corte sin necesitar un crossfade real. */
+static float roomTransitionAlpha = 0.0f;
+
 static float sectorWidthFactor[6];
 static float sectorAlpha[6];
 static float sectorCenterAngle[6];
@@ -89,7 +104,7 @@ static int   sectorLayoutInitialized = 0;
 
 static void updateSectorLayout(void);
 static void loadRoomIntoSegments(int roomKey);
-static void resetSectorLayout(void);
+static int  computeActiveArtworkIndex(ClockTime t);
 
 /* -----------------------------------------------------------------------
  * setActiveRoom / getActiveRoom
@@ -112,18 +127,23 @@ void setActiveRoom(int roomKey)
         case 3: setChangeInterval(CHANGE_INTERVAL_60_MINUTES); break;
     }
 
-    /* fuerza reinicio de animacion de layout */
-    resetSectorLayout();
+    /* NO se resetea el layout: dejar que sectorWidthFactor/sectorAlpha
+       animen desde donde estaban (via LAYOUT_SMOOTHING) hace la
+       transicion menos brusca que el snap instantaneo de antes. El
+       contenido de las obras SI cambia de golpe (son texturas/geometria
+       distintas), por eso se suma un flash breve (ver
+       roomTransitionAlpha) que disimula ese corte. */
+    roomTransitionAlpha = 0.55f;
+
+    /* la navegacion manual (goToNextArtwork/Previous) no tiene sentido
+       "heredada" de la sala anterior -- se vuelve a sincronizar con la
+       obra que le toca a la sala nueva segun la hora real */
+    lastNaturalArtworkIndex = -1;
 }
 
 int getActiveRoom(void)
 {
     return activeRoom;
-}
-
-static void resetSectorLayout(void)
-{
-    sectorLayoutInitialized = 0;
 }
 
 /* Carga los 6 ArtworkType de la sala indicada en segments[]. */
@@ -143,8 +163,17 @@ static void loadRoomIntoSegments(int roomKey)
     for(i = 0; i < 6; i++)
     {
         segments[i].angle       = (float)(i * 60);
-        segments[i].innerRadius = 0.42f;
-        segments[i].outerRadius = 0.82f;
+        /* 15% mas chico que el original (0.42/0.82) para dejar aire
+           arriba y abajo del anillo: sin eso no entraban ni el panel
+           de descripcion (arriba) ni los controles Anterior/Siguiente
+           (abajo) sin recortarse contra el borde de la ventana. Como
+           todas las obras dibujan en su lienzo local -1..1 y
+           canvasScale se recalcula cada frame a partir de estos
+           radios (ver drawSegment), este cambio no afecta las
+           proporciones internas de ninguna obra, solo el tamano total
+           de la rueda. */
+        segments[i].innerRadius = 0.36f;
+        segments[i].outerRadius = 0.70f;
         segments[i].animation   = 0.0f;
         segments[i].artwork     = room[i];
     }
@@ -155,6 +184,20 @@ static void drawArtworkBackground(const Segment *segment, float halfAngle);
 static void drawPlaceholderArtwork(ArtworkType type);
 static void drawPlaceholderBackground(const Segment *segment, float halfAngle);
 
+/* Minutos por slot de la sala activa: 15/30/60. Compartido por
+   computeActiveArtworkIndex() y getSecondsUntilNextArtworkChange(),
+   para que ambos coincidan siempre en que cuenta como "un bloque". */
+static int getActiveSlotMinutes(void)
+{
+    switch(activeRoom)
+    {
+        case 1:  return 15;
+        case 3:  return 60;
+        case 2:
+        default: return 30;
+    }
+}
+
 /* -----------------------------------------------------------------------
  * computeActiveArtworkIndex
  *
@@ -164,17 +207,39 @@ static void drawPlaceholderBackground(const Segment *segment, float halfAngle);
 static int computeActiveArtworkIndex(ClockTime t)
 {
     int minutesIntoHalfDay = (t.hour % 12) * 60 + t.minute;
-    int slotMinutes;
-
-    switch(activeRoom)
-    {
-        case 1:  slotMinutes = 15; break;
-        case 3:  slotMinutes = 60; break;
-        case 2:
-        default: slotMinutes = 30; break;
-    }
+    int slotMinutes = getActiveSlotMinutes();
 
     return (minutesIntoHalfDay / slotMinutes) % 6;
+}
+
+/* Segundos que faltan para que la hora real cruce al proximo bloque
+   de la sala activa (para el contador "proxima obra en" de la UI). No
+   depende de la navegacion manual: cuenta siempre en base al reloj
+   real, tal como se decidio para que Anterior/Siguiente no lo altere. */
+int getSecondsUntilNextArtworkChange(void)
+{
+    ClockTime t = getCurrentTime();
+    int slotMinutes = getActiveSlotMinutes();
+    int minutesIntoHalfDay = (t.hour % 12) * 60 + t.minute;
+    int minutesIntoSlot = minutesIntoHalfDay % slotMinutes;
+    int secondsIntoSlot = minutesIntoSlot * 60 + t.second;
+    int secondsPerSlot = slotMinutes * 60;
+
+    return secondsPerSlot - secondsIntoSlot;
+}
+
+/* Navegacion manual: corre activeArtworkIndex un paso, sin tocar
+   lastNaturalArtworkIndex -- asi el proximo cambio de hora real (que
+   si actualiza lastNaturalArtworkIndex) vuelve a tomar el control (ver
+   nota junto a la declaracion de lastNaturalArtworkIndex). */
+void goToNextArtwork(void)
+{
+    activeArtworkIndex = (activeArtworkIndex + 1) % 6;
+}
+
+void goToPreviousArtwork(void)
+{
+    activeArtworkIndex = (activeArtworkIndex + 5) % 6;
 }
 
 /* -----------------------------------------------------------------------
@@ -182,9 +247,14 @@ static int computeActiveArtworkIndex(ClockTime t)
  * ----------------------------------------------------------------------- */
 void initSegments(void)
 {
-    /* arranca en sala 1 (15 min) por defecto */
-    loadRoomIntoSegments(1);
-    activeRoom = 1;
+    /* arranca en sala 1 (15 min) por defecto. Usa setActiveRoom() en
+       vez de duplicar su logica (loadRoomIntoSegments + activeRoom)
+       para que el intervalo de cambio (ver app_config) quede
+       sincronizado desde el arranque -- antes se pisaba el valor por
+       defecto de app_config.c (30 min) sin avisarle, y el selector de
+       intervalo de la UI mostraba "30 min" resaltado mientras la sala
+       realmente activa era la de 15 min. */
+    setActiveRoom(1);
 
     /* evita un primer frame degenerado */
     updateSectorLayout();
@@ -393,6 +463,20 @@ void drawSegments(void)
     {
         drawSegment(&segments[i]);
     }
+
+    /* flash de cambio de sala (ver roomTransitionAlpha): un circulo
+       negro translucido que cubre la rueda entera y se desvanece solo
+       en updateSegments(). Va DESPUES de los 6 segmentos para tapar
+       tambien sus bordes/halo. */
+    if(roomTransitionAlpha > 0.0f)
+    {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        glColor4f(0.0f, 0.0f, 0.0f, roomTransitionAlpha);
+
+        drawFilledCircle(0.0f, 0.0f, 1.0f);
+    }
 }
 
 ArtworkType getActiveArtworkType(void)
@@ -407,9 +491,26 @@ int getActiveArtworkIndex(void)
 
 void updateSegments(void)
 {
-    activeArtworkIndex = computeActiveArtworkIndex(getCurrentTime());
+    int naturalIndex = computeActiveArtworkIndex(getCurrentTime());
+
+    /* el automatico solo pisa la navegacion manual cuando la hora real
+       realmente cruzo a un slot distinto -- no en cada frame, o
+       goToNextArtwork/Previous nunca tendrian efecto visible */
+    if(naturalIndex != lastNaturalArtworkIndex)
+    {
+        activeArtworkIndex = naturalIndex;
+        lastNaturalArtworkIndex = naturalIndex;
+    }
 
     updateSectorLayout();
+
+    if(roomTransitionAlpha > 0.0f)
+    {
+        roomTransitionAlpha -= 0.06f;
+
+        if(roomTransitionAlpha < 0.0f)
+            roomTransitionAlpha = 0.0f;
+    }
 
     highlightPulsePhase += HIGHLIGHT_PULSE_SPEED;
 

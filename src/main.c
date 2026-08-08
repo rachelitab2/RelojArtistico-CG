@@ -59,6 +59,26 @@ static void activateVsync(void)
  * PlaySoundA(): nunca falla, en el peor caso el catalogo queda como
  * estaba antes de este fix.
  */
+/*
+ * FreeGLUT no tiene una funcion propia para arrancar maximizado (solo
+ * glutFullScreen(), que saca tambien la barra de titulo -- no es lo
+ * que se pidio: la ventana debe seguir teniendo minimizar/restaurar/
+ * cerrar, solo arrancar ocupando toda la pantalla como si se hubiera
+ * apretado el boton de maximizar). Se busca el HWND recien creado por
+ * su titulo (unico en este proceso) y se maximiza con la API de
+ * Windows directamente.
+ *
+ * Debe llamarse DESPUES de glutCreateWindow() (la ventana tiene que
+ * existir para poder encontrarla).
+ */
+static void maximizeWindow(void)
+{
+    HWND window = FindWindowA(NULL, "Reloj Artistico");
+
+    if(window != NULL)
+        ShowWindow(window, SW_MAXIMIZE);
+}
+
 static void resolveAssetsWorkingDirectory(void)
 {
     char exePath[MAX_PATH];
@@ -201,6 +221,7 @@ int main(int argc,char** argv)
 
 #ifdef _WIN32
     activateVsync();
+    maximizeWindow();
 #endif
 
     /* deben ir antes del loop: display() ya espera segments[] lleno */

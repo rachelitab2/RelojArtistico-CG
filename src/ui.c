@@ -421,6 +421,97 @@ static void drawSoundToggle(void)
     drawTextLine(textX, textY, GLUT_BITMAP_HELVETICA_10, muted ? "Activar musica" : "Silenciar musica");
 }
 
+/* Rectangulos (en unidades de mundo) de los botones Anterior/Siguiente,
+   recalculados cada frame en drawArtworkNavigator(). */
+static float prevButtonX;
+static float prevButtonY;
+static float navButtonWidth;
+static float navButtonHeight;
+static float nextButtonX;
+static float nextButtonY;
+
+static void drawNavButton(float x, float y, float width, float height,
+                          const char *label, ArtworkColor accent)
+{
+    float textWidth = (float)glutBitmapLength(GLUT_BITMAP_HELVETICA_10, (const unsigned char *)label);
+    float textX = x + (width - pixelsToWorldUnits((int)textWidth)) * 0.5f;
+    float textY = y - height * 0.5f - pixelsToWorldUnits(4);
+
+    glColor4f(0.02f, 0.02f, 0.025f, 0.55f);
+    glBegin(GL_QUADS);
+        glVertex2f(x, y);
+        glVertex2f(x + width, y);
+        glVertex2f(x + width, y - height);
+        glVertex2f(x, y - height);
+    glEnd();
+
+    glColor4f(accent.red, accent.green, accent.blue, 0.35f);
+    glLineWidth(1.0f);
+    glBegin(GL_LINE_LOOP);
+        glVertex2f(x, y);
+        glVertex2f(x + width, y);
+        glVertex2f(x + width, y - height);
+        glVertex2f(x, y - height);
+    glEnd();
+
+    glColor3f(0.88f, 0.88f, 0.90f);
+    drawTextLine(textX, textY, GLUT_BITMAP_HELVETICA_10, label);
+}
+
+/* Barra inferior: botones Anterior/Siguiente para saltar de obra a
+   mano dentro de la sala activa, mas el contador de cuanto falta para
+   el proximo cambio automatico por hora real (ver ADR pendiente y
+   getSecondsUntilNextArtworkChange en segments.c: la navegacion manual
+   no altera ese contador, el automatico siempre termina retomando el
+   control). */
+static void drawArtworkNavigator(void)
+{
+    float left;
+    float right;
+    float bottom;
+    float top;
+    const ArtworkInfo *artwork = getArtworkInfo(getActiveArtworkType());
+    float margin = pixelsToWorldUnits(26);
+    float gap = pixelsToWorldUnits(10);
+    float totalWidth;
+    float countdownY;
+    int secondsLeft = getSecondsUntilNextArtworkChange();
+    int minutesLeft;
+    char countdownText[48];
+
+    if(secondsLeft < 0)
+        secondsLeft = 0;
+
+    minutesLeft = secondsLeft / 60;
+    secondsLeft = secondsLeft % 60;
+
+    getWorldBounds(&left, &right, &bottom, &top);
+
+    navButtonWidth  = pixelsToWorldUnits(96);
+    navButtonHeight = pixelsToWorldUnits(26);
+    totalWidth = navButtonWidth * 2.0f + gap;
+
+    prevButtonX = -totalWidth * 0.5f;
+    nextButtonX = prevButtonX + navButtonWidth + gap;
+
+    countdownY = bottom + margin;
+    prevButtonY = countdownY + pixelsToWorldUnits(14) + gap + navButtonHeight;
+    nextButtonY = prevButtonY;
+
+    drawNavButton(prevButtonX, prevButtonY, navButtonWidth, navButtonHeight, "< Anterior", artwork->accentColor);
+    drawNavButton(nextButtonX, nextButtonY, navButtonWidth, navButtonHeight, "Siguiente >", artwork->accentColor);
+
+    snprintf(countdownText, sizeof(countdownText), "proxima obra en %02d:%02d", minutesLeft, secondsLeft);
+
+    glColor3f(0.52f, 0.55f, 0.58f);
+    {
+        float textWidth = (float)glutBitmapLength(GLUT_BITMAP_HELVETICA_10, (const unsigned char *)countdownText);
+        float textX = 0.0f - pixelsToWorldUnits((int)textWidth) * 0.5f;
+
+        drawTextLine(textX, countdownY, GLUT_BITMAP_HELVETICA_10, countdownText);
+    }
+}
+
 /* Convierte un click en pixeles (origen arriba-izquierda, como lo
    entrega GLUT) a las mismas unidades de mundo que usa el resto de la
    UI, para poder comparar contra soundButtonX/Y/Width/Height. */
@@ -457,6 +548,20 @@ int uiHandleClick(int pixelX, int pixelY)
        worldY <= soundButtonY && worldY >= soundButtonY - soundButtonHeight)
     {
         toggleAudioMute();
+        return 1;
+    }
+
+    if(worldX >= prevButtonX && worldX <= prevButtonX + navButtonWidth &&
+       worldY <= prevButtonY && worldY >= prevButtonY - navButtonHeight)
+    {
+        goToPreviousArtwork();
+        return 1;
+    }
+
+    if(worldX >= nextButtonX && worldX <= nextButtonX + navButtonWidth &&
+       worldY <= nextButtonY && worldY >= nextButtonY - navButtonHeight)
+    {
+        goToNextArtwork();
         return 1;
     }
 
@@ -622,4 +727,5 @@ void drawUserInterface(void)
     drawIntervalSelector();
     drawSoundToggle();
     drawArtworkPanel();
+    drawArtworkNavigator();
 }

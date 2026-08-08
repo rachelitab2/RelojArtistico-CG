@@ -83,4 +83,17 @@ ArtworkType getActiveArtworkType(void);
 
 int getActiveArtworkIndex(void);
 
+/* Navegacion manual dentro de la sala activa (botones Anterior/
+   Siguiente de la UI). El cambio automatico por hora real sigue
+   funcionando en paralelo y retoma el control en cuanto la hora real
+   cruza a un slot distinto (ver ADR pendiente sobre navegacion manual
+   vs. automatica). */
+void goToNextArtwork(void);
+void goToPreviousArtwork(void);
+
+/* Segundos restantes hasta el proximo cambio automatico de obra,
+   segun la hora real y la sala activa. Para el contador "proxima obra
+   en" de la UI; no se ve afectado por la navegacion manual. */
+int getSecondsUntilNextArtworkChange(void);
+
 #endif
