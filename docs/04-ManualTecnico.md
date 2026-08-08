@@ -359,13 +359,31 @@ Función	Responsabilidad
 draw<Artista>()	Dibuja la composición principal de la obra.
 draw<Artista>Background()	Representa el fondo del segmento correspondiente.
 Obras implementadas
-Archivo	Obra representada
-segment_hokusai.c	La Gran Ola de Kanagawa
-segment_vangogh.c	La Noche Estrellada
-segment_kandinsky.c	Composición abstracta inspirada en Kandinsky
-segment_mondrian.c	Composición geométrica inspirada en Mondrian
-segment_monet.c	Los Nenúfares
-segment_klimt.c	El Beso
+
+## Sala 15 min — Color y geometría
+- Cuadrado negro y cuadrado rojo — Kazimir Malevich
+- Ritmos — Robert Delaunay
+- Vi la cifra 5 en oro — Charles Demuth
+- Composición VIII — Wassily Kandinsky
+- Composición con rojo, azul y amarillo — Piet Mondrian
+- Ritmo de color — Bridget Riley
+
+## Sala 30 min — Luz, ritmo y color
+- Nenúfares — Claude Monet
+- La noche estrellada — Vincent van Gogh
+- Symmetry Drawing No. 69 — M. C. Escher
+- Un domingo en la Grande Jatte — Georges Seurat
+- Fiesta de primavera — Alma Thomas
+- Castillo y sol — Paul Klee
+
+## Sala 60 min — Símbolo, ornamento y abstracción
+- El beso — Gustav Klimt
+- Color fields for kids — Mark Rothko
+- El Cisne, No. 17 — Hilma af Klint
+- El Jardín — Joan Miró
+- Composición Suprematista — Kazimir Malevich
+- Amorfa, fuga en dos colores — František Kupka
+
 Mantenimiento
 
 Para modificar una obra artística únicamente es necesario editar su módulo correspondiente.

@@ -9,7 +9,7 @@ El proyecto representa un reloj analógico funcional cuya periferia está formad
 # Características
 
 - Reloj analógico sincronizado con la hora del sistema.
-- Seis obras artísticas distribuidas alrededor del reloj.
+- Dieciocho obras artísticas distribuidas en tres salas temáticas (15/30/60 min).
 - Arquitectura modular basada en responsabilidades.
 - Motor de segmentos independiente.
 - Selección automática de la obra destacada según la hora.
@@ -21,12 +21,29 @@ El proyecto representa un reloj analógico funcional cuya periferia está formad
 
 # Obras representadas
 
-- 🌊 La Gran Ola de Kanagawa — Katsushika Hokusai
-- 🌌 La Noche Estrellada — Vincent van Gogh
-- 🎨 Composición abstracta — Wassily Kandinsky
-- 🟥 Composición geométrica — Piet Mondrian
-- 🪷 Los Nenúfares — Claude Monet
-- ✨ El Beso — Gustav Klimt
+## Sala 15 min — Color y geometría
+- Cuadrado negro y cuadrado rojo — Kazimir Malevich
+- Ritmos — Robert Delaunay
+- Vi la cifra 5 en oro — Charles Demuth
+- Composición VIII — Wassily Kandinsky
+- Composición con rojo, azul y amarillo — Piet Mondrian
+- Ritmo de color — Bridget Riley
+
+## Sala 30 min — Luz, ritmo y color
+- Nenúfares — Claude Monet
+- La noche estrellada — Vincent van Gogh
+- Symmetry Drawing No. 69 — M. C. Escher
+- Un domingo en la Grande Jatte — Georges Seurat
+- Fiesta de primavera — Alma Thomas
+- Castillo y sol — Paul Klee
+
+## Sala 60 min — Símbolo, ornamento y abstracción
+- El beso — Gustav Klimt
+- Color fields for kids — Mark Rothko
+- El Cisne, No. 17 — Hilma af Klint
+- El Jardín — Joan Miró
+- Composición Suprematista — Kazimir Malevich
+- Amorfa, fuga en dos colores — František Kupka
 
 ---
 
