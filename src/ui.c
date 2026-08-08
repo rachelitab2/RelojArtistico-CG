@@ -8,6 +8,7 @@
 #include "app_config.h"
 #include "texture.h"
 #include "audio.h"
+#include "utils.h"
 
 /*
  * Convierte pixeles a unidades del mundo usando la proyeccion actual.
@@ -682,10 +683,7 @@ drawTextLine(
     textY -= pixelsToWorldUnits(23);
 
     glColor4f(1.0f, 1.0f, 1.0f, 0.14f);
-    glBegin(GL_LINES);
-        glVertex2f(contentX, textY + pixelsToWorldUnits(9));
-        glVertex2f(x + panelWidth - pixelsToWorldUnits(14), textY + pixelsToWorldUnits(9));
-    glEnd();
+    drawLine(contentX, textY + pixelsToWorldUnits(9), x + panelWidth - pixelsToWorldUnits(14), textY + pixelsToWorldUnits(9));
 
     descriptionLineCount = wrapText(
         artwork->description,

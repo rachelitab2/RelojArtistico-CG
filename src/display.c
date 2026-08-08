@@ -35,6 +35,64 @@ static AppScreen currentScreen = SCREEN_LOADING;
 static float loadingElapsedSeconds = 0.0f;
 static const float LOADING_DURATION_SECONDS = 2.0f;
 
+/* Precarga de texturas durante la pantalla de carga (ver
+ * preloadNextTexture() y su llamada en timer()).
+ *
+ * Crear una textura de OpenGL (glGenTextures + glTexImage2D) mientras
+ * el usuario interactua -- por ejemplo al clickear Siguiente y pasar a
+ * una obra que todavia no cargo su imagen -- crashea de forma
+ * reproducible en varias maquinas (ver
+ * docs/09-Diagnostico-Pantallazo-VIDEO-SCHEDULER.md). Se descarto que
+ * sea corrupcion de imagen o mal manejo de memoria (las 19 imagenes
+ * cargan perfecto con stb_image puro, sin OpenGL); el problema aparece
+ * especificamente al crear texturas GL durante el uso interactivo.
+ *
+ * La mitigacion: cargar las 19 texturas (18 obras + logo) UNA POR
+ * FRAME durante la pantalla de carga, antes de que el usuario pueda
+ * tocar nada -- cada carga queda separada por un ciclo real de
+ * timer()/display()/glutSwapBuffers(), a diferencia de un loop
+ * apretado. Para cuando se puede interactuar, loadTexture() siempre
+ * pega en cache (ver texture.c) y no vuelve a crear una textura GL. */
+static int preloadIndex = 0;
+
+static const char *getPreloadImagePath(int index)
+{
+    static const char *paths[1 + ROOM_SIZE * 3];
+    static int initialized = 0;
+    int i;
+
+    if(!initialized)
+    {
+        int n = 0;
+
+        paths[n++] = "assets/logo.png";
+
+        for(i = 0; i < ROOM_SIZE; i++) paths[n++] = getArtworkInfo(ROOM_15_MIN[i])->imagePath;
+        for(i = 0; i < ROOM_SIZE; i++) paths[n++] = getArtworkInfo(ROOM_30_MIN[i])->imagePath;
+        for(i = 0; i < ROOM_SIZE; i++) paths[n++] = getArtworkInfo(ROOM_60_MIN[i])->imagePath;
+
+        initialized = 1;
+    }
+
+    if(index < 0 || index >= (int)(sizeof(paths) / sizeof(paths[0])))
+        return 0;
+
+    return paths[index];
+}
+
+#define PRELOAD_TOTAL (1 + ROOM_SIZE * 3)
+
+/* Un paso de precarga por llamada (ver preloadIndex). Se llama una vez
+   por tick del timer mientras dure SCREEN_LOADING. */
+static void preloadNextTexture(void)
+{
+    if(preloadIndex >= PRELOAD_TOTAL)
+        return;
+
+    loadTexture(getPreloadImagePath(preloadIndex));
+    preloadIndex++;
+}
+
 static const float GOLD[3] = {0.85f, 0.65f, 0.25f};
 
 /* pixeles -> unidades del mundo y texto centrado: mismo criterio
@@ -499,7 +557,15 @@ void timer(int value)
     {
         loadingElapsedSeconds += FRAME_INTERVAL_MS / 1000.0f;
 
-        if(loadingElapsedSeconds >= LOADING_DURATION_SECONDS)
+        preloadNextTexture();
+
+        /* no pasa a la intro hasta cumplir el tiempo minimo de marca
+           Y terminar de precargar -- lo que tarde mas. Con 19
+           texturas a un ritmo de una por frame (33ms) la precarga
+           sola tarda bastante menos que LOADING_DURATION_SECONDS, asi
+           que en la practica el tiempo minimo de marca es el que
+           manda y la precarga ya esta lista de sobra. */
+        if(loadingElapsedSeconds >= LOADING_DURATION_SECONDS && preloadIndex >= PRELOAD_TOTAL)
             currentScreen = SCREEN_INTRO;
     }
     else if(currentScreen == SCREEN_CLOCK)
