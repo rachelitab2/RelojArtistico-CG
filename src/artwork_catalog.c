@@ -7,16 +7,16 @@
  * la escena, la interfaz y el motor de segmentos compartan una misma identidad
  * artistica sin duplicar datos en diferentes modulos.
  *
- * Las obras marcadas con [PLACEHOLDER] no tienen todavia un segment_*.c
- * propio; segments.c las dibuja con un relleno generico hasta que se
- * implemente su modulo grafico.
+ * Las 18 obras tienen su propio segment_*.c/.h (ver segments.c). Si se
+ * agrega una obra nueva sin implementacion grafica todavia, segments.c
+ * la dibuja con un relleno generico hasta que se cree su modulo.
  */
 static const ArtworkInfo ARTWORK_CATALOG[] =
 {
     /* ===== SALA 15 MIN: Color y geometria ===== */
 
     {
-        ART_MALEVICH,                                          /* [PLACEHOLDER] */
+        ART_MALEVICH,
         "Cuadrado negro y cuadrado rojo",
         "Kazimir Malevich",
         "1915",
@@ -32,7 +32,7 @@ static const ArtworkInfo ARTWORK_CATALOG[] =
         }
     },
     {
-        ART_DELAUNAY,                                          /* [PLACEHOLDER] */
+        ART_DELAUNAY,
         "Formas simultaneas",
         "Robert Delaunay",
         "1912",
@@ -96,7 +96,7 @@ static const ArtworkInfo ARTWORK_CATALOG[] =
         }
     },
     {
-        ART_RILEY,                                             /* [PLACEHOLDER] */
+        ART_RILEY,
         "Ritmo de color",
         "Bridget Riley",
         "1967",
@@ -147,7 +147,7 @@ static const ArtworkInfo ARTWORK_CATALOG[] =
         }
     },
     {
-        ART_ESCHER,                                            /* [PLACEHOLDER] */
+        ART_ESCHER,
         "Symmetry Drawing No. 69",
         "M. C. Escher",
         "1948",
@@ -179,7 +179,7 @@ static const ArtworkInfo ARTWORK_CATALOG[] =
         }
     },
     {
-        ART_ALMA_THOMAS,                                       /* [PLACEHOLDER] */
+        ART_ALMA_THOMAS,
         "Fiesta de primavera",
         "Alma Thomas",
         "1968",
@@ -294,7 +294,7 @@ static const ArtworkInfo ARTWORK_CATALOG[] =
         }
     },
     {
-        ART_TAEUBER_ARP,                                       /* [PLACEHOLDER] */
+        ART_TAEUBER_ARP,
         "Composicion de circulos y semicirculos superpuestos",
         "Sophie Taeuber-Arp",
         "1930",
