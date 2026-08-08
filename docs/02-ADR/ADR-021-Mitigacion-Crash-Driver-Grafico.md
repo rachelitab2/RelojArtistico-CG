@@ -1,11 +1,11 @@
-ADR-013 – Mitigación del crash del driver gráfico al cambiar de sala
+ADR-021 – Mitigación del crash del driver gráfico al cambiar de sala
 Estado
 
 Aceptado (mitigado, causa raíz no resuelta — ver Consecuencias).
 
 Contexto
 
-Al ampliar el proyecto al sistema de tres salas (ADR-011), se detectó un cierre abrupto reproducible de la aplicación al cambiar de sala (tecla 1/2/3), con código de excepción 0xc0000005 en el Visor de eventos de Windows. Un diagnóstico detallado (ver docs/09-Diagnostico-Pantallazo-VIDEO-SCHEDULER.md) usando adjunte en vivo de gdb al proceso confirmó que el crash ocurre enteramente dentro de nvoglv64.dll (el driver de NVIDIA), en DrvPresentBuffers, sin ningún cuadro de pila perteneciente al código de la aplicación.
+Al ampliar el proyecto al sistema de tres salas (ADR-019), se detectó un cierre abrupto reproducible de la aplicación al cambiar de sala (tecla 1/2/3), con código de excepción 0xc0000005 en el Visor de eventos de Windows. Un diagnóstico detallado (ver docs/09-Diagnostico-Pantallazo-VIDEO-SCHEDULER.md) usando adjunte en vivo de gdb al proceso confirmó que el crash ocurre enteramente dentro de nvoglv64.dll (el driver de NVIDIA), en DrvPresentBuffers, sin ningún cuadro de pila perteneciente al código de la aplicación.
 
 Problema
 
@@ -51,11 +51,11 @@ El comportamiento del crash quedó documentado con evidencia reproducible (docs/
 Desventajas
 El crash sigue siendo reproducible de forma no determinística tras las tres mitigaciones (confirmado con pruebas automatizadas de cambio de sala repetido, que no lo reprodujeron de forma consistente, pero el usuario sí lo vio en uso interactivo real).
 La causa raíz solo puede resolverse actualizando el driver de NVIDIA del equipo, algo fuera del control del código del proyecto.
-Se agregaron alias de teclado 4/5/6 (ver ADR-014) específicamente para descartar que el crash estuviera atado a las teclas 1/2/3, lo que confirmó que el disparador es el cambio de sala en sí, no la tecla usada.
+Se agregaron alias de teclado 4/5/6 (ver ADR-022) específicamente para descartar que el crash estuviera atado a las teclas 1/2/3, lo que confirmó que el disparador es el cambio de sala en sí, no la tecla usada.
 Evidencia en el proyecto
 
 docs/09-Diagnostico-Pantallazo-VIDEO-SCHEDULER.md (diagnóstico completo con backtraces de gdb); drawDot() en segment_seurat.c y segment_escher.c; ausencia de glutPostRedisplay() en keyboard() (main.c, con comentario explicando el motivo); activateVsync() en main.c.
 
 Relación con otros ADR
 
-Consecuencia directa de ADR-011 (sistema de salas), que introdujo el patrón de uso (cambio de sala con recarga completa de 6 obras) donde el crash se hizo evidente. Relacionado con ADR-014 (alias de teclado), usado como herramienta de diagnóstico para este mismo problema.
+Consecuencia directa de ADR-019 (sistema de salas), que introdujo el patrón de uso (cambio de sala con recarga completa de 6 obras) donde el crash se hizo evidente. Relacionado con ADR-022 (alias de teclado), usado como herramienta de diagnóstico para este mismo problema.

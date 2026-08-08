@@ -1,4 +1,4 @@
-ADR-014 – Alias de teclado 4/5/6 y resolución de assets relativa al ejecutable
+ADR-022 – Alias de teclado 4/5/6 y resolución de assets relativa al ejecutable
 Estado
 
 Aceptado.
@@ -7,7 +7,7 @@ Contexto
 
 Dos problemas de robustez, independientes entre sí pero ambos tocando main.c, surgieron durante el trabajo de la sala de 1 hora:
 
-(a) Como parte de la investigación del crash del driver gráfico (ver ADR-013), era necesario descartar si el cierre abrupto estaba atado específicamente a las teclas 1/2/3 o al cambio de sala en sí, independientemente de qué tecla lo dispara.
+(a) Como parte de la investigación del crash del driver gráfico (ver ADR-021), era necesario descartar si el cierre abrupto estaba atado específicamente a las teclas 1/2/3 o al cambio de sala en sí, independientemente de qué tecla lo dispara.
 
 (b) Todas las rutas de assets del catálogo (artwork_catalog.c, app_config.c) son relativas ("assets/images/...", "assets/audio/..."), lo que las hace depender del directorio de trabajo (CWD) en el momento de lanzar el proceso, no de dónde esté físicamente el ejecutable. Si algo lanza el .exe con el CWD en otro lado (un acceso directo, "Run" del IDE, abrir el .exe desde build/ en vez de la raíz del proyecto), las imágenes y el audio quedan en blanco sin ningún aviso al usuario.
 
@@ -40,7 +40,7 @@ Las alternativas seleccionadas: (a) case '4'/'5'/'6' se agregan a los mismos cas
 
 Decisión
 
-(a) keyboard() en main.c: cada case de setActiveRoom(1/2/3) ahora acepta tanto la tecla original (1/2/3) como su alias (4/5/6) mediante fall-through de switch. Confirmado que el crash del driver ocurre igual con las teclas alias, descartando que estuviera atado a una tecla específica (ver ADR-013).
+(a) keyboard() en main.c: cada case de setActiveRoom(1/2/3) ahora acepta tanto la tecla original (1/2/3) como su alias (4/5/6) mediante fall-through de switch. Confirmado que el crash del driver ocurre igual con las teclas alias, descartando que estuviera atado a una tecla específica (ver ADR-021).
 
 (b) resolveAssetsWorkingDirectory() se llama al inicio de main(), antes de glutInit(). Si no encuentra assets/ tras 2 niveles hacia arriba desde la carpeta del ejecutable, deja el directorio de trabajo como estaba — mismo criterio de degradación seguro que loadTexture() y PlaySoundA(): nunca falla ni interrumpe el arranque, en el peor caso el catálogo queda como antes de este fix.
 
@@ -64,4 +64,4 @@ case '4'/'5'/'6' en keyboard() (main.c); resolveAssetsWorkingDirectory() y su ll
 
 Relación con otros ADR
 
-(a) es una herramienta de diagnóstico para ADR-013 (mitigación del crash del driver). (b) es independiente, motivado por robustez de arranque en distintos contextos de lanzamiento, sin relación directa con el sistema de salas (ADR-011) más allá de compartir el mismo archivo main.c.
+(a) es una herramienta de diagnóstico para ADR-021 (mitigación del crash del driver). (b) es independiente, motivado por robustez de arranque en distintos contextos de lanzamiento, sin relación directa con el sistema de salas (ADR-019) más allá de compartir el mismo archivo main.c.

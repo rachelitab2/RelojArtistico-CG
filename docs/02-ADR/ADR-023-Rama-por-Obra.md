@@ -1,11 +1,11 @@
-ADR-015 – Una rama de Git por obra artística
+ADR-023 – Una rama de Git por obra artística
 Estado
 
 Aceptado.
 
 Contexto
 
-El ADR-005 ya establecía que cada obra vive en su propio módulo de código (segment_*.c/.h) para reducir conflictos de integración en un desarrollo colaborativo vía Git. Al ampliar el catálogo a 18 obras (ADR-011), con el trabajo concentrado en una sola persona pero desarrollado obra por obra a lo largo de varias sesiones, se hizo explícito un criterio adicional: no solo el código de cada obra debe estar aislado en su propio módulo, sino que el historial de Git debe reflejar esa misma separación, una rama por obra.
+El ADR-005 ya establecía que cada obra vive en su propio módulo de código (segment_*.c/.h) para reducir conflictos de integración en un desarrollo colaborativo vía Git. Al ampliar el catálogo a 18 obras (ADR-019), con el trabajo concentrado en una sola persona pero desarrollado obra por obra a lo largo de varias sesiones, se hizo explícito un criterio adicional: no solo el código de cada obra debe estar aislado en su propio módulo, sino que el historial de Git debe reflejar esa misma separación, una rama por obra.
 
 Problema
 
@@ -38,7 +38,7 @@ Cambios que no son una obra nueva (mitigaciones de rendimiento, fixes de arranqu
 
 Justificación
 
-Mantener el historial de Git alineado con la separación modular del código (ADR-005) hace que cada rama sea una unidad de revisión y reversión completa: si una obra necesita rehacerse (como ocurrió con Rothko, ver ADR-012) o descartarse, el cambio queda contenido a su propia rama sin arrastrar el trabajo de otras obras implementadas en la misma sesión.
+Mantener el historial de Git alineado con la separación modular del código (ADR-005) hace que cada rama sea una unidad de revisión y reversión completa: si una obra necesita rehacerse (como ocurrió con Rothko, ver ADR-020) o descartarse, el cambio queda contenido a su propia rama sin arrastrar el trabajo de otras obras implementadas en la misma sesión.
 
 git add -p para separar hunks de un mismo archivo compartido evita el trade-off entre "una rama por obra" y "los archivos compartidos se tocan en varias obras a la vez" — permite ambas cosas sin forzar merges innecesarios ni perder la trazabilidad de qué commit tocó qué obra.
 
@@ -56,4 +56,4 @@ El historial de ramas del repositorio: feature/segment-escher, feature/segment-p
 
 Relación con otros ADR
 
-Extiende a nivel de control de versiones el criterio de aislamiento por obra ya establecido en ADR-005 (organización modular por archivo). Es la práctica de proceso que acompañó la implementación de ADR-011 (sistema de salas) al escalar el catálogo de 6 a 18 obras.
+Extiende a nivel de control de versiones el criterio de aislamiento por obra ya establecido en ADR-005 (organización modular por archivo). Es la práctica de proceso que acompañó la implementación de ADR-019 (sistema de salas) al escalar el catálogo de 6 a 18 obras.
