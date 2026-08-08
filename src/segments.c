@@ -22,6 +22,7 @@
 #include "segment_kupka.h"
 #include "segment_hilma.h"
 #include "segment_joan_miro.h"
+#include "segment_malevich_suprematist.h"
 #include "artwork_catalog.h"
 #include "app_config.h"
 
@@ -58,7 +59,7 @@ const ArtworkType ROOM_60_MIN[ROOM_SIZE] =
     ART_JOAN_MIRO,
     ART_ROTHKO,
     ART_KUPKA,
-    ART_TAEUBER_ARP
+    ART_MALEVICH_SUPREMATIST
 };
 
 Segment segments[6]; /* los 6 sectores del reloj, en orden fijo */
@@ -489,6 +490,7 @@ static void drawArtwork(ArtworkType artwork)
         case ART_KUPKA:       drawKupka();       break;
         case ART_HILMA:       drawHilma();       break;
         case ART_JOAN_MIRO:   drawJoanMiro();    break;
+        case ART_MALEVICH_SUPREMATIST: drawMalevichSuprematist(); break;
 
         /* --- placeholders --- */
         default:
@@ -562,6 +564,10 @@ static void drawArtworkBackground(const Segment *segment, float halfAngle)
 
         case ART_PAUL_KLEE:
             drawPaulKleeBackground(segment->innerRadius, segment->outerRadius, halfAngle);
+            break;
+
+        case ART_MALEVICH_SUPREMATIST:
+            drawMalevichSuprematistBackground(segment->innerRadius, segment->outerRadius, halfAngle);
             break;
 
         case ART_KUPKA:

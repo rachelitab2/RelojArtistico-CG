@@ -308,6 +308,22 @@ static const ArtworkInfo ARTWORK_CATALOG[] =
             {0.15f, 0.55f, 0.80f},
             {0.92f, 0.82f, 0.20f}
         }
+    },
+    {
+        ART_MALEVICH_SUPREMATIST,
+        "Composicion Suprematista",
+        "Kazimir Malevich",
+        "1916",
+        "Suprematismo",
+        "Formas geometricas puras que flotan sin gravedad ni horizonte sobre un fondo blanco silencioso.",
+        "assets/images/malevich_suprematist.jpg",
+        {0.94f, 0.93f, 0.90f},
+        {0.08f, 0.10f, 0.55f},
+        {
+            {0.08f, 0.10f, 0.55f},
+            {0.94f, 0.76f, 0.10f},
+            {0.10f, 0.55f, 0.30f}
+        }
     }
 };
 

@@ -32,7 +32,8 @@ typedef enum
     ART_JOAN_MIRO,
     ART_ROTHKO,
     ART_KUPKA,
-    ART_TAEUBER_ARP
+    ART_TAEUBER_ARP,
+    ART_MALEVICH_SUPREMATIST
 
 } ArtworkType;
 
