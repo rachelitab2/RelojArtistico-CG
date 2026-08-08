@@ -7,6 +7,7 @@
 #include "artwork_catalog.h"
 #include "app_config.h"
 #include "texture.h"
+#include "audio.h"
 
 /*
  * Convierte pixeles a unidades del mundo usando la proyeccion actual.
@@ -357,6 +358,111 @@ static void drawIntervalSelector(void)
     );
 }
 
+/* Rectangulo (en unidades de mundo) del boton de sonido, recalculado
+   cada frame en drawSoundToggle() para que uiHandleClick() sepa donde
+   esta sin duplicar el calculo de layout. */
+static float soundButtonX;
+static float soundButtonY;
+static float soundButtonWidth;
+static float soundButtonHeight;
+
+static void drawSoundToggle(void)
+{
+    float left;
+    float right;
+    float bottom;
+    float top;
+    const ArtworkInfo *artwork = getArtworkInfo(getActiveArtworkType());
+    int muted = isAudioMuted();
+    float margin = pixelsToWorldUnits(26);
+    float x;
+    float y;
+    float textX;
+    float textY;
+
+    getWorldBounds(&left, &right, &bottom, &top);
+
+    x = left + margin;
+
+    /* debajo del selector de intervalo: margen + etiqueta (15px) +
+       fila de opciones (23px) + aire (14px) */
+    y = top - margin - pixelsToWorldUnits(15) - pixelsToWorldUnits(23) - pixelsToWorldUnits(14);
+
+    glColor3f(0.72f, 0.75f, 0.78f);
+    drawTextLine(x, y, GLUT_BITMAP_HELVETICA_10, "sonido");
+
+    y -= pixelsToWorldUnits(15);
+
+    soundButtonX = x;
+    soundButtonY = y;
+    soundButtonWidth = pixelsToWorldUnits(140);
+    soundButtonHeight = pixelsToWorldUnits(23);
+
+    if(muted)
+        glColor4f(0.02f, 0.02f, 0.025f, 0.48f);
+    else
+        glColor4f(artwork->accentColor.red, artwork->accentColor.green, artwork->accentColor.blue, 0.22f);
+
+    glBegin(GL_QUADS);
+        glVertex2f(soundButtonX, soundButtonY);
+        glVertex2f(soundButtonX + soundButtonWidth, soundButtonY);
+        glVertex2f(soundButtonX + soundButtonWidth, soundButtonY - soundButtonHeight);
+        glVertex2f(soundButtonX, soundButtonY - soundButtonHeight);
+    glEnd();
+
+    if(muted)
+        glColor3f(0.58f, 0.61f, 0.64f);
+    else
+        glColor3f(artwork->accentColor.red, artwork->accentColor.green, artwork->accentColor.blue);
+
+    textX = soundButtonX + pixelsToWorldUnits(10);
+    textY = soundButtonY - pixelsToWorldUnits(15);
+
+    drawTextLine(textX, textY, GLUT_BITMAP_HELVETICA_10, muted ? "Activar musica" : "Silenciar musica");
+}
+
+/* Convierte un click en pixeles (origen arriba-izquierda, como lo
+   entrega GLUT) a las mismas unidades de mundo que usa el resto de la
+   UI, para poder comparar contra soundButtonX/Y/Width/Height. */
+static void pixelToWorld(int pixelX, int pixelY, float *worldX, float *worldY)
+{
+    GLint viewport[4];
+    float left;
+    float right;
+    float bottom;
+    float top;
+
+    glGetIntegerv(GL_VIEWPORT, viewport);
+    getWorldBounds(&left, &right, &bottom, &top);
+
+    if(viewport[2] <= 0 || viewport[3] <= 0)
+    {
+        *worldX = 0.0f;
+        *worldY = 0.0f;
+        return;
+    }
+
+    *worldX = left + ((float)pixelX / (float)viewport[2]) * (right - left);
+    *worldY = top - ((float)pixelY / (float)viewport[3]) * (top - bottom);
+}
+
+int uiHandleClick(int pixelX, int pixelY)
+{
+    float worldX;
+    float worldY;
+
+    pixelToWorld(pixelX, pixelY, &worldX, &worldY);
+
+    if(worldX >= soundButtonX && worldX <= soundButtonX + soundButtonWidth &&
+       worldY <= soundButtonY && worldY >= soundButtonY - soundButtonHeight)
+    {
+        toggleAudioMute();
+        return 1;
+    }
+
+    return 0;
+}
+
 static void drawArtworkPanel(void)
 {
     float left;
@@ -514,5 +620,6 @@ drawTextLine(
 void drawUserInterface(void)
 {
     drawIntervalSelector();
+    drawSoundToggle();
     drawArtworkPanel();
 }

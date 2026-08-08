@@ -7,6 +7,7 @@
 #include "display.h"
 #include "segments.h"
 #include "audio.h"
+#include "ui.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -170,6 +171,16 @@ void keyboard(unsigned char key, int x, int y)
        de hasta 33ms para que se refleje la tecla es imperceptible. */
 }
 
+/* Primer uso de mouse en el proyecto: hasta ahora toda la interaccion
+   era por teclado (ver ADR-017, sobre la intro). Solo se necesita el
+   flanco de bajada del boton izquierdo para el boton de sonido de la
+   UI (ver ui.c); uiHandleClick() decide si el click cayo dentro. */
+void mouse(int button, int state, int x, int y)
+{
+    if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+        uiHandleClick(x, y);
+}
+
 int main(int argc,char** argv)
 {
 #ifdef _WIN32
@@ -204,6 +215,8 @@ int main(int argc,char** argv)
     glutReshapeFunc(reshape);
 
     glutKeyboardFunc(keyboard);
+
+    glutMouseFunc(mouse);
 
     glutTimerFunc(33,timer,0); /* arranca el reloj de animacion (~30 FPS) */
 
