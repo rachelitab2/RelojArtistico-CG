@@ -290,3 +290,75 @@ frames de la aplicacion, no prueba que la causa este en el driver -- solo
 prueba que el recurso que fallo se administra ahi. Vale la pena revisar
 manejo de recursos (texturas, buffers, handles) antes de asumir que un
 crash asi es responsabilidad exclusiva del driver.
+
+## Segundo crash distinto (2026-08-08): crear texturas durante la interaccion
+
+Con la fuga de cache ya arreglada, aparecio un crash separado, mismo codigo
+de excepcion (`0xc0000005`, 100% dentro de `nvoglv64.dll`/`DrvPresentBuffers`,
+a veces en un thread interno del driver): al usar los botones Anterior/
+Siguiente de la UI (navegacion manual, ver ADR pendiente) para pasar por
+varias obras nuevas seguidas. Reproducible en al menos dos maquinas
+distintas de dos integrantes del equipo -- eso descarta que sea un problema
+puntual de un driver de una PC especifica.
+
+### Descarte sistematico (auditoria de codigo, no suposiciones)
+
+- **Fuga de memoria**: ya arreglada aparte (ver seccion anterior); no
+  aplica aca, el cache (`TEXTURE_CACHE_CAPACITY=32`) nunca se llena con
+  las 19 imagenes del proyecto.
+- **Imagen corrupta**: se escribio un programa standalone que carga y
+  libera las 19 imagenes con `stb_image` puro, sin ningun codigo OpenGL de
+  por medio. Las 19 decodifican sin problemas, 0 crashes.
+- **Canales mal contados** (asumir RGB cuando en realidad es RGBA o
+  escala de grises): se verificaron los 19 archivos, todos con el conteo
+  de canales que el codigo espera (3 para los JPEG, 4 para el logo PNG).
+- **`GL_INVALID_OPERATION` silencioso**: instrumentando con `glGetError()`
+  se encontro un error real (codigo 1282) en el divisor de texto del panel
+  de obra (`drawArtworkPanel()`), disparandose en cada frame una vez que
+  una obra con imagen estaba activa. Reemplazar ese `glBegin(GL_LINES)`
+  inline por la funcion compartida `drawLine()` NO elimino el crash --
+  era un problema real pero no la causa de este crash en particular.
+- **Velocidad de los clicks**: crasheaba igual con clicks rapidos (moviendo
+  el mouse por script, ~140ms entre clicks) que con pausas de 2 segundos
+  entre cada uno. Se descarta que sea un problema de saturar la cola de
+  comandos por velocidad.
+- **`glFinish()` tras cada subida de textura**: se agrego para forzar que
+  el driver termine de procesar una textura antes de arrancar la
+  siguiente. Tampoco elimino el crash por si solo.
+
+Lo unico que reproducia el crash de forma consistente, con o sin las
+mitigaciones de arriba, era crear una textura de OpenGL nueva
+(`glGenTextures` + `glTexImage2D`) mientras la aplicacion esta en su loop
+de render normal (frames ya arrancados, ventana ya estable) -- sin importar
+si esa creacion la disparaba un click de Anterior/Siguiente o un loop de
+precarga corrido a mano antes de `glutMainLoop()`.
+
+### Mitigacion aplicada
+
+Se movio toda la creacion de texturas a la pantalla de carga
+(`SCREEN_LOADING`), una textura por tick del timer (33ms), en vez de dejar
+que cada obra cargue la suya la primera vez que se vuelve activa. Para
+cuando el usuario llega a la pantalla del reloj y puede interactuar, las 19
+texturas (18 obras + logo) ya estan en el cache de `texture.c` y
+`loadTexture()` nunca vuelve a ejecutar el camino que crea una textura GL
+durante el uso interactivo.
+
+Confirmado con pruebas automatizadas sobre el mismo proceso corriendo: 20
+clicks rapidos en Siguiente (mismo timing que antes crasheaba siempre en el
+click #3), 30 clicks mas cruzando las 3 salas, 15 clicks en Anterior, y el
+escenario original de teclas sueltas (1/2/3/4/5/6) -- sin un solo crash en
+ninguna de las cuatro pruebas.
+
+### Por que quedaba sin resolver antes
+
+La investigacion original (seccion de arriba) concluyo "causa raiz en el
+driver de esta maquina especifica" porque el crash desaparecia bajo control
+(gdb, pruebas cortas) y el stack no tenia frames propios. La pista que
+faltaba: reproducirlo en una segunda maquina. Un crash 100% dentro del
+driver puede seguir siendo un bug de la aplicacion si el *patron de uso* de
+la API (crear texturas GL en pleno render en vivo, en vez de precargarlas)
+es lo que lo dispara -- el driver no valida ese patron con un error GL
+limpio, simplemente crashea. La leccion de la seccion anterior ("revisar
+manejo de recursos antes de asumir que es el driver") resulto ser
+literalmente el camino correcto, solo que aplicado al recurso equivocado
+la primera vez (memoria filtrada vs. timing de creacion).
