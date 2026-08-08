@@ -278,7 +278,7 @@ static const ArtworkInfo ARTWORK_CATALOG[] =
         }
     },
     {
-        ART_KUPKA,                                             /* [PLACEHOLDER] */
+        ART_KUPKA,
         "Amorfa, fuga en dos colores",
         "Frantisek Kupka",
         "1912",
