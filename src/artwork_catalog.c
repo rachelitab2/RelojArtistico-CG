@@ -262,19 +262,19 @@ static const ArtworkInfo ARTWORK_CATALOG[] =
         }
     },
     {
-        ART_ROTHKO,                                            /* [PLACEHOLDER] */
-        "No. 61 (Oxido y azul)",
+        ART_ROTHKO,
+        "Color fields for kids",
         "Mark Rothko",
         "1953",
         "Expresionismo abstracto",
-        "Campos de color que flotan y respiran, generando una presencia casi fisica.",
+        "Bandas verticales de color puro con pincelada pastosa, casi tactil, que laten una junto a otra.",
         "assets/images/rothko.jpg",
-        {0.10f, 0.04f, 0.03f},
-        {0.55f, 0.20f, 0.12f},
+        {0.11f, 0.04f, 0.04f},
+        {0.90f, 0.46f, 0.16f},
         {
-            {0.55f, 0.20f, 0.12f},
-            {0.10f, 0.18f, 0.45f},
-            {0.38f, 0.08f, 0.06f}
+            {0.90f, 0.46f, 0.16f},
+            {0.80f, 0.10f, 0.14f},
+            {0.55f, 0.16f, 0.22f}
         }
     },
     {
