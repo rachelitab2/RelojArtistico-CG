@@ -1,5 +1,7 @@
 /* Punto de entrada: solo arma la ventana y los callbacks. No dibuja nada. */
 
+#include <string.h>
+
 #include <GL/freeglut.h>
 
 #include "display.h"
@@ -7,6 +9,8 @@
 #include "audio.h"
 
 #ifdef _WIN32
+#include <windows.h>
+
 __declspec(dllexport) unsigned long NvOptimusEnablement = 0x00000001;
 __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 
@@ -38,6 +42,46 @@ static void activateVsync(void)
 
     if(wglSwapIntervalEXT != 0)
         wglSwapIntervalEXT(1);
+}
+
+/*
+ * Todas las rutas de assets del catalogo son relativas ("assets/images/...",
+ * "assets/audio/..."), asi que dependen de cual sea el directorio de
+ * trabajo al arrancar -- no de donde este el .exe. Si algo lanza el
+ * proceso con el CWD en otro lado (ej. "Run" del IDE, un acceso directo,
+ * o abrirlo desde build/ en vez de la raiz del proyecto), todas las
+ * imagenes y el audio quedan en blanco sin ningun aviso.
+ *
+ * Se ubica la carpeta del ejecutable y se sube hasta 2 niveles buscando
+ * "assets/". Si no aparece, se deja el directorio de trabajo como
+ * estaba -- degradacion segura, mismo criterio que loadTexture() y
+ * PlaySoundA(): nunca falla, en el peor caso el catalogo queda como
+ * estaba antes de este fix.
+ */
+static void resolveAssetsWorkingDirectory(void)
+{
+    char exePath[MAX_PATH];
+    char *lastSlash;
+    int attempt;
+
+    if(GetModuleFileNameA(NULL, exePath, MAX_PATH) == 0)
+        return;
+
+    lastSlash = strrchr(exePath, '\\');
+    if(lastSlash != NULL)
+        *lastSlash = '\0';
+
+    SetCurrentDirectoryA(exePath);
+
+    for(attempt = 0; attempt < 3; attempt++)
+    {
+        DWORD attrs = GetFileAttributesA("assets");
+
+        if(attrs != INVALID_FILE_ATTRIBUTES && (attrs & FILE_ATTRIBUTE_DIRECTORY))
+            return;
+
+        SetCurrentDirectoryA("..");
+    }
 }
 #endif
 
@@ -128,6 +172,10 @@ void keyboard(unsigned char key, int x, int y)
 
 int main(int argc,char** argv)
 {
+#ifdef _WIN32
+    resolveAssetsWorkingDirectory();
+#endif
+
     glutInit(&argc,argv);
 
     /* CUESTIONABLE: sin GLUT_ALPHA ni GLUT_DEPTH. El overlay de
