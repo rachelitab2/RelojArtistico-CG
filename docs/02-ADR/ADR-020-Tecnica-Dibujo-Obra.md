@@ -1,4 +1,4 @@
-ADR-012 – Dos técnicas de dibujo por obra: lienzo local vs. polar-nativo
+ADR-020 – Dos técnicas de dibujo por obra: lienzo local vs. polar-nativo
 Estado
 Aceptado.
 
@@ -38,4 +38,4 @@ Evidencia en el proyecto
 drawRiley()/drawEscher()/drawKupka()/drawRothko() vacías ({}), con toda la composición en sus respectivas funciones *Background(); comparar con drawDemuth()/drawKandinsky()/drawPaulKlee(), que sí dibujan en el lienzo local. El comentario y la constante OVERLAP_DEG en segment_rothko.c documentan el ajuste de costuras.
 
 Relación con otros ADR
-Refina el ADR-006 (sistema de lienzo local) y el ADR-007 (separación fondo/contenido), que seguían vigentes pero no contemplaban el caso de obras sin lienzo local. Relacionado con ADR-011 (sistema de salas), ya que la necesidad de que las obras "llenen" el sector se hizo más evidente al ampliar el catálogo a 18 obras con estilos muy distintos entre sí.
+Refina el ADR-006 (sistema de lienzo local) y el ADR-007 (separación fondo/contenido), que seguían vigentes pero no contemplaban el caso de obras sin lienzo local. Relacionado con ADR-019 (sistema de salas), ya que la necesidad de que las obras "llenen" el sector se hizo más evidente al ampliar el catálogo a 18 obras con estilos muy distintos entre sí.

@@ -1,11 +1,11 @@
-ADR-011 – Sistema de salas de tiempo (18 obras, 3 intervalos)
+ADR-019 – Sistema de salas de tiempo (18 obras, 3 intervalos)
 Estado
 Aceptado. Reemplaza la restricción de "seis obras fijas" descrita en el ADR-005, el ADR-008 y el ADR-018.
 
 Contexto
 El diseño original del proyecto (ver ADR-005, ADR-008) fijaba el catálogo en exactamente seis obras, una por segmento, con un único intervalo de cambio (cada 15 minutos). Esa restricción era intencional en su momento: simplificaba el enum ArtworkType, el dispatcher de segments.c y el layout angular de la galería.
 
-El proyecto evolucionó hacia un alcance mayor: representar 18 obras en total, agrupadas temáticamente en tres "salas" (Color y geometría / Luz, ritmo y color / Símbolo, ornamento y abstracción), cada una con seis obras y su propio intervalo de cambio de obra activa (15, 30 o 60 minutos). El usuario elige la sala activa con las teclas 1/2/3 (alias 4/5/6, ver ADR-014).
+El proyecto evolucionó hacia un alcance mayor: representar 18 obras en total, agrupadas temáticamente en tres "salas" (Color y geometría / Luz, ritmo y color / Símbolo, ornamento y abstracción), cada una con seis obras y su propio intervalo de cambio de obra activa (15, 30 o 60 minutos). El usuario elige la sala activa con las teclas 1/2/3 (alias 4/5/6, ver ADR-022).
 
 Problema
 Extender el sistema de seis obras fijas a 18 obras organizadas en tres salas intercambiables en tiempo de ejecución, sin reescribir el motor de segmentos ni duplicar la lógica de layout, resaltado y sincronización con el reloj que ya funcionaba para el caso de seis obras.
@@ -34,10 +34,10 @@ Consecuencias
 
 Ventajas: Triplica el contenido del catálogo (6 → 18 obras) sin triplicar el motor de segmentos. El código de layout, resaltado y sincronización con el reloj (ADR-009, ADR-010) se reutiliza sin cambios para las tres salas. Agregar o mover una obra entre salas es un cambio acotado a los arrays ROOM_*.
 
-Desventajas: El enum ArtworkType ahora tiene 18 valores; el dispatcher de dos switch en segments.c debe extenderse por cada obra nueva, sin importar a qué sala pertenezca. Cambiar de sala reinicia por completo la animación de layout (resetSectorLayout()); no hay transición animada entre el estado de una sala y la siguiente. El tamaño de cada sala queda fijo en ROOM_SIZE=6 sectores; una sala con más o menos obras requeriría tocar la geometría angular fija del reloj (ver también ADR-012 sobre el conflicto de cupo detectado con Vasarely en la sala de 30 min).
+Desventajas: El enum ArtworkType ahora tiene 18 valores; el dispatcher de dos switch en segments.c debe extenderse por cada obra nueva, sin importar a qué sala pertenezca. Cambiar de sala reinicia por completo la animación de layout (resetSectorLayout()); no hay transición animada entre el estado de una sala y la siguiente. El tamaño de cada sala queda fijo en ROOM_SIZE=6 sectores; una sala con más o menos obras requeriría tocar la geometría angular fija del reloj (ver también ADR-020 sobre el conflicto de cupo detectado con Vasarely en la sala de 30 min).
 
 Evidencia en el proyecto
 ROOM_15_MIN, ROOM_30_MIN, ROOM_60_MIN y ROOM_SIZE en segments.h/.c; setActiveRoom()/getActiveRoom()/loadRoomIntoSegments() en segments.c; el manejo de teclas 1/2/3 (y sus alias 4/5/6) en main.c; el enum ArtworkType de 18 valores en segments.h.
 
 Relación con otros ADR
-Reemplaza la restricción de seis obras fijas de ADR-005, ADR-008 y ADR-018 — esos tres ADR siguen vigentes en cuanto a la organización modular por archivo y el mecanismo de dispatcher, pero su premisa de "seis obras, un único set" queda superada por este ADR. Depende de ADR-009 (sincronización con el reloj) para el cálculo de slotMinutes por sala. Ver también ADR-014 (alias de teclado) y ADR-015 (rama por obra), ambos consecuencia directa de este cambio de alcance.
+Reemplaza la restricción de seis obras fijas de ADR-005, ADR-008 y ADR-018 — esos tres ADR siguen vigentes en cuanto a la organización modular por archivo y el mecanismo de dispatcher, pero su premisa de "seis obras, un único set" queda superada por este ADR. Depende de ADR-009 (sincronización con el reloj) para el cálculo de slotMinutes por sala. Ver también ADR-022 (alias de teclado) y ADR-023 (rama por obra), ambos consecuencia directa de este cambio de alcance.

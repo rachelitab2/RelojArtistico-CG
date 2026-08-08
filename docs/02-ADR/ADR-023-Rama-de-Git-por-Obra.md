@@ -1,9 +1,9 @@
-ADR-015 – Una rama de Git por obra artística
+ADR-023 – Una rama de Git por obra artística
 Estado
 Aceptado.
 
 Contexto
-El ADR-005 ya establecía que cada obra vive en su propio módulo de código (segment_*.c/.h) para reducir conflictos de integración en un desarrollo colaborativo vía Git. Al ampliar el catálogo a 18 obras (ADR-011), con el trabajo desarrollado obra por obra a lo largo de varias sesiones, se hizo explícito un criterio adicional: no solo el código de cada obra debe estar aislado en su propio módulo, sino que el historial de Git debe reflejar esa misma separación, una rama por obra.
+El ADR-005 ya establecía que cada obra vive en su propio módulo de código (segment_*.c/.h) para reducir conflictos de integración en un desarrollo colaborativo vía Git. Al ampliar el catálogo a 18 obras (ADR-019), con el trabajo desarrollado obra por obra a lo largo de varias sesiones, se hizo explícito un criterio adicional: no solo el código de cada obra debe estar aislado en su propio módulo, sino que el historial de Git debe reflejar esa misma separación, una rama por obra.
 
 Problema
 Decidir si el trabajo de implementar múltiples obras en una misma sesión se agrupa en una sola rama/commit grande, o si cada obra mantiene su propia rama, y qué hacer cuando un cambio no pertenece claramente a una sola obra (cambios al motor de segmentos, al catálogo compartido, o fixes transversales).
@@ -24,7 +24,7 @@ Cuando un mismo archivo compartido (segments.c, artwork_catalog.c, CMakeLists.tx
 Cambios que no son una obra nueva (mitigaciones de rendimiento, fixes de arranque, alias de teclado) van en su propia rama fix/<descripcion>, siguiendo el mismo criterio de "una unidad de cambio, una rama".
 
 Justificación
-Mantener el historial de Git alineado con la separación modular del código (ADR-005) hace que cada rama sea una unidad de revisión y reversión completa: si una obra necesita rehacerse (como ocurrió con Rothko, ver ADR-012) o descartarse, el cambio queda contenido a su propia rama sin arrastrar el trabajo de otras obras.
+Mantener el historial de Git alineado con la separación modular del código (ADR-005) hace que cada rama sea una unidad de revisión y reversión completa: si una obra necesita rehacerse (como ocurrió con Rothko, ver ADR-020) o descartarse, el cambio queda contenido a su propia rama sin arrastrar el trabajo de otras obras.
 
 git add -p para separar hunks de un mismo archivo compartido evita el trade-off entre "una rama por obra" y "los archivos compartidos se tocan en varias obras a la vez".
 
@@ -38,4 +38,4 @@ Evidencia en el proyecto
 El historial de ramas: feature/segment-escher, feature/segment-paul-klee, feature/segment-hilma-af-klint, feature/segment-joan-miro, feature/segment-kupka, feature/segment-rothko-v2, feature/segment-malevich-suprematist, fix/gpu-scheduler-crash, fix/assets-working-directory, entre otras, todas mergeadas a develop vía merge --no-ff.
 
 Relación con otros ADR
-Extiende a nivel de control de versiones el criterio de aislamiento por obra ya establecido en ADR-005. Es la práctica de proceso que acompañó la implementación de ADR-011 al escalar el catálogo de 6 a 18 obras.
+Extiende a nivel de control de versiones el criterio de aislamiento por obra ya establecido en ADR-005. Es la práctica de proceso que acompañó la implementación de ADR-019 al escalar el catálogo de 6 a 18 obras.
