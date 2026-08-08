@@ -2,7 +2,7 @@
 
 Proyecto final de la asignatura **Computación Gráfica I** desarrollado en lenguaje **C** utilizando **OpenGL**, **FreeGLUT** y **CMake**.
 
-El proyecto representa un reloj analógico funcional cuya periferia está formada por seis segmentos circulares inspirados en reconocidas obras de la historia del arte. Cada obra es renderizada mediante primitivas gráficas de OpenGL y el sistema destaca automáticamente una de ellas según la hora actual del sistema.
+El proyecto representa un reloj analógico funcional cuya periferia está formada por seis segmentos circulares inspirados en reconocidas obras de la historia del arte, organizados en tres salas temáticas de 18 obras en total. Cada obra es renderizada mediante primitivas gráficas de OpenGL y el sistema destaca automáticamente una de ellas según la hora actual del sistema.
 
 ---
 

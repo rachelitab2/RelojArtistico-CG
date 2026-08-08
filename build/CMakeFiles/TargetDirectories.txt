@@ -1,3 +1,0 @@
-C:/Users/Usuario/RelojArtistico-CG/build/CMakeFiles/RelojArtistico.dir
-C:/Users/Usuario/RelojArtistico-CG/build/CMakeFiles/ALL_BUILD.dir
-C:/Users/Usuario/RelojArtistico-CG/build/CMakeFiles/ZERO_CHECK.dir
