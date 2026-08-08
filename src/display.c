@@ -9,10 +9,16 @@
 #include "audio.h"
 #include "texture.h"
 #include <stdio.h>
+#include <string.h>
 
 #define FRAME_INTERVAL_MS 33
 
-static const float WHEEL_VERTICAL_OFFSET = -0.12f; /* baja el reloj/rueda, deja aire arriba */
+/* pequeno corrimiento hacia abajo (deja un poco mas de aire arriba,
+   donde estan los paneles de UI, que abajo, donde esta el navegador de
+   obras); el offset y los radios de segments.c (ver loadRoomIntoSegments)
+   se ajustaron juntos para que el anillo completo (incluido el halo del
+   sector activo) entre sin recortarse ni chocar con ningun panel. */
+static const float WHEEL_VERTICAL_OFFSET = 0.02f;
 
 /* Secuencia de arranque (ver ADR-017): carga breve -> intro de las 3
    franjas de tiempo -> reloj. La intro avanza con cualquier tecla, no
@@ -228,6 +234,116 @@ static void drawIntroCard(float x, float y, float width, float height,
     { int i; for(i = 0; desc2[i] != '\0'; i++) glutBitmapCharacter(GLUT_BITMAP_HELVETICA_10, desc2[i]); }
 }
 
+/* Divide "text" en lineas que entran en maxWidthPixels, cortando en
+   espacios. Mismo criterio que wrapText() en ui.c (duplicado aqui
+   porque display.c no depende de ui.c) -- FreeGLUT no da layout de
+   texto, asi que hay que medir palabra por palabra con
+   glutBitmapWidth(). */
+static int wrapTextForIntro(const char *text, void *font, int maxWidthPixels,
+                             char lines[][160], int maxLines)
+{
+    int lineCount = 0;
+    int position = 0;
+
+    while(text[position] != '\0' && lineCount < maxLines)
+    {
+        int lineStart;
+        int lastSpace = -1;
+        int width = 0;
+        int length;
+
+        while(text[position] == ' ')
+            position++;
+
+        lineStart = position;
+
+        while(text[position] != '\0')
+        {
+            width += glutBitmapWidth(font, text[position]);
+
+            if(text[position] == ' ')
+                lastSpace = position;
+
+            if(width > maxWidthPixels && lastSpace >= lineStart)
+                break;
+
+            position++;
+        }
+
+        if(text[position] == '\0')
+        {
+            length = position - lineStart;
+        }
+        else if(lastSpace >= lineStart)
+        {
+            length = lastSpace - lineStart;
+            position = lastSpace + 1;
+        }
+        else
+        {
+            length = position - lineStart;
+        }
+
+        if(length > 159)
+            length = 159;
+
+        memcpy(lines[lineCount], text + lineStart, (size_t)length);
+        lines[lineCount][length] = '\0';
+
+        lineCount++;
+    }
+
+    return lineCount;
+}
+
+/* Parrafo de presentacion del proyecto, en una tarjeta propia entre el
+   subtitulo y las 3 franjas de tiempo: mismo tratamiento visual
+   (borde fino, fondo casi transparente) que drawIntroCard(), para que
+   se lea como parte organizada de la pantalla y no como texto plano
+   suelto. */
+static void drawProjectDescription(float x, float y, float width, float height)
+{
+    static const char *description =
+        "El Reloj Artistico es un proyecto de Computacion Grafica que busca "
+        "acercar el arte al publico de una manera interactiva. Cada reloj "
+        "contiene diferentes obras de autores distintos, recreadas mediante "
+        "figuras geometricas que conservan la esencia visual de la pieza "
+        "original.";
+    char lines[5][160];
+    int lineCount;
+    int i;
+    float lineHeight = pixelsToWorldUnits(20);
+    float textY;
+
+    glColor4f(1.0f, 1.0f, 1.0f, 0.04f);
+    glBegin(GL_QUADS);
+        glVertex2f(x, y);
+        glVertex2f(x + width, y);
+        glVertex2f(x + width, y - height);
+        glVertex2f(x, y - height);
+    glEnd();
+
+    glColor4f(GOLD[0], GOLD[1], GOLD[2], 0.30f);
+    glLineWidth(1.0f);
+    glBegin(GL_LINE_LOOP);
+        glVertex2f(x, y);
+        glVertex2f(x + width, y);
+        glVertex2f(x + width, y - height);
+        glVertex2f(x, y - height);
+    glEnd();
+
+    lineCount = wrapTextForIntro(description, GLUT_BITMAP_HELVETICA_12,
+                                  (int)(width / pixelsToWorldUnits(1)) - 40,
+                                  lines, 5);
+
+    textY = y - (height - (float)lineCount * lineHeight) * 0.5f - pixelsToWorldUnits(14);
+
+    glColor3f(0.78f, 0.78f, 0.82f);
+
+    for(i = 0; i < lineCount; i++)
+        drawCenteredText(x + width * 0.5f, textY - (float)i * lineHeight, GLUT_BITMAP_HELVETICA_12, lines[i]);
+}
+
 /* Pantalla intermedia: explica las 3 franjas de tiempo antes de entrar
    al reloj. Avanza con cualquier tecla (ver advanceFromIntroScreen),
    no con mouse, para no sumar un callback nuevo (ver ADR-017). */
@@ -263,6 +379,8 @@ static void drawIntroScreen(void)
     glColor3f(0.66f, 0.66f, 0.70f);
     drawCenteredText(0.0f, 0.34f, GLUT_BITMAP_HELVETICA_12,
         "Elegis cada cuanto cambia la obra activa: eso define el ritmo del reloj.");
+
+    drawProjectDescription(cardsLeft, 0.25f, cardsTotalWidth, 0.20f);
 
     drawIntroCard(cardsLeft, cardsTop, cardWidth, cardHeight,
         "CADA 15 MIN", "Ritmo rapido",
@@ -348,7 +466,7 @@ glClearColor(
 
     glColor4f(accent.red, accent.green, accent.blue, 0.28f);
     glLineWidth(1.2f);
-    drawCircle(0.0f, 0.0f, 0.80f);
+    drawCircle(0.0f, 0.0f, 0.68f); /* 15% mas chico, ver nota junto a WHEEL_VERTICAL_OFFSET */
 
     /* anillo exterior con color pulsante (verde-amarillo). CUESTIONABLE:
        es independiente del pulso dorado del segmento destacado en
@@ -357,7 +475,7 @@ glClearColor(
     glColor4f(accent.red, accent.green, accent.blue, 0.62f);
     glLineWidth(2.5f);
 
-drawCircle(0.0f, 0.0f, 0.90f);
+drawCircle(0.0f, 0.0f, 0.76f); /* 15% mas chico, ver nota junto a WHEEL_VERTICAL_OFFSET */
 
     drawSegments();
 
