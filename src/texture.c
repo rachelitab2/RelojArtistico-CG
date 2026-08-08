@@ -108,6 +108,15 @@ Texture loadTexture(const char *path)
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, format, GL_UNSIGNED_BYTE, pixels);
 
+    /* Fuerza a que el driver termine de subir ESTA textura antes de
+       seguir. Sin esto, crear varias texturas en sucesion rapida
+       (precarga al arrancar, o navegar varias obras seguidas)
+       satura la cola de comandos del driver y crashea dentro de
+       nvoglv64.dll (ver docs/09-Diagnostico-Pantallazo-VIDEO-SCHEDULER.md,
+       causa raiz real). Solo se paga este costo la primera vez que se
+       carga cada imagen (cache hit no vuelve a pasar por aca). */
+    glFinish();
+
     stbi_image_free(pixels);
 
     {
